@@ -1,6 +1,6 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-05. Auf Auftrag wurden Issue #1 präzisiert und #2–#9 angelegt. **Planungsstand; kein Paket ist implementiert.** Die Issues sind ausführbare Arbeitspakete, keine Freigabe aller bisherigen Produktvorschläge. Maßgeblich bleiben [Entscheidungsregister](decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md) und `AGENTS.md`.
+Stand: 2026-09-05. Auf Auftrag wurden Issue #1 präzisiert und #2–#9 angelegt. **P0 ist implementiert und vollständig abgenommen; alle späteren Pakete sind Planungsstand.** Die Issues sind ausführbare Arbeitspakete, keine Freigabe aller bisherigen Produktvorschläge. Maßgeblich bleiben [Entscheidungsregister](decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
@@ -16,7 +16,7 @@ Stand: 2026-09-05. Auf Auftrag wurden Issue #1 präzisiert und #2–#9 angelegt.
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` | GPT-5.6 Terra · High |
 | P4 / [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | #8 | `codex/p4-poc-acceptance` | GPT-5.6 Terra · High |
 
-Abhängigkeiten bedeuten **abgenommen und nach main gemergt**, nicht nur „ein PR wurde eröffnet“. Sie sind in Issues und dieser Tabelle dokumentiert. Ein offenes Issue kann weiterhin durch diese Bedingungen blockiert sein. Die Branchliste legt Namen fest, behauptet aber nicht, dass alle Branches schon existieren. P0 ist der einzige unmittelbar vorzubereitende Arbeitsbranch; spätere Branches werden beim jeweiligen Start vom dann aktuellen `main` erstellt.
+Abhängigkeiten bedeuten **abgenommen und nach main gemergt**, nicht nur „ein PR wurde eröffnet“. Sie sind in Issues und dieser Tabelle dokumentiert. Ein offenes Issue kann weiterhin durch diese Bedingungen blockiert sein. Die Branchliste legt Namen fest, behauptet aber nicht, dass alle Branches schon existieren. P0 ist abgeschlossen; spätere Branches werden beim jeweiligen Start vom dann aktuellen `main` erstellt.
 
 Die einzige vorgesehene Parallelität ist #6/#7 nach #5. Darstellung versus Generator sind getrennte Zuständigkeiten; gemeinsame Verträge nicht unabhängig ändern. Standard bleibt ein Paket pro PR. #8 wartet auf beide Ergebnisse, damit die Integration nicht auf zwei beweglichen Grundlagen erfolgt.
 
@@ -47,9 +47,9 @@ Countdownlänge und Steuertasten sind hier neue **konkrete Vorschläge**, keine 
 
 Ein Paket liefert Implementierung, passende Tests, gepflegte Dokumentation und konkrete Nachweise. In jedem Issue stehen messbare Abnahmekriterien, Nicht-Ziele und ein kompakter Codex-Prompt. Vollständige Issue-Inhalte werden nicht noch einmal in den Prompt kopiert.
 
-[docs/testing.md](testing.md) definiert die verpflichtenden CLI-Einstiege. **P0 erstellt den Runner und die Export-Presets erst.** Bis dahin sind die dortigen Befehle Soll-Vertrag, keine vorhandene Installation. Jedes Folgepaket ergänzt seine Testsuite und hält alle bisherigen Tests sowie beide Exportjobs grün. Unbekannte/leere Testsuiten dürfen nicht erfolgreich durchlaufen.
+[docs/testing.md](testing.md) definiert die verpflichtenden CLI-Einstiege. **P0 hat den Runner, die Export-Presets und die minimale CI angelegt; diese Grundlage ist abgenommen.** Jedes Folgepaket ergänzt seine Testsuite und hält alle bisherigen Tests sowie beide Exportjobs grün. Unbekannte/leere Testsuiten dürfen nicht erfolgreich durchlaufen.
 
-Reale Grafik, Hardwaretastatur, Browserpersistenz und subjektives Spielgefühl sind separate Nachweise. Eine nicht vorhandene Testumgebung rechtfertigt keine erfundene Abnahme. CI kann prüfbare Teile übernehmen, der Nutzer kann fehlende echte Windows-/Spieltests ergänzen. Solange ein verpflichtender Nachweis fehlt, bleibt die Abnahme offen und der PR Draft.
+Reale Grafik, Hardwaretastatur, Browserpersistenz und subjektives Spielgefühl sind separate Nachweise. Eine nicht vorhandene Testumgebung rechtfertigt keine erfundene Abnahme. Für P0 wurden native Windows-/Web-Starts sowie die manuelle Hardwaretastaturprüfung vollständig bestanden. In Folgepaketen kann CI die automatisierbaren Teile übernehmen; fehlende echte Windows-/Spieltests ergänzt der Nutzer. Solange ein verpflichtender Nachweis fehlt, bleibt die jeweilige Abnahme offen und der PR Draft.
 
 ## Branch, PR und Dokumentationspflege
 
@@ -61,7 +61,7 @@ README/Roadmap zeigen die Wahrheit: „implementiert, Test X offen“ ist nicht 
 
 Die Auswahl in der Tabelle ist eine projektspezifische Empfehlung, keine Garantie eines bestimmten Tokenverbrauchs. Begründungen stehen zusätzlich in jedem Issue: Terra High für zusammenhängende Mehrdateienpakete; Terra Medium für den nach stabilen Verträgen isolierten lokalen Speicher; Terra Very High nur für die anspruchsvolle Generator-/Retry-/Determinismussemantik. Astra Medium ist gezielt für den visuellen Ausschnitt vorgesehen, nicht pauschal für jede Aufgabe. Wenn im verwendeten Codex noch nicht verfügbar, ist für #6 **GPT-5.6 Terra · High** die Ausweichwahl.
 
-**Selbst umsetzbar: Teilweise** für die vollständigen neun Implementierungspakete mit ihren jeweiligen Abnahmen. GitHub-Änderungen, Codebearbeitung, Reviews und Commit/Push sind mit den verfügbaren Werkzeugen möglich. In der aktuellen Chat-Umgebung ist noch keine Godot-Laufzeit installiert und keine native Windows-Grafikumgebung vorhanden; Tests dürfen daher nicht als bereits ausführbar oder bestanden ausgegeben werden. Größere zusammenhängende Implementierungen gehen bevorzugt an Codex mit geeigneter Laufzeit. Kleine isolierte Fehlerbehebungen, Reviews und Dokumentationsänderungen werden bevorzugt direkt übernommen; deren konkrete Testbarkeit wird unmittelbar vor der Aufgabe erneut geprüft.
+**Selbst umsetzbar: Teilweise** für die vollständigen neun Implementierungspakete mit ihren jeweiligen Abnahmen. GitHub-Änderungen, Codebearbeitung, Reviews und Commit/Push sind mit den verfügbaren Werkzeugen möglich. Für P0 standen Godot 4.7.2, Export-Templates sowie Windows- und Chrome-Laufzeit zur Verfügung; Import, Exporte, technische Render-/Eingabediagnosen und die manuelle Hardwaretastaturabnahme wurden erfolgreich durchgeführt. Größere zusammenhängende Implementierungen gehen bevorzugt an Codex mit geeigneter Laufzeit. Kleine isolierte Fehlerbehebungen, Reviews und Dokumentationsänderungen werden bevorzugt direkt übernommen; deren konkrete Testbarkeit wird unmittelbar vor der Aufgabe erneut geprüft.
 
 Bei späteren Nacharbeiten enthält der Prompt nur Repository/Branch, aktuellen PR-Review, Pflichtbefehle und Übergaberegeln; die Reviewpunkte werden nicht vollständig wiederholt. Modell, Reasoning und Eigenumsetzbarkeit werden unmittelbar vor dem neuen Auftrag erneut beurteilt, nicht nur rückblickend genannt.
 

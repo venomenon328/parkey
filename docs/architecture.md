@@ -1,12 +1,12 @@
 # Technische Architektur
 
-Stand: 2026-09-05. **Planungsstand, keine implementierte Architektur.** Godot und Windows-Fokus sind bestätigt; konkrete Sprache, Module und Exportprofile sind Vorschläge P-001/P-002/P-009 im [Entscheidungsregister](decisions.md).
+Stand: 2026-09-05. P0 implementiert die gemeinsame Godot-/GDScript-Grundlage, Renderprofil-Diagnose, Export-Presets und Eingabenormalisierung. Spielkern, Streckendaten, Speicherung und Generator bleiben Planungsstand. Godot und Windows-Fokus sind bestätigt; konkrete Sprache, Module und Exportprofile sind Vorschläge P-001/P-002/P-009 im [Entscheidungsregister](decisions.md).
 
 ## Ein Projekt, zwei Darstellungsprofile
 
 Vorgesehen ist ein Godot-4-Projekt mit typisiertem GDScript. Der Spielkern, Streckendaten und grundsätzlich auch Szenen/Assets werden geteilt. Windows verwendet ein hochwertiges Forward+-Profil; Web verwendet Compatibility und passende reduzierte Grafik-/Audioeinstellungen. Material- oder Umgebungsvarianten dürfen nötig sein, sollen aber keine zweite Spielimplementierung erzeugen.
 
-Die offizielle Windows-Downloadseite weist bei der Recherche am 2026-09-05 Godot **4.7.2** aus. Das ist der vorgeschlagene Ausgangspunkt für P0, noch kein im Projekt vorhandener Versionspin. P0 muss die genaue Standard-Editorversion und dazu passende Export-Templates gemeinsam fixieren und durch echte Exporte prüfen. Keine stillen Engine-Upgrades über eine bewegliche `latest`-Angabe.
+P0 pinnt den Godot-Standardeditor auf **4.7.2.stable.official.ed1daf0bf** und die passenden Export-Templates auf **4.7.2.stable**. Beide Zielprofile wurden mit diesem Stand tatsächlich exportiert und gestartet. Engine-Upgrades erfolgen nicht still über eine bewegliche `latest`-Angabe, sondern als eigene nachvollziehbare Änderung mit erneuter Exportprüfung.
 
 Aktuelle technische Grundlage: Godot 4 kann im Web nur den Compatibility-Renderer mit WebGL 2.0 verwenden; Forward+/Mobile stehen dort nicht zur Verfügung. C#-Projekte können derzeit nicht als Godot-4-Web-Projekt exportiert werden. Deshalb ist GDScript hier die vorgeschlagene gemeinsame Sprache. Quellen siehe unten.
 
@@ -39,6 +39,8 @@ Für die Laufzeit ist eine injizierbare monotone Uhr vorgesehen; im Godot-Adapte
 
 Die Uhr garantiert keine identische Ende-zu-Ende-Eingabelatenz auf Windows und im Browser. In P0/P1 wird dokumentiert, an welcher Stelle Eingabezeiten erfasst werden. Künstliche Testereignisse können exakte Regelparität zeigen; reale Hardware-, OS- und Browserlatenzen müssen zusätzlich untersucht werden. Keine Behauptung einer hardwareübergreifend garantierten Millisekundengenauigkeit.
 
+P0 erfasst beim Eintritt in Foundation._unhandled_input mit Time.get_ticks_usec() den Zeitpunkt, zu dem die Anwendung das Ereignis entgegennimmt, und zeigt ihn nur als captured_usec an. Dieser Wert ist weder ein behaupteter OS-/Browserzeitstempel noch ein Renntimer. Die Normalisierung verarbeitet den vom Layout erzeugten Unicodewert (A–Z), Shift, Key-up, Echo und Shortcut-Modifier sichtbar; sie enthält keine RunSession- oder Fehlerregel. P1a darf diesen Empfangspunkt erst mit dem dann beauftragten Uhr- und Regelvertrag verbinden.
+
 ## Streckenmodell und Reproduzierbarkeit
 
 `CourseData` enthält stabile Feld-IDs, ganzzahlige Rasterkoordinaten, normalisierte Buchstaben, explizite Verbindungen sowie Start/Ziel. Wo zwei Felder räumlich als begehbare Nachbarn erscheinen, müssen Daten und Geometrie dieselbe Aussage machen. Rückverbindungen sind im vorgeschlagenen ersten Modell symmetrisch.
@@ -51,7 +53,7 @@ Determinismus muss nachgewiesen werden: stabile Iterationsreihenfolge, kontrolli
 
 Vorgeschlagene Projektstruktur nach P0: `project.godot` im Repository-Root; `scenes/`, `scripts/core/`, `scripts/input/`, `scripts/presentation/`, `scripts/storage/`, `data/`, `assets/` und `tests/`. Verzeichnisse entstehen erst bei tatsächlichem Bedarf. Importcaches, Buildausgaben und lokale Secrets werden nicht versioniert; notwendige Quellassets, Szenen und Godot-UID-Dateien schon.
 
-P0 liefert zwei Export-Presets und reproduzierbare Buildbefehle. P1 ergänzt Kernregeltests; CI soll Tests und Exporte automatisieren, sobald diese lokal reproduzierbar sind. Ein tatsächlich gestarteteter Windows-Build und ein im Browser gestarteter HTTP(S)-Export bleiben eigenständige Abnahmen. Ein erfolgreiches Headless-Exportkommando ersetzt sie nicht.
+P0 liefert zwei Export-Presets, reproduzierbare Buildbefehle, Smoke-Tests und CI. P1 ergänzt Kernregeltests und führt die bestehende Test-/Exportkette fort. Ein tatsächlich gestarteter Windows-Build und ein im Browser gestarteter HTTP(S)-Export bleiben eigenständige Abnahmen. Ein erfolgreiches Headless-Exportkommando ersetzt sie nicht.
 
 Lokale Ergebnisse brauchen ein versioniertes Datenformat, verlässliches Laden und eine verständliche Behandlung fehlgeschlagener Speicherung. Browserpersistenz, Reload und eingeschränkte Speicherumgebungen werden gesondert geprüft. Die Offline-Spielbarkeit darf nicht von einer späteren Online-Rangliste abhängen.
 
@@ -59,7 +61,7 @@ Für Onlinewertungen können Eingabeverläufe gegen Strecke und Regeln validiert
 
 ## Primärquellen
 
-Alle folgenden Quellen wurden am **2026-09-05** geprüft. Die `stable`-Dokumentation ist beweglich; beim Versionspin in P0 sind die relevanten Aussagen erneut gegen die gewählte Version zu prüfen.
+Alle folgenden Quellen wurden am **2026-09-05** geprüft. Die `stable`-Dokumentation ist beweglich; bei späteren Engine-Upgrades sind die relevanten Aussagen erneut gegen die gewählte Version zu prüfen.
 
 - Windows-Download und Version: https://godotengine.org/download/windows/
 - Web-Export, C#-Grenze und Renderer: https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html

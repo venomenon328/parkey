@@ -1,0 +1,53 @@
+name: Godot verification
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - codex/p0-godot-foundation
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    env:
+      GODOT_VERSION: 4.7.2
+      GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+      GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned Godot editor and templates
+        shell: bash
+        run: |
+          mkdir -p .ci-tools/templates
+          curl --fail --location --silent --show-error --output .ci-tools/godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  .ci-tools/godot.zip" | sha256sum --check
+          unzip -q .ci-tools/godot.zip -d .ci-tools
+          mv ".ci-tools/Godot_v${GODOT_VERSION}-stable_linux.x86_64" .ci-tools/godot
+          chmod +x .ci-tools/godot
+          curl --fail --location --silent --show-error --output .ci-tools/templates.tpz "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  .ci-tools/templates.tpz" | sha256sum --check
+          unzip -q .ci-tools/templates.tpz -d .ci-tools/templates
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mv .ci-tools/templates/templates/* "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
+          echo "$GITHUB_WORKSPACE/.ci-tools" >> "$GITHUB_PATH"
+
+      - name: Import project
+        run: godot --headless --path . --import
+
+      - name: Run tests
+        run: godot --headless --path . --script res://tests/run_tests.gd -- --suite all
+
+      - name: Export Windows release
+        run: |
+          mkdir -p build/windows
+          godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
+
+      - name: Export Web release
+        run: |
+          mkdir -p build/web
+          godot --headless --path . --export-release "Web" build/web/index.html
