@@ -14,7 +14,7 @@ Stand: 2026-09-05. P0 / Issue #1 ist implementiert und vollständig abgenommen: 
 
 **P1a / Issue #2 ist abgenommen und über PR #12 nach `main` gemergt** (`5ddf921fdf3736f9e521b8e37b833139beee636f`). Der testbare Kern enthält `CourseData`, getrennte Graph-/Layoutvalidierung, versionierte Identität, `RunSession`, monotone Uhr und den Eingabeadapter. Nach Review-Nacharbeit: `core` mit 127 und `all` mit 158 Assertions, beide Exporte und CI erfolgreich. Diese Nachweise betreffen den Kern, nicht einen schon sichtbaren Spielablauf.
 
-**P1b / Issue #3 ist zur Umsetzung vorbereitet, noch nicht implementiert.** Ein sichtbarer Parcours, Kamera-/Animationsintegration, HUD, dauerhafte Ranglisten und Generator fehlen noch. Der aktuelle Programmeinstieg ist weiterhin die P0-Diagnose.
+**P1b / Issue #3 ist im Draft-PR #13 implementiert, aber noch nicht vollständig abgenommen.** Der reguläre Einstieg ist ein validierter 26-Feld-Handparcours mit zwei Routen, Rückwegen, Figur, automatischer Kamera, Timer, Fehlerfeedback, Quick Restart und minimaler Escape-Rückmeldung. Die echte Suite `integration` prüft die Szenen-/UI-/Kernverdrahtung. Physische Windows-/Web-Spielabnahme und Review bleiben eigenständige Gates. Dauerhafte Ranglisten und Generator fehlen weiterhin planmäßig.
 
 Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
 
@@ -35,9 +35,9 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-[**P1b / Issue #3: Spielbarer Third-Person-Testparcours**](https://github.com/venomenon328/parkey/issues/3). Arbeitsbranch `codex/p1b-playable-course` auf Basis des abgenommenen P1a-Stands. Die [Integrationsvorgaben](docs/p1b-implementation.md) konkretisieren den Auftrag; es fehlt keine weitere pauschale Profilfreigabe. Die Dokumentationsvorbereitung und anschließende Implementierung erfolgen auf demselben Branch/PR; keinen separaten Vorbereitungsmerge voraussetzen.
+[**Draft-PR #13 zu P1b / Issue #3**](https://github.com/venomenon328/parkey/pull/13) technisch und manuell abnehmen. Arbeitsbranch ist `codex/p1b-playable-course`; die [Integrationsvorgaben](docs/p1b-implementation.md) enthalten Bedienfolge, Darstellungsgrenzen und offene Nachweise. Kein separater Vorbereitungsmerge und kein zweiter PR.
 
-P1b liefert erstmals einen vollständigen Handlauf mit Figur, Kamera, Timer, Fehlerfeedback und Quick Restart. Lokale Bestzeiten folgen in P1c. Erst erprobte Routenbausteine werden zufallsgeneriert. Spätere Branches entstehen nach ihren Abhängigkeiten vom dann aktuellen `main`.
+Nach Abnahme und Merge liefert P1b erstmals einen vollständigen Handlauf. Lokale Bestzeiten folgen in P1c. Erst erprobte Routenbausteine werden zufallsgeneriert. Spätere Branches entstehen nach ihren Abhängigkeiten vom dann aktuellen `main`.
 
 ## Zusammenarbeit
 

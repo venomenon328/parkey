@@ -85,12 +85,13 @@ Im Repository-Root ausführen. `build/` ist absichtlich nicht versioniert.
 New-Item -ItemType Directory -Force -Path build/windows, build/web
 godot --headless --path . --import
 godot --headless --path . --script res://tests/run_tests.gd -- --suite core
+godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
 godot --headless --path . --script res://tests/run_tests.gd -- --suite all
 godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
 godot --headless --path . --export-release "Web" build/web/index.html
 ~~~
 
-Der Runner kennt ab P1a `smoke`, `core` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
+Der Runner kennt ab P1b `smoke`, `core`, `integration` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
 
 ~~~powershell
 godot --headless --path . --script res://tests/run_tests.gd -- --suite does-not-exist
@@ -110,4 +111,4 @@ Die P0-Testszene zeigt eine Taste mit Y, eine Platzhalterfigur mit Kopf, eine er
 
 `KeyInputNormalizer` wertet den erzeugten Unicodewert eines neuen A-Z-Key-down aus, nicht die physische Taste. Shift wird normalisiert; Key-up, Echo sowie Ctrl/Alt/Meta-Kombinationen werden verworfen.
 
-Die P0-Szene liest `Time.get_ticks_usec()` beim Eintritt in `_unhandled_input`; `captured_usec` ist nur der monotone Zeitpunkt des Anwendungsempfangs. P1a stellt darauf aufbauend den testbaren `RunSession`-/Uhrvertrag bereit. Die Verdrahtung des sichtbaren Parcours folgt erst in P1b. Hardware-, OS- und Browserlatenzen werden nicht als identisch behauptet.
+Die P0-Szene liest `Time.get_ticks_usec()` beim Eintritt in `_unhandled_input`; `captured_usec` ist nur der monotone Zeitpunkt des Anwendungsempfangs. P1a stellt darauf aufbauend den testbaren `RunSession`-/Uhrvertrag bereit. P1b verdrahtet ihn über genau einen `_unhandled_input`-Pfad mit dem sichtbaren Parcours. Hardware-, OS- und Browserlatenzen werden nicht als identisch behauptet.

@@ -5,7 +5,9 @@ extends RefCounted
 ## circles on one plane. It is not a general polygon or collision framework.
 
 const QUANTUM := 0.001
-const NUMERIC_EPSILON := 0.000001
+# GDScript layout values are 32-bit floats. At larger valid coordinates a
+# decimal snapped to 0.001 can differ by a few millionths when snapped again.
+const NUMERIC_EPSILON := 0.00001
 const ANCHOR_TOLERANCE := 0.001
 const EDGE_TOLERANCE := 0.01
 const MIN_FIELD_EXTENT := 0.5

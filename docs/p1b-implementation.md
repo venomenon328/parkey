@@ -1,6 +1,6 @@
 # P1b: Integration des ersten spielbaren Parcours
 
-Stand: 2026-09-05. **Umsetzung vorbereitet, noch nicht implementiert oder abgenommen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
+Stand: 2026-09-05. **Im Draft-PR #13 implementiert; vollständige technische und manuelle Abnahme offen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
 
 Diese Datei konkretisiert die Integration des freigegebenen [P1-Regelprofils](p1-rule-profile.md), ohne neue Spielregeln einzuführen. Umfang und Abnahmekriterien stehen in Issue #3, allgemeine Prüfungen in [testing.md](testing.md). Es fehlt keine weitere Start-, Eingabe-, Fehler- oder Geometriefreigabe.
 
@@ -65,6 +65,32 @@ Pflicht sind ein tatsächlich durchgespielter nativer Windows-Export mit Forward
 Manuell beide Routen, Rückweg, erster korrekter/falscher Buchstabe, Fehlerpause, schneller Eingabeburst, Y/Z, Shift, Echo/Überlappung, Backspace, Escape und Fokusverlust prüfen. Figur, Markierungen, Kopfbewegung und Kamera dürfen weder dauerhaft zurückbleiben noch benötigte Zeichen verdecken. Fenstergrößenwechsel als Lesbarkeits-Sanity-Check ergänzen. Screenshots oder Clips helfen bei der Beurteilung, ersetzen den realen Tastatur-/Spieltest aber nicht.
 
 Die Übergabe enthält eine kurze konkrete Bedien- und Abnahmeanleitung mit tatsächlichem Streckenverlauf, Startbuchstaben und erreichbaren Teststellen sowie den Buildpfaden. Fehlende reale Nutzerprüfung bleibt offen und der PR Draft, auch wenn alle Headless-Tests grün sind. Dieses Paket ist erst nach technischem Review und echter Spielabnahme abgeschlossen.
+
+## 8. Implementierte Strecke und Darstellungsgrenzen
+
+`scripts/course/handcrafted_course.gd` ist die einzige Quelle der 26 Felder, Buchstaben, expliziten Kanten, Grundflächen, Anker und Übergänge. Der gesamte ebene Kurs ist um 18° gedreht. Gabelungs-/Zusammenführungsfelder sind 2,0 × 4,2 Einheiten groß; die unregelmäßige obere Passage wechselt von 2,0 auf 2,6 und 1,4 Einheiten Breite. Alle Maße bleiben im freigegebenen Layoutprofil und werden vor Szenenfreigabe vollständig validiert.
+
+Konkrete Eingabefolgen ab Start:
+
+- obere Route: `AZKQWERTYUIMOPLXN`
+- untere Route: `AZKDFGHJCVBMOPLXN`
+- Rückwegprobe vom oberen Ast bis Start: `AZKQKZAS`
+
+Die Darstellung speichert höchstens 18 Wegpunkte aus den tatsächlich gewählten Übergängen. Nach dem letzten normalen Schritt holt die Figur innerhalb von höchstens 350 ms auf. Würde ein Eingabeburst die Grenze überschreiten, wird ohne Tween unmittelbar auf den aktuellen logischen Anker korrigiert; anschließend wird nur der neue begrenzte Restpfad dargestellt. Die Kamera erreicht ihre logische Zielposition innerhalb von höchstens 450 ms. Fehler und Quick Restart verwerfen den alten Darstellungsrest sofort. Diese Werte begrenzen nur Grafikrückstand und niemals korrekte Eingaben.
+
+## 9. Konkrete manuelle Abnahme
+
+Windows-Artefakt: `build/windows/parkey.exe`. Web-Einstieg: `build/web/index.html`, ausschließlich über den dokumentierten lokalen HTTP-Server öffnen.
+
+1. Ohne Eingabe warten: `00:00.000`, Feld S und A als erreichbarer Nachbar bleiben sichtbar.
+2. `A`, `Z`, `K` tippen; am K-Feld beide Äste lesen. Oberen Ast mit `QWERTYUI`, unteren nach Backspace mit `DFGHJCVB` spielen. Ab M jeweils `OPLXN` bis zum Ziel.
+3. Für den Rückweg `AZKQKZAS` tippen. Markierung, Figur und Kamera müssen am jeweils logischen Feld bleiben.
+4. Nach Backspace einen falschen Buchstaben außer A tippen, während der roten Fehleranzeige weitere Buchstaben drücken und nach etwa 200 ms A verwenden. Timer läuft, weitere Sperreingaben werden nicht nachgespielt.
+5. Schnelle Bursts, Shift-Buchstaben, Y/Z und überlappende neue Tastendrücke prüfen; gehaltene Taste/Echo darf keine Schrittfolge erzeugen. Backspace während Bewegung/Fehler startet bereit bei null.
+6. Escape vor Start öffnen/schließen. Escape während eines Laufs erhält die Position, beendet aber die Wertbarkeit; erst Backspace startet neu. Im UI-Fokustest Buchstaben und Backspace eingeben, ohne Spielaktion.
+7. Während Lauf und Fehler den Fensterfokus verlieren. Rückkehr darf nicht fortsetzen; ein bereits angezeigtes Zielergebnis bleibt erhalten. Bei 1280 × 720 sowie nach Fenstergrößenwechsel Buchstaben, Rückwege, Markierungen und HUD prüfen.
+
+Für beide Exporte getrennt Engine, OS/Browser, Hardware/Auflösung, physische Eingaben und Befunde protokollieren. Automatisierte oder synthetische Tastaturereignisse ersetzen diesen letzten Punkt nicht.
 
 ## Technische Primärquellen
 

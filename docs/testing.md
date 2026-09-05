@@ -1,6 +1,6 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist freigegeben und der P1a-Kern abgenommen/gemergt. P1b samt `integration`-Suite ist zur Umsetzung vorbereitet, noch nicht implementiert. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist freigegeben und der P1a-Kern abgenommen/gemergt. P1b samt `integration`-Suite ist im Draft-PR #13 implementiert; vollständige technische und physische Plattformabnahme bleibt offen. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
 ## P0-Teststand
 
@@ -18,6 +18,14 @@ P0 belegt technische Grundlage und reale Tastaturereignisse, keinen Parcours, Re
 Issue #2 / PR #12 ist nach gezielter Review-Nacharbeit auf `617015da51edb6ef9df85a450ff16a478e0fbe64` abgenommen. Der Implementierungsnachweis unter Windows mit Godot 4.7.2 nennt erfolgreichen Import, `core` mit **127 Assertions / 0 Failures**, `all` mit **158 Assertions / 0 Failures** und beide erfolgreichen Release-Exporte. CI-Lauf `33972097170` auf diesem Head erfolgreich.
 
 Der Re-Review prüfte insbesondere den gültigen 30°-Großfeld-/Mehrfachanschluss und die typfeste Validierung von `neighbors = 42`. Merge-Commit: `5ddf921fdf3736f9e521b8e37b833139beee636f`. Auch der anschließende `main`-CI-Lauf `33972595464` war erfolgreich. Dies sind Kern-/Buildnachweise; kein sichtbarer P1b-Parcours und kein P1b-Spielgefühl wurden damit abgenommen.
+
+## P1b-Teststand im Draft
+
+Lokaler Implementierungsnachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.official.ed1daf0bf: Import erfolgreich, `integration` mit **107 Assertions / 0 Failures**, `all` mit **266 Assertions / 0 Failures** sowie beide Release-Exporte erfolgreich. Die absichtlich unbekannte und die fehlende Suite endeten mit Exitcode 1. Der genaue Commit und der CI-Lauf stehen nach Push im Draft-PR #13; bis dahin ist dies keine Mergeabnahme.
+
+Die verpackten Exporte wurden zusätzlich auf AMD Ryzen 7 5800X, NVIDIA GeForce RTX 3070 und 2560 × 1440 Desktopauflösung gestartet. Das Windows-Fenster lief bei 1280 × 720 mit Forward+; Chrome 152.0.7977.76 lud den Webexport über `http://127.0.0.1:8000/` mit Compatibility. OS-synthetische Tastaturereignisse spielten beide vollständigen Routen bis `FINISHED`/Fehler 0 und prüften außerdem gehaltenes A/Echo, überlappendes Z→K, Fehleranzeige, Restart, Escape und tatsächlichen Fensterfokusverlust. Web wurde zusätzlich auf 960 × 620 verkleinert; Pflichtzeichen, HUD und Gabel blieben in der visuellen Sanity-Prüfung lesbar.
+
+**Offen:** Diese Automatisierung ist kein physischer Tastatur- oder Nutzer-Spieltest. Insbesondere Hardware-Y/Z und Shift, echtes menschliches Überlappen/Burstgefühl, LineEdit-Fokus per Maus, Verständlichkeit der 200-ms-Grenze sowie subjektive Kamera-/Routenlesbarkeit müssen auf Windows und Chrome anhand der Anleitung in [p1b-implementation.md](p1b-implementation.md) manuell bestätigt werden. Technisches Review und CI auf dem gepushten Head bleiben ebenfalls Abnahmegates; PR #13 bleibt Draft.
 
 ## Verbindlicher Test-/Exportvertrag
 
@@ -44,7 +52,7 @@ Windows: den stabilen PATH-Shim oder vollständigen Editorpfad aus [development.
 | P3b / #8 | `seed_flow` | Seed-/Sitzungs-/Speicherintegration und Exportkonformität |
 | P4 / #9 | `acceptance` | Komplette Läufe, Wiederholungen und Zustandstrennung |
 
-Die echte GDScript-Suite `core` prüft Graph/Layout, Identität, Eingabeadapter, Start, Sperrgrenzen, Restart, Menü, Fokus und einmalige Ergebnisse mit einer injizierten Uhr. `integration` und spätere Suites sind noch nicht implementiert. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
+Die echte GDScript-Suite `core` prüft Graph/Layout, Identität, Eingabeadapter, Start, Sperrgrenzen, Restart, Menü, Fokus und einmalige Ergebnisse mit einer injizierten Uhr. P1b ergänzt `integration` mit echter Szeneninstanziierung und Viewport-Eingaben. Spätere Suites sind noch nicht implementiert. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
 
 Beide Exporte bleiben in jedem Paket Pflicht, bei Kernänderungen auch über erfolgreiche CI auf aktuellem Head nachweisbar. Tests führen den wirklichen GDScript-Code aus, keine Python-/JavaScript-Ersatzimplementierung. Reale Plattformtests gemäß jeweiligem Issue zusätzlich durchführen.
 
@@ -98,7 +106,7 @@ Issue #3 und [p1b-implementation.md](p1b-implementation.md) sind der konkrete n�
 godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
 ```
 
-Die Suite ist erst zu implementieren. Sie muss die wirkliche Spielszene im SceneTree initialisieren und mindestens einen Lauf über ihren Event-/UI-Pfad ausführen. Kein Ersatz durch Tests, die ausschließlich `RunSession.handle_letter()` aufrufen oder Quelltextmuster suchen. Der Runner wartet auf ausstehende Szenentests; ein vorzeitiges erfolgreiches Beenden ist kein Testnachweis.
+Die Suite instanziiert `scenes/playable_course.tscn` im SceneTree, wartet auf `_ready` und Prozessframes und führt vollständige Läufe über den Viewport-Eingabepfad aus. Direkte Kernproben ergänzen, ersetzen diesen Pfad aber nicht. Der Runner beendet sich erst nach den ausstehenden Szenentests.
 
 Zu prüfen sind beide Routen und Rückwege, richtige/falsche Ersteingabe, Fehlerfrist, mindestens 50 schnelle Ereignisse bei unterschiedlichen Renderfortschritten, `LineEdit`-Fokus, Menü/Fokusverlust, Restart während Bewegungs-/Fehlerfeedback und einmalige Zielzeit. Standpunkte/Drehung/Übergänge entsprechen den Kursdaten; Szenenaufbau und Renderprofil ändern die Identität nicht. Vorhandene P0-Diagnose erhalten; nur die absichtlich geänderte Hauptszenen-Assertion anpassen.
 

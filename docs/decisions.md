@@ -26,7 +26,7 @@ Stand: 2026-09-05. Quelle ist die Projektabstimmung einschließlich freier Strec
 
 ## Für P1 freigegebene Entscheidungen
 
-Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle. Der testbare P1a-Kern ist über PR #12 abgenommen und gemergt; der sichtbare P1b-Spielablauf ist zur Umsetzung vorbereitet, aber noch nicht implementiert.
+Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle. Der testbare P1a-Kern ist über PR #12 abgenommen und gemergt; der sichtbare P1b-Spielablauf ist im Draft-PR #13 implementiert, seine vollständige Abnahme bleibt offen.
 
 | ID | Entscheidung |
 | --- | --- |
@@ -43,7 +43,7 @@ Die getrennte Menü-/Wertungsbehandlung, Start-/Zielgrenzen und Paketabgrenzung 
 | ID | Wert/Idee | Einordnung |
 | --- | --- | --- |
 | T-001 | Fehlerpause zunächst **200 ms** | Durch D-016 für das erste Profil freigegeben; weiterhin kein endgültiges Balancing. Zentral konfigurieren und wertungsrelevante Änderungen versionieren. |
-| T-002 | Kleine Kopfschüttelanimation bei einem Fehler | Vorgeschlagene visuelle Rückmeldung, die in P1b an der Platzhalterfigur erprobt wird. Sie darf die definierte Sperrdauer nicht verlängern oder spielrelevante Zeichen verdecken. |
+| T-002 | Kleine Kopfschüttelanimation bei einem Fehler | Für P1b als vorläufige Darstellung umgesetzt und noch manuell zu erproben. Sie verlängert die definierte Sperrdauer nicht und darf spielrelevante Zeichen nicht verdecken. |
 
 ## Umsetzungsvorschläge und abgelöste Einträge
 
@@ -55,9 +55,9 @@ Die getrennte Menü-/Wertungsbehandlung, Start-/Zielgrenzen und Paketabgrenzung 
 | P-004 | **Für P1 freigegeben durch D-017** | A–Z, beidseitige explizite Verbindungen. Frühere Viererraster-Einschränkung bleibt durch D-010 ersetzt. |
 | P-005 | **Abgelöst durch D-014/D-015/D-018** | Früherer Enter-/Countdown-Start gilt nicht mehr. Zieleingang bleibt logisch bestimmt; Fokus-/Menübehandlung gemäß P1-Profil. |
 | P-006 | Zunächst lokale Ranglisten je Strecken-/Regelidentität, noch kein Online-Dienst | Geplanter Lieferumfang von P1c; Speicher-/Onlinefragen blockieren den P1a-Kern nicht. Keine automatische Windows-/Web-Synchronisierung. |
-| P-007 | Automatische, erhöhte Third-Person-Kamera; lesbare Nachbarn und rechtzeitig sichtbare Verzweigungen | Keine Mausbedienung nötig; Informationsverlust durch Kamera darf nicht zur Hauptschwierigkeit werden. Als P1b-Testgestaltung vorgesehen, finale Kameraparameter noch offen. |
+| P-007 | Automatische, erhöhte Third-Person-Kamera; lesbare Nachbarn und rechtzeitig sichtbare Verzweigungen | Als P1b-Testgestaltung mit begrenztem Aufholen umgesetzt; keine Mausbedienung nötig. Finale Kameraparameter bleiben offen. |
 | P-008 | Zuerst handgebaute Teststrecken, danach modulbasierte Seed-Generierung | Erst gute Abschnittstypen finden, dann reproduzierbar kombinieren. |
-| P-009 | Unabhängige logische Position und aufholende visuelle Bewegung; keine unbeschränkte Animationswarteschlange | D-003/D-012 sind verbindlich; die konkrete visuelle Umsetzung wird in P1b erprobt. |
+| P-009 | Unabhängige logische Position und aufholende visuelle Bewegung; keine unbeschränkte Animationswarteschlange | In P1b mit endlicher Wegpunktgrenze und Aufholbudget umgesetzt; D-003/D-012 bleiben verbindlich, die Darstellung ist noch manuell zu erproben. |
 
 Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Entscheidungen. Statusänderungen erfolgen nachvollziehbar.
 
@@ -65,7 +65,7 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 
 **P1a / Issue #2:** Abgeschlossen. Regelprofil, Datenformat, kleines ebenes Layoutprofil, Zahlenpräzision und Toleranzen sind dokumentiert und technisch abgenommen. Merge über PR #12: `5ddf921fdf3736f9e521b8e37b833139beee636f`. Keine neue Freigabe des Kernprofils erforderlich.
 
-**P1b / Issue #3:** Umsetzung vorbereitet. [p1b-implementation.md](p1b-implementation.md) konkretisiert die Integration und die reale Abnahme. Sichtbarer Bewegungsrückstand beim Fehler und bei hoher Tippgeschwindigkeit sowie Kamera-/Buchstabenlesbarkeit sind praktisch zu prüfen. Vorläufige Darstellungsparameter werden im Paket zentral festgelegt und dokumentiert; dafür fehlt keine weitere fachliche Startfreigabe. Escape bleibt von Quick Restart getrennt; eine minimale Unterbrechungsrückmeldung genügt, vollständige Menü-/Fortsetzungsoberfläche und Persistenz sind nicht erforderlich.
+**P1b / Issue #3:** Im Draft-PR #13 implementiert. [p1b-implementation.md](p1b-implementation.md) dokumentiert Handkurs, zentrale Darstellungsparameter, Bedienung und reale Abnahme. Sichtbarer Bewegungsrückstand, Kamera-/Buchstabenlesbarkeit und physische Eingabe bleiben praktisch abzunehmen. Escape ist von Quick Restart getrennt; vollständige Menü-/Fortsetzungsoberfläche und Persistenz sind nicht enthalten.
 
 **Vor P2/P3:** Zielhardware, Auflösung und Leistungsbudget für #6; Kamera-/Routenlesbarkeit sowie Tippbarkeit in #5 erproben. Nur geeignete Bausteine für #7 freigeben. Weitere Tastaturlayouts und endgültige Streckenlängen bleiben offen. Größenbereiche, Mindestbreiten lesbarer Randübergänge und Fugentoleranzen sind an Testabschnitten zu erproben. Höhenwechsel, Sprung-/Brückenmechaniken und ein beliebiger Polygon-Generator sind nicht mitbeauftragt.
 
@@ -81,3 +81,4 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 - 2026-09-05: D-014 bis D-018 und `p1-input-start-v1` nach Nutzerfreigabe dokumentiert. Start per erstem Buchstaben ersetzt Countdown/Enter; Quick Restart und Escape-Menü getrennt. Fehler-, Rückweg-, Eingabe- und Fokusregeln für P1 freigegeben. Vorbereitung auf P1a-Branch, damals noch keine Implementierungsabnahme.
 - 2026-09-05: P1a-Kern auf `codex/p1a-run-core` implementiert: getrennte Graph-/Layoutvalidierung, versionierte Strecken-/Regelidentität, monotone Zeit, Eingabeadapter und RunSession.
 - 2026-09-05: Nacharbeit `617015d` geprüft; P1a über PR #12 abgenommen und gemergt, CI auf Merge-Commit erfolgreich. P1b auf dieser Grundlage vorbereitet; bestehende Regeln unverändert. Integration und echte Spiel-/Grafikabnahme noch ausstehend.
+- 2026-09-05: P1b-Handkurs, Spielszene, HUD, begrenztes visuelles Aufholen und `integration`-Suite im Draft-PR #13 umgesetzt. Das Regelprofil bleibt unverändert; Review und vollständige manuelle Plattformabnahme stehen getrennt aus.

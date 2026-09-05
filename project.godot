@@ -9,7 +9,7 @@ config_version=5
 [application]
 
 config/name="Parkey"
-run/main_scene="res://scenes/foundation.tscn"
+run/main_scene="res://scenes/playable_course.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 boot_splash/show_image=false
 

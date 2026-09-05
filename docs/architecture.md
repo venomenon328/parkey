@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a ist über PR #12 abgenommen und nach `main` gemergt: testbarer Spielkern, Streckendaten und Validierung. P1b ist zur Umsetzung vorbereitet; sichtbarer Parcours, Speicherung und Generator bleiben unimplementiert. [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 sind zusätzlich zu D-001 bis D-013 verbindlich; die nächste Integration ist in [p1b-implementation.md](p1b-implementation.md) konkretisiert. Siehe [Entscheidungsregister](decisions.md).
+Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a ist über PR #12 abgenommen und nach `main` gemergt: testbarer Spielkern, Streckendaten und Validierung. P1b integriert im Draft-PR #13 den sichtbaren Parcours; Speicherung und Generator bleiben unimplementiert. [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 sind zusätzlich zu D-001 bis D-013 verbindlich; die Integration ist in [p1b-implementation.md](p1b-implementation.md) konkretisiert. Siehe [Entscheidungsregister](decisions.md).
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -67,7 +67,7 @@ Determinismus braucht stabile Iterationsordnung und getrennte kontrollierte Zufa
 
 Projektdatei im Root, Szenen in `scenes/`, Code nach Bedarf in `scripts/core/`, `scripts/input/`, `scripts/presentation/`, `scripts/storage/`, Daten/Assets/Tests in entsprechenden Verzeichnissen. Verzeichnisse erst bei Bedarf anlegen. Caches, Builds und Secrets nicht versionieren; notwendige Quellassets, Szenen und UID-Dateien schon.
 
-P0 liefert Smoke-Runner, zwei Export-Presets, Buildanleitung und CI. P1a hat `core` ergänzt und hält die bestehende Kette grün. Tatsächliche grafische Windows-/HTTP(S)-Web-Starts bleiben eigene Abnahmen; erfolgreiche Headless-Exporte ersetzen sie nicht. Der sichtbare P1b-Spielablauf ist vorbereitet, noch nicht implementiert.
+P0 liefert Smoke-Runner, zwei Export-Presets, Buildanleitung und CI. P1a hat `core`, P1b `integration` ergänzt und wartet im Runner auf die echten Szenentests. Tatsächliche grafische Windows-/HTTP(S)-Web-Starts bleiben eigene Abnahmen; erfolgreiche Headless-Exporte ersetzen sie nicht.
 
 P1c erhält versionierte lokale Ergebnisdaten und klare Fehlerbehandlung beim Laden/Schreiben; Browserpersistenz/Reload getrennt prüfen. Spielbarkeit bleibt unabhängig von späterer Onlinewertung. Die Kernsession übernimmt keine Dateisystem-/Serverzuständigkeit.
 

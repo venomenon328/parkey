@@ -1,6 +1,6 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 und P1a sind abgenommen und gemergt; P1b ist zur Umsetzung vorbereitet, noch nicht implementiert.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
+Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 und P1a sind abgenommen und gemergt; P1b ist im Draft-PR #13 implementiert und wartet auf vollständige Abnahme.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
@@ -8,7 +8,7 @@ Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 
 | --- | --- | --- | --- |
 | P0 / [#1](https://github.com/venomenon328/parkey/issues/1) | Ein Projekt, zwei Exporte, Test-/CI-Grundlage | Abgenommen und gemergt | `codex/p0-godot-foundation` |
 | P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Abgenommen, PR #12 gemergt | `codex/p1a-run-core` |
-| P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | Voraussetzung #2 erfüllt; Umsetzung vorbereitet | `codex/p1b-playable-course` |
+| P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | Im Draft implementiert; Review/manuelle Abnahme offen | `codex/p1b-playable-course` |
 | P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | #3 | `codex/p1c-local-leaderboards` |
 | P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | #4; echter P1-Spieltest | `codex/p2a-route-decisions` |
 | P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | #5; Zielhardware/Budget klären | `codex/p2b-visual-slice` |
@@ -32,11 +32,11 @@ Die vollständige Menüoberfläche und eine spätere Übungsfortsetzung sind nic
 
 ## P1b: konkreter nächster Auftrag
 
-Issue #3 und [p1b-implementation.md](p1b-implementation.md) konkretisieren die Integration auf dem abgenommenen Kern. Erforderlich sind ein validierter Handparcours mit etwa 20–40 Feldern und Gabelung/Zusammenführung, unregelmäßiger Stelle, sichtbarer Figur, automatischer Kamera, Timer, Fehlerfeedback und Quick Restart. Die Spielszene ersetzt den regulären P0-Einstieg, die P0-Diagnose bleibt separat erhalten.
+Issue #3 und [p1b-implementation.md](p1b-implementation.md) konkretisieren die implementierte Integration auf dem abgenommenen Kern: validierter 26-Feld-Handparcours mit Gabelung/Zusammenführung, unregelmäßiger Stelle, sichtbarer Figur, automatischer Kamera, Timer, Fehlerfeedback und Quick Restart. Die Spielszene ersetzt den regulären P0-Einstieg, die P0-Diagnose bleibt separat erhalten.
 
 Kernregeln nicht in der Darstellung nachbauen. Eingabe-/UI-Fokus, Aufholen entlang des richtigen Wegs, Fristende ohne neue Eingabe, Abbrechen alter Animationen beim Restart und einmaliger Zieleingang sind zentrale Integrationsrisiken. Darstellungsparameter zentral festlegen und testen; keine neue Produktfreigabe für jede Kamerakonstante verlangen. Ein vollständiges Pausemenü, Persistenz und Generator bleiben außerhalb.
 
-Die neue Suite `integration` muss die wirkliche Spielszene verwenden. Nach Headless-Tests und Exporten folgt die reale Abnahme eines Windows-Laufs und eines HTTP-Web-Laufs in Chrome mit physischer Tastatur. Dafür eine konkrete Bedien-/Testanleitung und Artefaktpfade liefern. Keine automatische Abnahme allein aufgrund grüner CI.
+Die Suite `integration` verwendet die wirkliche Spielszene und wartet auf ihre asynchronen Szenentests. Nach Headless-Tests und Exporten folgt die vollständige reale Abnahme eines Windows-Laufs und eines HTTP-Web-Laufs in Chrome mit physischer Tastatur. Keine automatische Abnahme allein aufgrund grüner Automatik.
 
 ## Nicht rastergebundene Strecken
 
@@ -57,7 +57,7 @@ D-010 bis D-013 bleiben verbindlich. Die P1-Regelfreigabe ändert keine Geometri
 
 Jedes Paket liefert Implementierung, passende Tests, gepflegte Dokumentation und konkrete Nachweise. Issues enthalten Abnahmekriterien und Nicht-Ziele; kompakte Arbeitsanweisungen wiederholen den Lieferumfang nicht unnötig.
 
-[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert. P1a hat `core` ergänzt. `integration` ist vorbereitet, aber noch nicht implementiert; weitere Suites entstehen erst in ihren Paketen. `all` führt alle bis dahin vorhandenen Suites aus. Unbekannte oder leere Suites müssen scheitern.
+[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert, P1a `core`, P1b `integration`. Weitere Suites entstehen erst in ihren Paketen. `all` führt alle bis dahin vorhandenen Suites aus. Unbekannte oder leere Suites müssen scheitern.
 
 Reale Grafik, Hardwaretastatur, Browserpersistenz und Spielgefühl bleiben gesonderte Nachweise. Keine erfundene Abnahme bei fehlender Umgebung. P0-Starts und Hardwaretests sowie der P1a-Kern sind bestanden; der sichtbare P1b-Spielablauf ist dadurch noch nicht abgenommen. Fehlende verpflichtende Nachweise halten den jeweiligen PR im Draft.
 
