@@ -11,12 +11,18 @@ const RenderProfileScript = preload("res://scripts/presentation/render_profile.g
 const FIELD_HEIGHT := 0.32
 const FIGURE_HEIGHT := 0.55
 const MAX_VISUAL_WAYPOINTS := 18
-const MAX_CATCH_UP_SECONDS := 0.35
-const CAMERA_CATCH_UP_SECONDS := 0.45
+## Presentation bounds, not input timing. A running catch-up window is never
+## restarted by another valid key; new route segments are condensed into it.
+const MAX_CATCH_UP_SECONDS := 0.05
+const CAMERA_CATCH_UP_SECONDS := 0.08
 const HEAD_SHAKE_SECONDS := 0.24
 const CAMERA_DISTANCE := 6.4
 const CAMERA_HEIGHT := 5.4
 const CAMERA_LOOK_AHEAD := 5.2
+const CALLOUT_HEIGHT := 2.65
+const VISITED_DARKEN_AMOUNT := 0.28
+const REACHABLE_LIGHTEN_AMOUNT := 0.18
+const CURRENT_BORDER_LIGHTEN_AMOUNT := 0.12
 
 @onready var course_root: Node3D = %CourseRoot
 @onready var transition_root: Node3D = %TransitionRoot
@@ -52,6 +58,7 @@ var _camera_budget_seconds := 0.0
 var _head_shake_remaining := 0.0
 var _camera_initialized := false
 var _camera_focus := Vector3.ZERO
+var _material_cache := {}
 
 
 func configure_for_test(clock: MonotonicClock) -> void:
@@ -258,6 +265,21 @@ func _build_field_mesh(node: Node3D, field_id: String, letter: String, layout: D
 	label.rotation_degrees.x = -90.0
 	node.add_child(label)
 
+	# The keycap inscription remains useful from above. This raised, tile-owned
+	# duplicate keeps the current row and its immediate choices legible from the
+	# required rear camera without moving the camera sideways or adding HUD keys.
+	var callout := Label3D.new()
+	callout.name = "LetterCallout"
+	callout.text = letter
+	callout.font_size = 108
+	callout.outline_size = 20
+	callout.modulate = Color("fff4d7")
+	callout.outline_modulate = Color("17233a")
+	callout.pixel_size = 0.006
+	callout.position = Vector3(0.0, CALLOUT_HEIGHT, 0.0)
+	callout.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	node.add_child(callout)
+
 	var marker := Label3D.new()
 	marker.name = "StateMarker"
 	marker.font_size = 72
@@ -295,8 +317,12 @@ func _append_visual_transition(first_id: String, second_id: String) -> void:
 		visual_waypoints.append(Vector3(first_mid.x, FIGURE_HEIGHT, first_mid.y))
 		visual_waypoints.append(Vector3(second_mid.x, FIGURE_HEIGHT, second_mid.y))
 	visual_waypoints.append(_anchor_world(second_id))
-	_visual_budget_seconds = MAX_CATCH_UP_SECONDS
-	_camera_budget_seconds = CAMERA_CATCH_UP_SECONDS
+	# Keep the original deadline while the presentation is already catching up.
+	# Resetting it here made every normal key postpone the whole remaining route.
+	if _visual_budget_seconds <= 0.0:
+		_visual_budget_seconds = MAX_CATCH_UP_SECONDS
+	if _camera_budget_seconds <= 0.0:
+		_camera_budget_seconds = CAMERA_CATCH_UP_SECONDS
 	if visual_waypoints.size() > MAX_VISUAL_WAYPOINTS:
 		visual_snap_count += 1
 		visual_waypoints.clear()
@@ -333,6 +359,10 @@ func _remaining_visual_distance() -> float:
 		distance += previous.distance_to(point)
 		previous = point
 	return distance
+
+
+func visual_backlog_distance() -> float:
+	return _remaining_visual_distance()
 
 
 func _advance_head_shake(delta: float) -> void:
@@ -415,19 +445,23 @@ func _update_markers() -> void:
 		var keycap: MeshInstance3D = node.get_node("Keycap")
 		var state_surface: MeshInstance3D = node.get_node("StateSurface")
 		var marker: Label3D = node.get_node("StateMarker")
+		var callout: Label3D = node.get_node("LetterCallout")
 		var is_current: bool = field_id == session.current_field_id
 		var is_reachable: bool = neighbors.has(field_id)
 		var is_visited: bool = visited_field_ids.has(field_id)
-		keycap.material_override = _material(_default_field_color(field_id), 0.48)
+		var base_color := _default_field_color(field_id)
+		var surface_color := _status_surface_color(base_color, is_reachable, is_visited)
+		keycap.material_override = _material(base_color, 0.48)
 		selection.visible = is_current or is_reachable
-		selection.material_override = _material(Color("fff1a8") if is_current else Color("62e6dd"), 0.3)
-		state_surface.material_override = _material(
-			Color("f3c84b") if is_current else Color("4cae9f") if is_reachable else Color("607da3") if is_visited else _default_field_color(field_id),
-			0.38,
+		selection.material_override = _material(
+			base_color.lightened(CURRENT_BORDER_LIGHTEN_AMOUNT if is_current else REACHABLE_LIGHTEN_AMOUNT),
+			0.3,
 		)
+		state_surface.material_override = _material(surface_color, 0.38)
 		marker.visible = is_current or is_reachable or is_visited
 		marker.text = "● ✓" if is_current else "◇ ✓" if is_reachable and is_visited else "◇" if is_reachable else "✓"
-		marker.modulate = Color("241b0c") if is_current else Color("062f31") if is_reachable else Color("eef5ff")
+		marker.modulate = _marker_color(base_color, is_current, is_reachable, is_visited)
+		callout.visible = is_current or is_reachable
 
 
 func field_visual_state(field_id: String) -> Dictionary:
@@ -450,6 +484,36 @@ func _default_field_color(field_id: String) -> Color:
 	if field_id == course.target_id:
 		return Color("b95c78")
 	return Color("d78b3d")
+
+
+func _status_surface_color(base_color: Color, is_reachable: bool, is_visited: bool) -> Color:
+	if is_reachable:
+		return base_color.lightened(REACHABLE_LIGHTEN_AMOUNT)
+	if is_visited:
+		return base_color.darkened(VISITED_DARKEN_AMOUNT)
+	return base_color
+
+
+func _marker_color(base_color: Color, is_current: bool, is_reachable: bool, is_visited: bool) -> Color:
+	if is_current or is_reachable:
+		return base_color.darkened(0.72)
+	if is_visited:
+		return base_color.lightened(0.45)
+	return base_color
+
+
+func field_material_colors(field_id: String) -> Dictionary:
+	var node: Node3D = field_nodes.get(field_id)
+	if node == null:
+		return {}
+	var keycap: MeshInstance3D = node.get_node("Keycap")
+	var state_surface: MeshInstance3D = node.get_node("StateSurface")
+	var selection: MeshInstance3D = node.get_node("Selection")
+	return {
+		"keycap": (keycap.material_override as StandardMaterial3D).albedo_color,
+		"surface": (state_surface.material_override as StandardMaterial3D).albedo_color,
+		"border": (selection.material_override as StandardMaterial3D).albedo_color,
+	}
 
 
 func _refresh_view(now_usec: int) -> void:
@@ -515,10 +579,14 @@ static func format_duration_usec(duration_usec: int) -> String:
 	return "%02d:%02d.%03d" % [minutes, seconds, milliseconds]
 
 
-static func _material(color: Color, roughness: float) -> StandardMaterial3D:
+func _material(color: Color, roughness: float) -> StandardMaterial3D:
+	var material_key := "%0.4f:%0.4f:%0.4f:%0.4f:%0.3f" % [color.r, color.g, color.b, color.a, roughness]
+	if _material_cache.has(material_key):
+		return _material_cache[material_key]
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = roughness
+	_material_cache[material_key] = material
 	return material
 
 

@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a ist über PR #12 abgenommen und nach `main` gemergt: testbarer Spielkern, Streckendaten und Validierung. P1b integriert im Draft-PR #13 den sichtbaren Parcours; die Review-Nacharbeit ist implementiert, Re-Review und physische Abnahme bleiben offen. Speicherung und Generator bleiben unimplementiert. [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 sind zusätzlich zu D-001 bis D-013 verbindlich; die Integration ist in [p1b-implementation.md](p1b-implementation.md) konkretisiert. Siehe [Entscheidungsregister](decisions.md).
+Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a ist über PR #12 abgenommen und nach `main` gemergt: testbarer Spielkern, Streckendaten und Validierung. P1b integriert im Draft-PR #13 den sichtbaren Parcours; die Nacharbeit einschließlich N1–N3 aus Re-Review 5122577064 ist implementiert, Re-Review und physische Abnahme bleiben offen. Speicherung und Generator bleiben unimplementiert. [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 sind zusätzlich zu D-001 bis D-013 verbindlich; die Integration ist in [p1b-implementation.md](p1b-implementation.md) konkretisiert. Siehe [Entscheidungsregister](decisions.md).
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -45,7 +45,7 @@ Die Menüanforderung darf keinen automatischen Reset auslösen; eine angenommene
 
 Die echte Spielszene wird zum gemeinsamen Export-Einstieg; P0 bleibt separat als Diagnose startbar. Ein Szenencontroller verbindet Daten/Validator, einen Eingabepfad, Session und Darstellung. Kein zusätzlich aktiver P0-Empfänger, keine doppelte Regelimplementierung und keine automatische Nachbarschaft aus Meshkontakten. `_ready`, GUI-Fokus und der Viewport-Eingabepfad werden in `integration` tatsächlich durchlaufen.
 
-Darstellung und HUD lesen logischen Zustand, Fristen und Ergebnis. Die Sperranzeige darf nicht allein auf dem bis zum nächsten Bewegungsereignis erhaltenen `LOCKED`-Enum beruhen. `last_result` darf nach Restart nicht versehentlich einen neuen Abschlussbildschirm auslösen. Verzögerte Kamera-/Tween-/Fehlerrückmeldungen eines alten Versuchs werden beim Reset ungültig. Die Details stehen ausschließlich in [p1b-implementation.md](p1b-implementation.md).
+Darstellung und HUD lesen logischen Zustand, Fristen und Ergebnis. Die Sperranzeige darf nicht allein auf dem bis zum nächsten Bewegungsereignis erhaltenen `LOCKED`-Enum beruhen. `last_result` darf nach Restart nicht versehentlich einen neuen Abschlussbildschirm auslösen. Verzögerte Kamera-/Tween-/Fehlerrückmeldungen eines alten Versuchs werden beim Reset ungültig. Ein laufendes Darstellungsbudget wird durch weitere gültige Eingaben verdichtet statt zurückgesetzt; es bleibt eine Darstellungsgrenze und beeinflusst weder Kernzeiten noch Schritthäufigkeit. Die Details stehen ausschließlich in [p1b-implementation.md](p1b-implementation.md).
 
 ## Streckenmodell und Reproduzierbarkeit
 

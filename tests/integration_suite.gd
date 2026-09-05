@@ -15,6 +15,7 @@ static func run(harness) -> void:
 	await _test_scene_input_ui_and_routes(harness)
 	await _test_lock_restart_menu_and_focus(harness)
 	await _test_fast_input_and_presentation_budget(harness)
+	await _test_responsiveness_status_and_callouts(harness)
 
 
 static func _test_handcrafted_course(harness) -> void:
@@ -82,6 +83,12 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_true(ready_start_state["current"] and ready_start_state["visited"], "The start field is visibly current and visited in readiness.")
 	harness._assert_true(scene.field_visual_state("approach_a")["reachable"], "The first reachable field has its own visible state.")
 	harness._assert_false(scene.field_visual_state("approach_z")["visited"], "An untouched non-neighbor remains in the standard state.")
+	for field_id in ["start", "approach_a"]:
+		var callout: Label3D = scene.field_nodes[field_id].get_node("LetterCallout")
+		harness._assert_true(callout.visible, "The immediate %s callout is visibly enabled." % field_id)
+		harness._assert_true(not scene.camera.is_position_behind(callout.global_position), "The raised %s callout is in front of the actual rear camera." % field_id)
+		harness._assert_true(callout.global_position.y > scene.figure_head.global_position.y, "The raised %s callout clears the figure head in world space." % field_id)
+	harness._assert_false((scene.field_nodes["approach_z"] as Node3D).get_node("LetterCallout").visible, "Distant non-neighbor callouts do not clutter the near-field composition.")
 	var course_identity_before_states := scene.session.course_identity()
 	var camera_to_start := scene.camera_target_for_field("start") - scene._anchor_world("start")
 	harness._assert_true(camera_to_start.dot(scene.course_forward()) < -PlayableCourseSceneScript.CAMERA_DISTANCE + 0.01, "The camera starts behind the figure along the course direction.")
@@ -143,7 +150,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	clock.current_usec = 10000300
 	await _push_key(scene, qwertz_z)
 	harness._assert_equal(scene.session.current_field_id, "approach_z", "The scene uses visible Unicode Z even on physical Y.")
-	harness._assert_true(not scene.visual_waypoints.is_empty(), "The presentation may still be following valid movement when another input arrives.")
+	harness._assert_true(scene.visual_backlog_distance() <= 2.4, "A regular post-focus movement stays within the bounded presentation backlog.")
 	harness._assert_equal(scene.session.course_identity(), course_identity_before_states, "Visited and reachable presentation state never mutates course identity.")
 
 	clock.current_usec = 10000400
@@ -305,12 +312,12 @@ static func _test_fast_input_and_presentation_budget(harness) -> void:
 	harness._assert_vector_close(scene.figure.position, scene._anchor_world("start"), 0.0001, "The bounded burst tail follows its remaining route and reaches the logical anchor.")
 
 	clock.current_usec = 510000
-	await _push_key(scene, _key(KEY_A, 97))
+	scene.get_viewport().push_input(_key(KEY_A, 97))
 	clock.current_usec = 511000
-	await _push_key(scene, _key(KEY_Z, 122))
+	scene.get_viewport().push_input(_key(KEY_Z, 122))
 	harness._assert_true(not scene.visual_waypoints.is_empty(), "Normal movement follows data transition waypoints.")
 	scene._advance_visual(PlayableCourseSceneScript.MAX_CATCH_UP_SECONDS)
-	harness._assert_true(scene.visual_waypoints.is_empty(), "Presentation catches up within the central 350 ms budget.")
+	harness._assert_true(scene.visual_waypoints.is_empty(), "Presentation catches up within the central bounded budget.")
 	harness._assert_vector_close(scene.figure.position, scene._anchor_world(scene.session.current_field_id), 0.0001, "Catch-up ends on the logical data anchor.")
 	var camera_before_follow := scene.camera.position
 	var focus_before_follow := scene._camera_focus
@@ -325,9 +332,8 @@ static func _test_fast_input_and_presentation_budget(harness) -> void:
 	clock.current_usec = 511100
 	scene.get_viewport().push_input(_key(KEY_X, 120))
 	harness._assert_transform_close(scene.camera.global_transform, camera_before_error, 0.0001, "An error reconciles the figure without snapping camera position or orientation.")
-	await scene.get_tree().process_frame
 	scene._update_camera(PlayableCourseSceneScript.CAMERA_CATCH_UP_SECONDS - 0.05)
-	harness._assert_vector_close(scene.camera.position, scene.camera_target_for_field(scene.session.current_field_id), 0.0001, "The camera catches up within its central 450 ms budget.")
+	harness._assert_vector_close(scene.camera.position, scene.camera_target_for_field(scene.session.current_field_id), 0.0001, "The camera catches up within its central bounded budget.")
 	harness._assert_vector_close(scene._camera_focus, scene.camera_focus_for_field(scene.session.current_field_id), 0.0001, "The camera look target catches up within the same finite budget.")
 
 	clock.current_usec = 720000
@@ -381,6 +387,87 @@ static func _test_fast_input_and_presentation_budget(harness) -> void:
 	await harness.process_frame
 
 
+static func _test_responsiveness_status_and_callouts(harness) -> void:
+	var fixture := await _scene_fixture(harness)
+	var scene: PlayableCourseScene = fixture["scene"]
+	var clock: MonotonicClock = fixture["clock"]
+
+	var standard_colors := scene.field_material_colors("approach_z")
+	var start_colors := scene.field_material_colors("start")
+	var reachable_colors := scene.field_material_colors("approach_a")
+	harness._assert_true(
+		(start_colors["surface"] as Color).is_equal_approx((start_colors["keycap"] as Color).darkened(PlayableCourseSceneScript.VISITED_DARKEN_AMOUNT)),
+		"The actual visited start surface is a darker version of its own base color.",
+	)
+	harness._assert_true(
+		(reachable_colors["surface"] as Color).is_equal_approx((reachable_colors["keycap"] as Color).lightened(PlayableCourseSceneScript.REACHABLE_LIGHTEN_AMOUNT)),
+		"The actual reachable surface is a lighter version of its own base color.",
+	)
+	harness._assert_true(
+		(standard_colors["surface"] as Color).is_equal_approx(standard_colors["keycap"] as Color),
+		"An untouched field keeps its unmodified base material color.",
+	)
+	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node("StateMarker").text, "● ✓", "The current visited start uses its explicit marker instead of a status hue.")
+	harness._assert_equal((scene.field_nodes["approach_a"] as Node3D).get_node("StateMarker").text, "◇", "A reachable unvisited field uses its explicit reachability marker.")
+
+	clock.current_usec = 1000000
+	await _push_key(scene, _key(KEY_A, 97))
+	var visited_reachable_colors := scene.field_material_colors("start")
+	harness._assert_true(
+		(visited_reachable_colors["surface"] as Color).is_equal_approx((visited_reachable_colors["keycap"] as Color).lightened(PlayableCourseSceneScript.REACHABLE_LIGHTEN_AMOUNT)),
+		"Visited plus reachable uses the lighter reachable base variant, not a third mixed palette.",
+	)
+	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node("StateMarker").text, "◇ ✓", "Visited plus reachable preserves the non-color visit signal.")
+	harness._assert_true((scene.field_nodes["approach_z"] as Node3D).get_node("LetterCallout").visible, "A newly directly reachable field receives its tile-owned callout immediately.")
+	# A second authored base color proves that the actual material derivation is
+	# relative, not a hidden fixed status palette.
+	scene.visited_field_ids["target"] = true
+	scene._update_markers()
+	var target_colors := scene.field_material_colors("target")
+	harness._assert_true(
+		(target_colors["surface"] as Color).is_equal_approx((target_colors["keycap"] as Color).darkened(PlayableCourseSceneScript.VISITED_DARKEN_AMOUNT)),
+		"The target's distinct base color also produces its own darker visited material.",
+	)
+
+	clock.current_usec = 1200000
+	await _push_key(scene, _key(KEY_BACKSPACE))
+	var intervals := [0.5, 0.2, 0.125, 0.08, 0.5, 0.08, 0.2, 0.125]
+	var letters := HandcraftedCourseScript.RETURN_SAMPLE
+	var maximum_backlog := 0.0
+	var total_backlog := 0.0
+	var measured_frames := 0
+	for index in letters.length():
+		clock.current_usec += int(float(intervals[index]) * 1000000.0)
+		var camera_before_input := scene.camera.global_transform
+		scene.get_viewport().push_input(_key(letters.unicode_at(index), letters.unicode_at(index)))
+		harness._assert_transform_close(scene.camera.global_transform, camera_before_input, 0.0001, "Timed input %d changes no camera transform inside its callback." % index)
+		_advance_presentation(scene, 1.0 / 60.0)
+		var backlog := scene.visual_backlog_distance()
+		maximum_backlog = maxf(maximum_backlog, backlog)
+		total_backlog += backlog
+		measured_frames += 1
+		_advance_presentation(scene, maxf(0.0, float(intervals[index]) - 1.0 / 60.0))
+		backlog = scene.visual_backlog_distance()
+		maximum_backlog = maxf(maximum_backlog, backlog)
+		total_backlog += backlog
+		measured_frames += 1
+	var rest_seconds := _advance_until_visual_caught_up(scene)
+	var typical_backlog := total_backlog / float(measured_frames)
+	print("P1b regular presentation metrics: max_backlog=%.3f, mean_backlog=%.3f, rest=%.3f, figure_snaps=%d" % [maximum_backlog, typical_backlog, rest_seconds, scene.visual_snap_count])
+	harness._assert_true(scene.visual_snap_count == 0, "Timed 500/200/125/80 ms input does not use the burst-only figure correction.")
+	harness._assert_true(maximum_backlog <= 2.4, "The controlled regular sequence stays within the documented visual backlog limit.")
+	harness._assert_true(typical_backlog <= 0.7, "The controlled regular sequence keeps typical visual backlog small.")
+	harness._assert_true(rest_seconds <= PlayableCourseSceneScript.MAX_CATCH_UP_SECONDS + 0.0001, "Stopping after regular input catches up within the short visual budget.")
+	harness._assert_true(scene.visual_waypoints.is_empty(), "The regular timed sequence leaves no deferred movement queue after its bounded rest.")
+
+	var camera_before_error := scene.camera.global_transform
+	clock.current_usec += 1000
+	scene.get_viewport().push_input(_key(KEY_X, 120))
+	harness._assert_transform_close(scene.camera.global_transform, camera_before_error, 0.0001, "An error after timed movement preserves the continuous camera transform in its callback.")
+	_scene_cleanup(scene)
+	await harness.process_frame
+
+
 static func _scene_fixture(harness) -> Dictionary:
 	var packed := load("res://scenes/playable_course.tscn") as PackedScene
 	harness._assert_not_null(packed, "The actual playable scene loads as a PackedScene.")
@@ -423,6 +510,24 @@ static func _drive_letters_viewport(scene: PlayableCourseScene, clock: Monotonic
 static func _drive_letters_direct(session: RunSession, letters: String, received_usec: int) -> void:
 	for index in letters.length():
 		session.handle_letter(letters.substr(index, 1), received_usec + index)
+
+
+static func _advance_presentation(scene: PlayableCourseScene, seconds: float) -> void:
+	var remaining := seconds
+	while remaining > 0.000001:
+		var step := minf(1.0 / 60.0, remaining)
+		scene._advance_visual(step)
+		scene._advance_head_shake(step)
+		scene._update_camera(step)
+		remaining -= step
+
+
+static func _advance_until_visual_caught_up(scene: PlayableCourseScene) -> float:
+	var elapsed := 0.0
+	while not scene.visual_waypoints.is_empty() and elapsed <= PlayableCourseSceneScript.MAX_CATCH_UP_SECONDS + 0.02:
+		_advance_presentation(scene, 1.0 / 600.0)
+		elapsed += 1.0 / 600.0
+	return elapsed
 
 
 static func _scene_cleanup(scene: Node) -> void:

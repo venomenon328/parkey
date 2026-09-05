@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das für P1 freigegebene Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-021 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf und die Review-Nacharbeit sind im Draft implementiert, Re-Review und physische Nutzerabnahme bleiben offen. Details: [p1b-implementation.md](p1b-implementation.md).
+Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das für P1 freigegebene Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-022 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf einschließlich N1–N3 ist im Draft implementiert, Re-Review und physische Nutzerabnahme bleiben offen. Details: [p1b-implementation.md](p1b-implementation.md).
 
 ## Spielkern
 
@@ -12,7 +12,7 @@ Die Bildreferenz aus der Projektabstimmung dient als visuelle Orientierung: plas
 
 P1 verwendet A–Z, normalisierte Großschreibung und beidseitige explizite Verbindungen. Keine festen Richtungsslots, kein allgemeiner Raster- oder Nachbarzahlzwang. Orthogonale und schräg angeordnete Übergänge sind möglich, sofern ihre Erreichbarkeit eindeutig ist. Jeder Bewegungsversuch wird gegen die aktuelle **logische** Position geprüft. Mehrere gültige Eingaben können vor dem nächsten Renderbild mehrere Schritte auslösen. Kein Schritt-Cooldown für korrektes Tippen.
 
-Die sichtbare Figur folgt ohne stetig anwachsenden Rückstand. Sie darf Animationen verkürzen oder zusammenführen, statt jeden alten Einzelschritt vollständig nachzuspielen. Aktives Feld und angezeigte Nachbarschaft bleiben konsistent. Auch unterschiedlich große Felder zählen pro gültigem Übergang genau einen Eingabeschritt. Größe, Entfernung und Winkel erzwingen keine zusätzliche Laufzeit, Eingabe oder Sperre; die Darstellung passt sich entlang des gewählten Wegs dem Tippen an.
+Die sichtbare Figur folgt ohne stetig anwachsenden Rückstand. Sie darf Animationen verkürzen oder zusammenführen, statt jeden alten Einzelschritt vollständig nachzuspielen. Ein bereits laufendes kurzes Aufholfenster wird bei weiteren Eingaben verdichtet und nicht auf seine Maximaldauer zurückgesetzt. Aktives Feld und angezeigte Nachbarschaft bleiben konsistent. Auch unterschiedlich große Felder zählen pro gültigem Übergang genau einen Eingabeschritt. Größe, Entfernung und Winkel erzwingen keine zusätzliche Laufzeit, Eingabe oder Sperre; die Darstellung passt sich entlang des gewählten Wegs dem Tippen an.
 
 Ein gültiger Schritt auf einen subjektiv unerwünschten Weg ist keine strafbare Falscheingabe. Rückwärtsgehen erfolgt per Buchstabe des vorherigen Felds, ohne automatische Rücknahme einer Entscheidung.
 
@@ -54,7 +54,7 @@ Für P1b wird der Status aus logischen Schritten geführt. Das besetzte Startfel
 
 Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie.
 
-Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; nötigenfalls dezente zusätzliche Buchstabenanzeigen. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben.
+Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; die P1b-Handstrecke verwendet zusätzlich für aktuelles und direkt erreichbare Tiles eine kontrastreiche, kameragerichtete und dem jeweiligen Tile zugeordnete Beschriftung oberhalb der Kopfmitte. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben.
 
 Während des P1b-Laufs genügen Timer und Fehlerfeedback, nach Abschluss Zeit und Fehlerzahl. Eine persönliche Bestzeit und ausführliche Rangliste kommen mit dem separaten Speicherausbau. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Effekte vermittelt werden. Fenstergrößenwechsel darf keine wichtigen Inhalte außerhalb der sichtbaren Fläche ablegen.
 
