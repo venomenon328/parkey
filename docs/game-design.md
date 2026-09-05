@@ -1,12 +1,12 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das für P1 freigegebene Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019/D-020 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf ist im Draft implementiert und nach der manuellen Rückmeldung noch nachzuarbeiten. Details: [p1b-implementation.md](p1b-implementation.md).
+Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das für P1 freigegebene Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-021 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf ist im Draft implementiert und nach der manuellen Rückmeldung noch nachzuarbeiten. Details: [p1b-implementation.md](p1b-implementation.md).
 
 ## Spielkern
 
 Parkey verbindet räumliches Lesen, Routenentscheidung und präzises Tippen. Der Spieler erkennt erreichbare Buchstabenfelder, wählt einen Weg und setzt ihn unmittelbar in Bewegung um. Wiederholungen sollen bessere Linien, flüssigere Eingaben und persönliche Bestzeiten ermöglichen.
 
-Die Bildreferenz aus der Projektabstimmung dient als visuelle Orientierung: plastische Tastenkappen, kleine Figur, warme Materialien und eine übersichtliche 3D-Welt. Sie legt weder Kameraposition, Figur noch Materialien endgültig fest. Die Bilddatei selbst ist nicht Bestandteil des Repositorys.
+Die Bildreferenz aus der Projektabstimmung dient als visuelle Orientierung: plastische Tastenkappen, kleine Figur, warme Materialien und eine übersichtliche 3D-Welt. Ihre Third-Person-Rückansicht ist durch D-021 als bevorzugte Kamerarichtung festgehalten; genaue Kameraparameter, Figur und Materialien sind damit nicht endgültig festgelegt. Die Bilddatei selbst ist nicht Bestandteil des Repositorys; die textliche Kamerabeschreibung unten ist auch ohne Zugriff auf den Mock verständlich.
 
 ## Bewegung und Eingabe
 
@@ -40,7 +40,11 @@ Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speichera
 
 ## Kamera und Lesbarkeit
 
-Die für P1b vorgesehene Testkamera ist erhöht, nach unten geneigt und automatisch geführt. Figur und aktuelles Feld bleiben sichtbar; an Kreuzungen werden Optionen rechtzeitig erkennbar. Keine notwendigen Mausbewegungen. Nach D-020 müssen **Position und Blickrichtung kontinuierlich** geführt werden: kein sprunghaft auf das nächste logische Feld gesetztes Blickziel, kein harter Schnitt bei Einzelinput, Richtungswechsel, Fehler oder Aufholkorrektur. Initiale Aufstellung und ausdrücklicher Quick Restart dürfen einen neuen Ausgangspunkt setzen; normale Eingaben sind keine Resets. Konkrete Glättungsparameter bleiben zu erproben, ohne Eingaben oder Kernzeit zu drosseln.
+**Bevorzugte Bildkomposition nach D-021: Third Person von hinten wie im ursprünglichen Mock.** Die perspektivische Kamera befindet sich hinter der Figur und blickt in die Tiefe des vorausliegenden Parcours. Eine moderate Erhöhung und Neigung nach unten machen Feldoberflächen lesbar; die seitlich erhöhte, isometrisch wirkende Draufsicht des bisherigen Builds ist nicht die gewünschte Standardansicht. Die Richtung gilt bereits für die anstehende P1b-Kameranacharbeit, nicht erst für die spätere Grafikpolitur. Höhe, Abstand, Sichtfeld und genaue Führungsparameter bleiben zu erproben; der Mock wird nicht pixelgenau nachgebaut.
+
+Figur, aktuelles Feld und erreichbare Nachbarn müssen dennoch erkennbar bleiben; an Kreuzungen werden Optionen rechtzeitig sichtbar. Insbesondere rückwärtige Nachbarn dürfen durch die Rückansicht nicht aus der Bedienung verschwinden. Keine notwendigen Mausbewegungen. Die Kamera muss nicht jedem einzelnen Rückschritt durch eine sofortige Kehrtwende folgen; eine geeignete Kurven-/Rückwegführung wird unter diesen Lesbarkeits- und Kontinuitätsanforderungen getestet.
+
+Nach D-020 müssen **Position und Blickrichtung kontinuierlich** geführt werden: kein sprunghaft auf das nächste logische Feld gesetztes Blickziel, kein harter Schnitt bei Einzelinput, Richtungswechsel, Fehler oder Aufholkorrektur. Initiale Aufstellung und ausdrücklicher Quick Restart dürfen einen neuen Ausgangspunkt setzen; normale Eingaben sind keine Resets. Konkrete Glättungsparameter bleiben zu erproben, ohne Eingaben oder Kernzeit zu drosseln.
 
 ### Feldzustände
 

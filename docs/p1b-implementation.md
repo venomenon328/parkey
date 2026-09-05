@@ -2,7 +2,7 @@
 
 Stand: 2026-09-05. **Im Draft-PR #13 implementiert, nach manueller Rückmeldung zu `c4142a1` aber nicht abnahmefähig; Nacharbeiten offen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
 
-Diese Datei konkretisiert die Integration des freigegebenen [P1-Regelprofils](p1-rule-profile.md). D-019/D-020 aus dem [Entscheidungsregister](decisions.md) ergänzen Feldstatus und durchgehend flüssige Kameraführung. Umfang und Abnahmekriterien stehen in Issue #3, allgemeine Prüfungen in [testing.md](testing.md). Es fehlt keine weitere Start-, Eingabe-, Fehler-, Geometrie- oder Darstellungsfreigabe; konkrete finale Gestaltung bleibt offen.
+Diese Datei konkretisiert die Integration des freigegebenen [P1-Regelprofils](p1-rule-profile.md). D-019 bis D-021 aus dem [Entscheidungsregister](decisions.md) ergänzen Feldstatus, durchgehend flüssige Kameraführung und die bevorzugte perspektivische Rückansicht. Umfang und Abnahmekriterien stehen in Issue #3, allgemeine Prüfungen in [testing.md](testing.md). Es fehlt keine weitere Start-, Eingabe-, Fehler-, Geometrie- oder Darstellungsfreigabe; konkrete finale Gestaltung bleibt offen.
 
 ## 1. Ergebnis und Paketgrenze
 
@@ -10,7 +10,7 @@ Eine vollständige kleine Spielschleife aus Bereitschaft, Eingabe, Bewegung/Fehl
 
 Die neue Spielszene wird regulärer Einstieg beider Exporte. Die vorhandene `scenes/foundation.tscn` bleibt als separat startbare P0-Diagnose erhalten; nicht zusätzlich als zweiter aktiver Eingabeempfänger in den Parcours einbetten. Die bisherige Smoke-Assertion auf die alte Hauptszene gezielt auf den neuen Einstieg aktualisieren, die übrigen P0-Prüfungen erhalten.
 
-Beschriftete Keycaps, eine einfache Figur mit unterscheidbarem Kopf, klare Beleuchtung und automatische erhöhte Kamera genügen. Lesbarkeit und reaktionsfähige Bewegung sind Pflicht; finale Assets und die hochwertige Beispielwelt folgen P2b. Kein Download ungeklärter oder kostenpflichtiger Fremdassets. Nach dem Ziel Zeit und Fehlerzahl anzeigen, aber keine Ergebnisdateien oder Rangliste vorziehen. P1c bleibt ein eigenes Paket.
+Beschriftete Keycaps, eine einfache Figur mit unterscheidbarem Kopf, klare Beleuchtung und eine automatische perspektivische Kamera hinter der Figur gemäß D-021 genügen. Eine moderate Erhöhung für lesbare Felder ist möglich; die bisherige isometrisch wirkende seitliche Draufsicht ist nicht die Zielkomposition. Lesbarkeit und reaktionsfähige Bewegung sind Pflicht; finale Assets und die hochwertige Beispielwelt folgen P2b. Kein Download ungeklärter oder kostenpflichtiger Fremdassets. Nach dem Ziel Zeit und Fehlerzahl anzeigen, aber keine Ergebnisdateien oder Rangliste vorziehen. P1c bleibt ein eigenes Paket.
 
 ## 2. Daten bleiben maßgeblich
 
@@ -48,7 +48,11 @@ Die Bewegung folgt Standpunkten und Übergängen entlang der tatsächlich gewäh
 
 Beim Fehler wird die Figur eindeutig auf das unveränderte logische Feld abgeglichen; anschließend keine alten Vorwärtsbewegungen während der Sperre. Eine erkennbare Kopfbewegung signalisiert den Fehler, bestimmt aber weder Sperrfrist noch Eingabefreigabe. Eine gleichmäßig gefärbte Kugel nur um ihren eigenen Mittelpunkt zu drehen ist keine verlässlich erkennbare Kopfschüttelrückmeldung; eine einfache Orientierungsform oder geeignete Pivotbewegung genügt, keine finalen Assets nötig. Auch starke vorherige Eingaberate und einen neuen gültigen Tastendruck exakt am Fristende prüfen.
 
-### Kontinuierliche Kamera
+### Rückansicht und kontinuierliche Kamera
+
+D-021 konkretisiert die bevorzugte Perspektive für diese Nacharbeit: Third Person von hinten, Blick entlang des vorausliegenden Parcours und räumliche Tiefe wie im ursprünglichen Mock. Moderate Höhe/Neigung dürfen Feldoberflächen lesbar machen; keine seitliche, isometrisch wirkende Draufsicht als Standard. Die textliche Beschreibung ist auch ohne die nicht im Repository enthaltene Mock-Bilddatei verbindliche Gestaltungsrichtung. Es genügt nicht, nur einen perspektivischen Projektionsmodus nachzuweisen und dieselbe schräge Bildkomposition beizubehalten.
+
+Höhe, Abstand, Neigung, Sichtfeld sowie Kurven-/Rückwegführung als vorläufige Darstellungsparameter erproben. Aktuelles Feld, erreichbare Seiten- und Rücknachbarn sowie beide Optionen an einer Gabelung müssen weiterhin ohne Kamerabedienung erkennbar bleiben. Keine automatische harte Kehrtwende bei einem Rückschritt; D-020 bleibt auch bei Richtungswechseln maßgeblich. Für die Abnahme Rückansicht und Lesbarkeit gemeinsam in Windows und Web prüfen, nicht erst in P2b.
 
 D-020 verlangt flüssige Position **und** Blickrichtung. Nicht nur die Position interpolieren und anschließend per `look_at` auf den bereits gesprungenen logischen Anker ausrichten. Ein neues logisches Ziel verändert das Führungsziel, nicht schlagartig den sichtbaren Kameratransform. Schritte, Fehler, Richtungswechsel und große Eingabebursts erhalten die laufende Kameraführung; Figurenabgleich und Kamerainitialisierung sind getrennte Operationen.
 
@@ -78,7 +82,7 @@ Zusätzliche bzw. geschärfte Regressionen nach Review von `c4142a1`:
 
 - Fehlende explizite Kante an einem im Layoutprofil begehbar erscheinenden Randanschluss sowie repräsentative Nachbar-/Nichtnachbarpaare beider Handkursäste; keine Prüfung nur der schon eingetragenen `transitions`.
 - Standard-, Besuchs-, Nachbar- und aktueller Status; Kombination besucht/erreichbar; Rückweg, Fehler, UI und Quick Restart; Marker aus logischem statt visuellem Fortschritt. Keine Mutation der Kursidentität.
-- Kameraposition und Orientierung vor/nach Einzelinput, bei kleinen Zeitschritten, Rückweg/Gabelung, Fehler, Burst und Ende des Aufholbudgets. Initialisierung/Quick Restart als ausdrücklich getrennte Fälle. Kein positiver Test, der den störenden Kamerasnap zur Sollvorgabe macht.
+- Kameraposition und Orientierung vor/nach Einzelinput, bei kleinen Zeitschritten, Rückweg/Gabelung, Fehler, Burst und Ende des Aufholbudgets. Initialisierung/Quick Restart als ausdrücklich getrennte Fälle. Kein positiver Test, der den störenden Kamerasnap zur Sollvorgabe macht. D-021 zusätzlich durch einen reproduzierbaren Rückansichts-Aufbau und manuelle Bildprüfung belegen, nicht nur durch einen Projektionsmodus-Flag.
 - Tatsächlicher Klick ins Textfeld, Text/Backspace, Klick in freie Spielfläche und anschließend ein wirksamer Spielbuchstabe. Den Fokusübergang nicht mit Test-Hilfsaufrufen vortäuschen.
 - Sichtbarer, nicht nur mathematisch rotierter Fehlerhinweis und Lesbarkeitsprüfung des HUD bei Fenstergrößenwechsel; die abschließende Wahrnehmbarkeit bleibt manuell zu prüfen.
 
@@ -88,7 +92,7 @@ Der Runner muss auf asynchrone Szeneninitialisierung bzw. ausstehende Tests wart
 
 Pflicht sind ein tatsächlich durchgespielter nativer Windows-Export mit Forward+ sowie ein über HTTP gestarteter Web-Export in Desktop-Chrome mit Compatibility. Jeweils Commit, Engine, OS/Browser, Hardware/Auflösung und Ergebnis dokumentieren. Firefox-Gesamtabnahme bleibt P4; mehr Tests sind willkommen, werden aber nicht stillschweigend Voraussetzung dieses Pakets.
 
-Manuell beide Routen, Rückweg, erster korrekter/falscher Buchstabe, Fehlerpause, schneller Eingabeburst, Y/Z, Shift, Echo/Überlappung, Backspace, Escape und Fokusverlust prüfen. Figur, Markierungen, Kopfbewegung und Kamera dürfen weder dauerhaft zurückbleiben noch benötigte Zeichen verdecken. Feldzustände auf der Oberfläche, Seitentrennung und kontinuierliche Kamera sind bereits für diesen PoC Abnahmekriterien, keine auf P2b verschobene Grafikpolitur. Fenstergrößenwechsel ergänzen. Screenshots oder Clips helfen bei der Beurteilung, ersetzen den realen Tastatur-/Spieltest aber nicht.
+Manuell beide Routen, Rückweg, erster korrekter/falscher Buchstabe, Fehlerpause, schneller Eingabeburst, Y/Z, Shift, Echo/Überlappung, Backspace, Escape und Fokusverlust prüfen. Figur, Markierungen, Kopfbewegung und Kamera dürfen weder dauerhaft zurückbleiben noch benötigte Zeichen verdecken. Feldzustände auf der Oberfläche, Seitentrennung und kontinuierliche Kamera mit der bevorzugten Rückansicht nach D-021 sind bereits für diesen PoC Abnahmekriterien, keine auf P2b verschobene Grafikpolitur. Fenstergrößenwechsel ergänzen. Screenshots oder Clips helfen bei der Beurteilung, ersetzen den realen Tastatur-/Spieltest aber nicht.
 
 Die Übergabe enthält eine kurze konkrete Bedien- und Abnahmeanleitung mit tatsächlichem Streckenverlauf, Startbuchstaben und erreichbaren Teststellen sowie den Buildpfaden. Nach Kursänderungen die Folgen unten und in PR/Tests gemeinsam aktualisieren. Fehlende reale Nutzerprüfung bleibt offen und der PR Draft, auch wenn alle Headless-Tests grün sind. Dieses Paket ist erst nach technischem Review und echter Spielabnahme abgeschlossen.
 
@@ -102,7 +106,7 @@ Eingabefolgen dieses Prüfstands, nach einer Kursänderung neu abzugleichen:
 - untere Route: `AZKDFGHJCVBMOPLXN`
 - Rückwegprobe vom oberen Ast bis Start: `AZKQKZAS`
 
-Der Prüfstand speichert höchstens 18 Wegpunkte; für die Figur sind 350 ms, für die Kamera 450 ms Aufholbudget implementiert. Bei Überlauf wird die Figur unmittelbar auf den logischen Anker gesetzt. Die Kameraposition wird interpoliert, die Blickrichtung jedoch unmittelbar auf das logische Feld ausgerichtet; Fehlerabgleich verwendet zusätzlich einen harten Kamerasnap. Diese Implementierungsbeschreibung ist **keine Freigabe der beobachteten Sprünge**. Die Nacharbeit darf Darstellungsparameter und Aufholstrategie ändern, muss aber D-012/D-020 erfüllen und endlichen Rückstand nachweisen.
+Der Prüfstand speichert höchstens 18 Wegpunkte; für die Figur sind 350 ms, für die Kamera 450 ms Aufholbudget implementiert. Bei Überlauf wird die Figur unmittelbar auf den logischen Anker gesetzt. Die Kameraposition wird interpoliert, die Blickrichtung jedoch unmittelbar auf das logische Feld ausgerichtet; Fehlerabgleich verwendet zusätzlich einen harten Kamerasnap. Diese Implementierungsbeschreibung ist **keine Freigabe der beobachteten Sprünge**. Die Nacharbeit darf Darstellungsparameter und Aufholstrategie ändern, muss aber D-012/D-020 erfüllen und endlichen Rückstand nachweisen. D-021 ersetzt zusätzlich die bisherige isometrisch wirkende Bildkomposition als Zielrichtung durch eine perspektivische Rückansicht; sie ist hier noch nicht als implementiert behauptet.
 
 Die bisherigen 107 Integrations- bzw. 266 Gesamtassertions und erfolgreichen Exporte/CI gehören zum Prüfstand `c4142a1`. Die Benutzerprüfung hat Erreichbarkeitsdarstellung und Kameraführung beanstandet; Besuchsstatus wurde ausdrücklich ergänzt. Neue Tests, Fehlerbehebung und erneute manuelle Abnahme sind noch ausstehend. P0/P1a werden dadurch nicht rückwirkend als ungeprüft bezeichnet.
 
@@ -110,7 +114,7 @@ Die bisherigen 107 Integrations- bzw. 266 Gesamtassertions und erfolgreichen Exp
 
 Windows-Artefakt: `build/windows/parkey.exe`. Web-Einstieg: `build/web/index.html`, ausschließlich über den dokumentierten lokalen HTTP-Server öffnen. Die korrigierten Builds verwenden, nicht den alten Prüfstand.
 
-1. Ohne Eingabe warten: Timer null, Startfeld aktuell/besucht, tatsächlich erreichbare Nachbarn sichtbar anders als Standard.
+1. Ohne Eingabe warten: Timer null, Startfeld aktuell/besucht, tatsächlich erreichbare Nachbarn sichtbar anders als Standard. Die Kamera zeigt die Figur von hinten und den Parcours perspektivisch voraus, keine seitliche isometrisch wirkende Draufsicht. Aktuelles Feld und Rücknachbarn bleiben erkennbar.
 2. Beide aktuellen Routen bis zum Ziel spielen. An den parallelen Abschnitten prüfen: Jeder wie ein normaler Randübergang aussehende Schritt ist möglich, andernfalls ist die Trennung räumlich eindeutig. Die Markierung allein erklärt keine unsichtbare Wand.
 3. Rückweg nehmen: Vorherige Besuche bleiben erkennbar, besuchte Nachbarn zusätzlich erreichbar. Quick Restart löscht die alte Besuchsspur und stellt Bereitschaft her.
 4. Einzelne korrekte Buchstaben mit Pausen, dann schnelle Folgen tippen. Kamera bleibt ohne Schnitt in Position und Blickrichtung; ebenso bei Rückweg, Fehler nach schnellem Tippen und langem Burst. Ein Clip über mehrere Schritte und einen Fehler ist als visueller Nachweis geeignet.
