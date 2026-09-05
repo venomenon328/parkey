@@ -1,6 +1,6 @@
 # P1b: Reaktionsgefühl, Nahbereich und zurückhaltende Feldzustände
 
-Stand: 2026-09-05. Verbindliche Präzisierung für Issue #3 / Draft-PR #13 nach Nutzerprüfung von `9641675`. Grundlage: [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md) und [Integration](p1b-implementation.md). **N1–N3 sind implementiert und automatisiert regressionsgeprüft; Re-Review, CI und physische/menschliche Abnahme stehen weiterhin aus.** Keine neue Spielmechanik und kein vorgezogenes P2-Grafikpaket.
+Stand: 2026-09-05. Verbindliche Präzisierung für Issue #3 / Draft-PR #13 nach Nutzerprüfung von `9641675`. Grundlage: [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md) und [Integration](p1b-implementation.md). **N1–N3 sind implementiert und automatisiert regressionsgeprüft; CI `33987533119` auf dem Implementierungscommit ist erfolgreich, Re-Review und physische/menschliche Abnahme stehen weiterhin aus.** Keine neue Spielmechanik und kein vorgezogenes P2-Grafikpaket.
 
 ## 1. Abgrenzung zum vorherigen Review
 

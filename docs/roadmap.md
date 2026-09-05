@@ -1,6 +1,6 @@
 # PoC-Roadmap
 
-Stand: 2026-09-05. **P0 und P1a sind abgenommen und gemergt. P1b ist im Draft-PR #13 einschließlich N1–N3 aus Re-Review 5122577064 implementiert; CI, Re-Review und physische Nutzerabnahme bleiben offen.** Issues beschreiben den Lieferumfang; [Umsetzungsplan](implementation-plan.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md) und [Teststrategie](testing.md) enthalten die gemeinsamen Verträge. P4 ist Integrationsabnahme, keine zusätzliche Featurephase.
+Stand: 2026-09-05. **P0 und P1a sind abgenommen und gemergt. P1b ist im Draft-PR #13 einschließlich N1–N3 aus Re-Review 5122577064 implementiert; CI `33987533119` auf dem Implementierungscommit ist erfolgreich, Re-Review und physische Nutzerabnahme bleiben offen.** Issues beschreiben den Lieferumfang; [Umsetzungsplan](implementation-plan.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md) und [Teststrategie](testing.md) enthalten die gemeinsamen Verträge. P4 ist Integrationsabnahme, keine zusätzliche Featurephase.
 
 ## Meilensteine und Pakete
 
