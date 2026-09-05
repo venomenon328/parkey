@@ -24,10 +24,11 @@ Schreibe Projektdokumentation auf Deutsch und Code-Bezeichner auf Englisch. Halt
 
 - Korrekte Eingaben nicht durch Animationsdauer, Physikticks oder einen pauschalen Schritt-Cooldown begrenzen. Die explizite Fehlerpause ist getrennt.
 - Renderer, Animationen und Netzwerkantworten entscheiden nicht über gültige Wege oder Zielankunft.
-- Änderungen an gewerteten Regeln/Strecken berücksichtigen Identität/Versionierung; kosmetische Änderungen dürfen nicht versehentlich andere Strecken erzeugen.
+- Änderungen an gewerteten Regeln/Strecken berücksichtigen Identität/Versionierung. Spielrelevante räumliche Layoutdaten gehören zur Streckenidentität; nur tatsächlich kosmetische Änderungen bleiben davon getrennt.
+- D-010 bis D-013 beachten: explizite Nachbarlisten, kein allgemeiner Raster-/Orthogonalitäts- oder fester Nachbarzahlzwang. Graph-/Layoutvalidierung trennen; moderate Größenvariation darf keinen zusätzlichen Bewegungs-Cooldown erzeugen. PoC-Bauhilfen nicht zu Kernregeln machen.
 - Keine doppelte Windows-/Web-Spielimplementierung ohne dokumentierte neue Entscheidung.
 - Neue Abhängigkeiten, Dienste und Assets auf Notwendigkeit, Plattformverträglichkeit und Lizenz prüfen. Keine Secrets, lokalen Zugangsdaten oder ungeklärten Fremdassets committen. Keine Projektlizenz, öffentliche Veröffentlichung oder kostenpflichtigen Dienste eigenmächtig festlegen.
-- Pflichtbefehle aus `docs/testing.md` einhalten. P0 erstellt den Test-Runner erst; niemals behaupten, die geplanten Skripte seien schon vorhanden. Unbekannte/leere Suites müssen fehlschlagen.
+- Pflichtbefehle aus `docs/testing.md` einhalten. P0 hat den Runner mit `smoke`/`all` und die Export-Presets geliefert; weitere geplante Suites nicht als vorhanden behaupten. Unbekannte/leere Suites müssen fehlschlagen.
 
 ## Bei Vorbereitung neuer Aufgaben
 

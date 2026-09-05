@@ -25,13 +25,13 @@ Nach **#5** sind die Abschnittsverträge und ihre spielerische Eignung überprü
 
 **P0:** Abgeschlossen. Editor und Export-Templates sind gemeinsam gepinnt; beide Ziele wurden aus demselben Projekt tatsächlich gestartet. Die manuelle Hardwaretastaturabnahme für Windows und Web ist bestanden.
 
-**P1:** Vorgeschlagene Start-/Fehler-/Fokusregeln vor #2 ausdrücklich als PoC-Experiment beauftragen oder ändern. Schnelle korrekte Ereignisse ohne Animationsdeckel, genau definierte Fehlerfrist, einmalige Zielzeit, lesbare Nachbarschaft und Neustart-/Persistenztests prüfen.
+**P1:** D-010 bis D-013 verlangen einen nicht rastergebundenen Kern mit expliziten Nachbarlisten, getrennter Layoutprüfung und räumlicher Streckenidentität. Ein Kernfall mit fünf Nachbarn und eine überschaubare unregelmäßige Stelle in #3 belegen die Freiheit; Größenunterschiede dürfen kein logisches Tempo vorgeben. Vorgeschlagene Start-/Fehler-/Fokusregeln vor #2 ausdrücklich als PoC-Experiment beauftragen oder ändern. Schnelle korrekte Ereignisse ohne Animationsdeckel, genau definierte Fehlerfrist, einmalige Zielzeit, lesbare Nachbarschaft und Neustart-/Persistenztests prüfen.
 
-**P2:** Vor der Routenwahl genügend Informationen zeigen. Unterschiedliche Tippmethoden praktisch testen, statt nur ein theoretisches Ergonomiemodell zu behaupten. Zielhardware, Auflösung, Leistungsbudget und eine repräsentative visuelle Nutzerabnahme gehören zu #6.
+**P2:** Vor der Routenwahl genügend Informationen zeigen; asymmetrische Anschlüsse und moderate Feldgrößen/-formen in beiden Grafikprofilen lesbar erproben. Unterschiedliche Tippmethoden praktisch testen, statt nur ein theoretisches Ergonomiemodell zu behaupten. Zielhardware, Auflösung, Leistungsbudget und eine repräsentative visuelle Nutzerabnahme gehören zu #6.
 
-**P3:** Gültigkeit jeder erzeugten Strecke prüfen, begrenzte Suchversuche, versionierte Identität und feste Referenz-Seeds. Wirkliche Windows-/Web-Konformitätsläufe in #8, nicht zwei native Läufe als Browserbeweis verkaufen.
+**P3:** Graph und räumliches Layout jeder erzeugten Strecke prüfen und gemeinsam in Identität/Golden-Fällen binden; keine feste Raster-/Nachbarzahl als allgemeine Regel. Weiterhin begrenzte Suchversuche, versionierte Identität und feste Referenz-Seeds. Wirkliche Windows-/Web-Konformitätsläufe in #8, nicht zwei native Läufe als Browserbeweis verkaufen.
 
-**P4:** Gleicher geprüfter Commit für beide Pakete; vollständige Plattformmatrix, bekannte Einschränkungen, Credits und tatsächliche Nutzerabnahme. Kein automatischer öffentlicher Release.
+**P4:** Alle bestätigten Anforderungen D-001 bis D-013 nachweisen. Gleicher geprüfter Commit für beide Pakete; vollständige Plattformmatrix, bekannte Einschränkungen, Credits und tatsächliche Nutzerabnahme. Kein automatischer öffentlicher Release.
 
 ## Abschlussumfang
 

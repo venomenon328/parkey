@@ -22,7 +22,7 @@ Ein späterer Online-Ranglistendienst kann dieselbe API für beide Exporte anbie
 
 | Bereich | Verantwortung | Darf nicht entscheiden |
 | --- | --- | --- |
-| `CourseData` / Validator | Felder, Buchstaben, Verbindungen, Start/Ziel, Identität; Gültigkeitsprüfungen | Animationen und Grafikqualität |
+| `CourseData` / Validator | IDs, Buchstaben, explizite Verbindungen, räumliches Layout, Start/Ziel und Identität; getrennte Graph-/Layoutprüfungen | Animationsdauer und Grafikqualität |
 | `RunSession` | Aktuelles Feld, Laufstatus, Eingabevalidierung, Fehlerfrist, Start/Ziel, Ergebnis | Kameraführung und Schrittanimationsdauer |
 | Eingabeadapter | Echte Tastendrücke normalisieren und geordnet mit Zeitwerten an den Kern übergeben | Vorab raten, welche zukünftigen Eingaben irgendwann passen |
 | Darstellung | Figur, Strecke, Kamera, HUD, Fehlerfeedback; visuell aufholen | Ob ein Schritt gültig ist und wann das Ziel erreicht wurde |
@@ -43,11 +43,19 @@ P0 erfasst beim Eintritt in Foundation._unhandled_input mit Time.get_ticks_usec(
 
 ## Streckenmodell und Reproduzierbarkeit
 
-`CourseData` enthält stabile Feld-IDs, ganzzahlige Rasterkoordinaten, normalisierte Buchstaben, explizite Verbindungen sowie Start/Ziel. Wo zwei Felder räumlich als begehbare Nachbarn erscheinen, müssen Daten und Geometrie dieselbe Aussage machen. Rückverbindungen sind im vorgeschlagenen ersten Modell symmetrisch.
+Die bestätigte Trennung aus D-010 bis D-013 ist vor P1a verbindlich: **Verbindungsgraph, räumliches Layout und kosmetische Darstellung sind verschiedene Verantwortlichkeiten.** `CourseData` führt stabile Feld-IDs, normalisierte Buchstaben, explizite Nachbar-IDs sowie Start/Ziel mit den zugehörigen Layoutdaten zusammen. Keine festen Slots wie oben/unten/links/rechts, keine allgemeine Manhattan-Nachbarschaft und kein eingebautes Vier-/Sechs-/Acht-Nachbarn-Limit. Rückverbindungen sind im vorgeschlagenen ersten Modell symmetrisch.
 
-Die spätere Streckenidentität berücksichtigt Seed, Generatorversion, Regelversion, beschriftungsrelevantes Layout-/Schwierigkeitsprofil und Topologiekonfiguration. Ein Hash der kanonisch serialisierten fertigen Streckendaten dient als zusätzliche Prüfung. Kosmetische Daten gehören nicht in diese Identität.
+Layoutdaten beschreiben relative Position, Grundfläche/Formparameter, Größe, Ausrichtung und geeigneten Stand-/Landepunkt je Feld sowie erforderliche Übergangsdaten. Für P1 reichen wenige einfache Formen und ein kleines datenbasiertes Format; beliebige Polygone, 3D-Brücken oder neue Generatoren sind nicht Voraussetzung. Optional verwendete Rasterkoordinaten sind Bauhilfen eines Layoutprofils, niemals Feldidentität oder Quelle der allgemeinen Erreichbarkeit. Präzision und kanonische Zahlenrepräsentation sind festzulegen; quantisierte Koordinaten erzwingen kein regelmäßiges Tile-Raster.
 
-Determinismus muss nachgewiesen werden: stabile Iterationsreihenfolge, kontrollierte Zufallsquelle und getrennte Zufallsströme für Topologie, Buchstaben und Dekoration. Nicht pauschal unterstellen, dass ein Engine-RNG über alle Versionen und Plattformen identische Resultate liefert. Feste Seeds und erwartete Ausgaben werden als plattformübergreifende Referenzfälle getestet. Die Versionierung schützt alte Ranglisten vor veränderten Strecken.
+Der Graphvalidator prüft IDs, Kantenreferenzen, Selbst-/Doppelkanten, vereinbarte Symmetrie, Erreichbarkeit und eindeutige Buchstaben der gesamten Nachbarschaft. Räumliche Prüfungen beurteilen separat gültige Grundflächen, Überlappungen, geeignete Anker und verständliche Randanschlüsse bzw. kleine Fugen des unterstützten Layoutprofils. Eckberührung allein reicht nicht. Ein Graph kann logisch gültig und trotzdem räumlich unbrauchbar sein; spielbare `CourseData` müssen beide Prüfungen bestehen. Die Nachbarschaft wird vor dem Start festgelegt, nicht während der Eingabe per Distanzschwelle oder Mesh-Kollision neu berechnet.
+
+`RunSession` benötigt für die Schrittentscheidung nur die expliziten Verbindungen und Buchstaben. Bei identischen normalisierten Eingaben/Zeitwerten ergeben unterschiedliche gültige Layouts derselben Topologie dieselben logischen Schritte und Zielzeiten, aber gegebenenfalls verschiedene Streckenidentitäten. Bewegungsgrafik folgt den Layout-Ankern/Übergängen und holt entlang des richtigen Wegs auf; aus Feldgröße, Abstand, Renderprofil oder Animationsende entsteht kein zusätzlicher Schritt-Cooldown.
+
+Die Streckenidentität berücksichtigt bereits bei Handstrecken und später bei Seeds die Topologie, Buchstaben, Regelversion, relevante Konfiguration und **spielrelevante räumliche Gestaltung**. Dazu gehören relative Feldpositionen, Grundflächen/Formparameter, Größen, Ausrichtungen, Standpunkte und Übergänge. Bei generierten Strecken kommen Seed, Generator-/Layoutversion und Tastatur-/Schwierigkeitsprofil hinzu. Ein Hash der kanonisch serialisierten fertigen Daten bindet diese Inhalte; Hashschema und Präzision sind versioniert. Geänderte räumliche Daten dürfen trotz identischem Graphen nicht in dieselbe Rangliste gelangen.
+
+Kosmetische Material-/Oberflächenvarianten und nicht spielrelevante Dekoration bleiben außerhalb dieser Identität. Die kanonischen Layoutdaten sind die Quelle für beide Renderprofile; keine Identitätsableitung aus Renderer-Meshes, Physikkontakten oder aktueller Kameraposition. Dekoration darf weder neue Übergänge suggerieren noch Pflichtinformationen verdecken. Ein bloßes Label „kosmetisch“ macht eine Änderung der Feldgrundfläche nicht zu Kosmetik.
+
+Determinismus muss nachgewiesen werden: stabile Iterationsreihenfolge, kontrollierte Zufallsquelle und getrennte Zufallsströme für Topologie, räumliches Layout, Buchstaben und Dekoration. Nicht pauschal unterstellen, dass ein Engine-RNG über alle Versionen und Plattformen identische Resultate liefert. Feste Seeds und erwartete Ausgaben werden als plattformübergreifende Referenzfälle getestet. Die Versionierung schützt alte Ranglisten vor veränderten Strecken.
 
 ## Ablage, Builds und Online-Perspektive
 
