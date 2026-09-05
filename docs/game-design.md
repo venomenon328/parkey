@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit und Status aller Festlegungen stehen im [Entscheidungsregister](decisions.md). Die folgenden Detailregeln sind, soweit nicht durch D-001 bis D-009 abgedeckt, vorgeschlagene PoC-Regeln.
+Stand: 2026-09-05. Verbindlichkeit und Status aller Festlegungen stehen im [Entscheidungsregister](decisions.md). Die folgenden Detailregeln sind, soweit nicht durch D-001 bis D-013 abgedeckt, vorgeschlagene PoC-Regeln.
 
 ## Spielkern
 
@@ -10,9 +10,9 @@ Die im Gespräch gezeigte Bildreferenz dient als visuelle Orientierung: große p
 
 ## Bewegung und Eingabe
 
-Vorgeschlagener Anfangsumfang: A–Z, normalisierte Großschreibung, vier orthogonale Richtungen, keine Diagonalen und beidseitige Verbindungen. Für jeden akzeptierten Tastendruck wird gegen die aktuelle **logische** Position geprüft. Gültige Eingaben können mehrere aufeinanderfolgende Schritte auslösen, bevor das nächste Bild gezeichnet wird. Es gibt keinen Schritt-Cooldown für korrektes Tippen.
+Vorgeschlagener Eingabeumfang für P1: A–Z, normalisierte Großschreibung und beidseitige Verbindungen. Die Strecke verwendet explizite Nachbarschaften, keine festen Richtungsslots. Orthogonale und schräg angeordnete Übergänge sind möglich, sofern ihre Erreichbarkeit eindeutig ist; es gibt keinen allgemeinen Raster- oder festen Nachbarzahlzwang (D-010/D-011). Für jeden akzeptierten Tastendruck wird gegen die aktuelle **logische** Position geprüft. Gültige Eingaben können mehrere aufeinanderfolgende Schritte auslösen, bevor das nächste Bild gezeichnet wird. Es gibt keinen Schritt-Cooldown für korrektes Tippen.
 
-Die sichtbare Figur folgt diesem Verlauf ohne stetig anwachsenden Rückstand. Sie darf Animationen verkürzen oder zusammenführen, statt jeden alten Einzelschritt vollständig nachzuspielen. Die Rückmeldung für das aktuelle Feld muss zur logisch gültigen Nachbarschaft passen. Bei hoher Geschwindigkeit ist diese Konsistenz wichtiger als eine vollständige Schrittanimation.
+Die sichtbare Figur folgt diesem Verlauf ohne stetig anwachsenden Rückstand. Sie darf Animationen verkürzen oder zusammenführen, statt jeden alten Einzelschritt vollständig nachzuspielen. Die Rückmeldung für das aktuelle Feld muss zur logisch gültigen Nachbarschaft passen. Bei hoher Geschwindigkeit ist diese Konsistenz wichtiger als eine vollständige Schrittanimation. Auch unterschiedlich große Felder zählen pro gültigem Übergang genau einen Eingabeschritt. Feldgröße und Entfernung dürfen keine zusätzliche Laufzeit, Eingabe oder Sperre erzwingen. Die Darstellung verkürzt/verdichtet nötigenfalls Bewegungen entlang des gewählten Wegs, statt das Tippen zu drosseln (D-012).
 
 Ein gültiger Buchstabe auf der unerwünschten Route ist eine Abzweigung, kein vom Spiel erkennbarer Tippfehler. Rückwärtsgehen ist im vorgeschlagenen Anfangsmodell möglich. Es gibt keine automatische Rücknahme einer subjektiv falschen Entscheidung.
 
@@ -50,13 +50,31 @@ Während des Laufs genügen Timer, persönliche Bestzeit und Fehlerfeedback. Die
 
 ## Strecken und Generation
 
+### Feldgeometrie und erkennbare Übergänge
+
+Das endgültige Streckendesign darf unregelmäßig sein: variable Grundformen, Ausrichtungen, Anordnungen, moderate Größenunterschiede und wechselnde Nachbarzahlen statt bloß eines anderen regelmäßigen Vierer-/Sechser-/Achterrasters. Übermäßig große Felder sind nicht das Ziel. Übersichtliche Passagen und markante Entscheidungspunkte bleiben wichtiger als möglichst viel Zufall. Eine größere Fläche darf beispielsweise entlang eines Randes mehrere kleinere Nachbarn haben; nicht jedes Feld muss gleich viele Ausgänge besitzen.
+
+Ein deutlich erkennbarer gemeinsamer Randabschnitt kann einen direkten Übergang bilden; dafür muss nicht eine vollständige Feldseite übereinstimmen. Bloße Eckberührung, diagonale Lage im gedachten Raster oder optische Nähe allein erzeugen keinen Übergang. Kleine Fugen sind als konsistentes Gestaltungsmittel möglich, wenn die Begehbarkeit trotzdem klar ist. Sichtbar begehbare Anschlüsse und gespeicherte Verbindungen müssen übereinstimmen; keine unsichtbaren Verbote und keine willkürlichen Fernverbindungen. Größere Sprünge, gesonderte Brückenmechaniken oder Höhenparcours sind damit nicht beschlossen.
+
+Verbindungen werden beim Erstellen/Validieren festgelegt und im Rennen nicht anhand wechselnder Mesh-Kontakte neu erraten. Alle tatsächlich erreichbaren Nachbarn brauchen verschiedene Buchstaben; aus dem verwendeten Alphabet ergibt sich eine sachliche Grenze, aber keine feste Produktvorgabe von vier, sechs oder acht Nachbarn. Ein einzelner Abschnitt darf aus Gründen der Lesbarkeit weniger Optionen haben.
+
+Für die sichtbare Figur ist ein geeigneter Stand-/Landepunkt innerhalb jedes Felds und ein plausibler Übergangsverlauf vorzusehen. Unterschiedliche Größen ändern die Zahl der nötigen Eingaben pro Übergang nicht. Optisch längere Wege können deshalb weniger Felder haben; die Unterteilung und ersten Optionen müssen vor einer Entscheidung lesbar sein. Größe, Distanz und Animation dürfen den logischen Fortschritt niemals durch Mindestbewegungszeiten verzögern. Konkrete Größen- und Anschlussgrenzen werden an Beispielen geprüft, nicht hier numerisch vorweggenommen.
+
+### PoC und Generierung
+
+Frühe Handstrecken dürfen einfach sein, ohne den gemeinsamen Kern auf dieses Layout festzulegen. P1a prüft die allgemeine Nachbarschaft unter anderem mit fünf eindeutig beschrifteten Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem klar lesbaren nicht rechtwinkligen Übergang. Dafür genügen wenige einfache Feldformen; ein beliebiger Polygon-Generator ist noch nicht nötig.
+
 Zunächst werden bewusst entworfene Abschnitte geprüft: flüssiger Korridor, gut einsehbare Gabelung, kurze schwierige Route gegen längere flüssige Route und ein gemeinsames Finale. Alternativwege sollen im ersten Test überwiegend wieder zusammenführen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht für den ersten PoC.
 
 Eine Routenwahl braucht vorab genügend Information über Verlauf und erste Buchstabensequenzen. Die Länge allein ist nicht die Schwierigkeit: Die Tippbarkeit einer Folge hängt unter anderem von Layout, Eingabemethode und Spielerfahrung ab. Ein anfängliches QWERTZ-Modell ist eine zu prüfende Hypothese, keine allgemeingültige Bewertung menschlichen Tippens.
 
 Die Eindeutigkeitsprüfung betrachtet immer die ganze erreichbare Nachbarschaft. Bereits **A–B–A** ist bei beidseitigen Verbindungen vom mittleren B aus ungültig. An Gabelungen und Zusammenführungen gilt dieselbe Regel. Sichtbare Anordnung und erlaubte Verbindungen müssen übereinstimmen; keine unsichtbaren Verbote zwischen scheinbar begehbaren Nachbarfeldern.
 
-Der spätere Generator kombiniert geprüfte Abschnittstypen und variiert Topologie sowie Beschriftung kontrolliert. Er prüft Zielerreichbarkeit, eindeutige Nachbarschaften, beabsichtigte Verbindungen und brauchbare Alternativen. Die beste Route darf vom Können des Spielers abhängen; sie muss nicht für jeden Menschen dieselbe sein.
+Der spätere Generator kombiniert geprüfte Abschnittstypen und variiert Topologie, räumliche Anordnung und Beschriftung kontrolliert. Er prüft Zielerreichbarkeit, eindeutige Nachbarschaften, beabsichtigte Verbindungen und brauchbare Alternativen. Die beste Route darf vom Können des Spielers abhängen; sie muss nicht für jeden Menschen dieselbe sein.
+
+### Streckenidentität
+
+Die räumliche Gestaltung beeinflusst das Lesen und die Routenwahl und ist deshalb nicht pauschal Kosmetik. Bei gleichen Buchstaben und Verbindungen, aber anderen relativen Positionen, Grundflächen, Größen, Ausrichtungen oder Übergängen ist die Streckenidentität entsprechend anzupassen. Reine Materialwechsel, Oberflächendetails und nicht spielrelevante Dekoration verändern sie dagegen nicht. Die Trennung gilt bereits für handgebaute Strecken und wird beim Generator fortgeführt; eine andere Identität ist kein Anlass für eine andere Eingabe- oder Zeitregel.
 
 ## Bewusst später
 

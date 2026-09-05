@@ -28,20 +28,35 @@ P2 trennt die Spielentscheidung von der Ausarbeitung des Looks. Ein Generator so
 
 ## Vorgeschlagenes experimentelles Regelprofil für P1
 
-**Noch nicht als endgültige Produktentscheidung bestätigt.** Vor Beginn von #2 dieses Profil ausdrücklich als PoC-Experiment mitbeauftragen oder die Abweichungen dokumentieren. Eine reine Bitte um Issues ersetzt diese Freigabe nicht. Das Profil konkretisiert die vorhandenen Vorschläge P-003 bis P-006, ohne D-001 bis D-009 zu ersetzen.
+**Noch nicht als endgültige Produktentscheidung bestätigt.** Vor Beginn von #2 dieses Profil ausdrücklich als PoC-Experiment mitbeauftragen oder die Abweichungen dokumentieren. Eine reine Bitte um Issues ersetzt diese Freigabe nicht. Das Profil konkretisiert die vorhandenen Vorschläge P-003 bis P-006, ohne D-001 bis D-013 zu ersetzen. D-010 bis D-013 sind inzwischen bestätigt; die übrigen noch offenen Start-/Fehler-/Fokusdetails bleiben davon getrennt.
 
 | Bereich | Konkreter Vorschlag für den Test |
 | --- | --- |
-| Bewegung | A–Z, Groß-/Kleinschreibung gleich; vier orthogonale Nachbarn; beidseitige Verbindungen und Rückwege. |
+| Bewegung | A–Z, Groß-/Kleinschreibung gleich; explizite beidseitige Verbindungen und Rückwege. Kein allgemeiner Raster-/Richtungs- oder fester Nachbarzahlzwang; ein gültiger Übergang bleibt ein Eingabeschritt. |
 | Tastatur | Angezeigter Buchstabe zählt. Nur neue Key-down-Ereignisse; Echo/Key-up ignorieren. Shift/Caps dürfen die Großschreibung ändern; Ctrl/Alt/Meta-Kombinationen und Nicht-A–Z-Zeichen sind keine Bewegungsversuche. UI-Texteingaben nicht ans Spiel durchreichen. |
 | Ereignisreihenfolge | Empfangsreihenfolge, auch bei gleichen Zeitwerten; kein künstliches Warten auf alle losgelassenen Tasten. Mehrere gültige Ereignisse ohne Renderfortschritt möglich. |
 | Start | Enter aus Bereit startet einen 3-Sekunden-Countdown. Erst ab festem Startzeitpunkt werden neue Bewegungsereignisse gewertet; keine Countdown-Eingaben puffern. |
 | Restart/Abbruch | Backspace startet denselben Parcours als neuen Versuch über denselben Countdown; Escape bricht ab. Menü-/Steuertasten sind keine falschen Buchstaben. Fokusverlust invalidiert den aktuellen Versuch, keine kostenlos pausierte Wertung. |
 | Fehler | Vorläufig 200 ms Sperre; Timer läuft; währenddessen Bewegungsversuche verwerfen, nicht puffern, nicht nachzählen und Frist nicht verlängern. Ab exakt Fristende neue Eingaben normal prüfen. Keine zusätzliche Zeitaddition. |
 | Ziel | Zeit beim gültigen logischen Zieleingang, genau ein gewertetes Ergebnis. Animationen und Speicherantworten verändern die Zeit nicht. |
-| Zeit/Identität | Monotone Integer-Mikrosekunden, Anzeige mit drei Millisekundennachkommastellen. Wertungsrelevante Einstellungen einschließlich Sperrdauer gehören zur Regelidentität. |
+| Zeit/Identität | Monotone Integer-Mikrosekunden, Anzeige mit drei Millisekundennachkommastellen. Wertungsrelevante Einstellungen einschließlich Sperrdauer gehören zur Regelidentität; relevante räumliche Layoutdaten gemäß D-013 zur Streckenidentität. |
 
 Countdownlänge und Steuertasten sind hier neue **konkrete Vorschläge**, keine rückwirkend behaupteten Nutzerwünsche. Technische Details wie konkrete Klassennamen dürfen im zuständigen Paket begründet angepasst werden. Ein endgültig anderes Spielverhalten benötigt dagegen eine dokumentierte Entscheidung und passende Tests. Spätere Balancingänderungen verändern die betroffenen Regel-/Wertungsprofile.
+
+## Konkretisierung der Pakete: nicht rastergebundene Strecken
+
+D-010 bis D-013 sind auf Nutzerauftrag in die bestehenden Pakete eingearbeitet. P0 bleibt abgeschlossen; diese Dokumentationsänderung implementiert noch keine Geometrie oder neue Tests. Paketgrenzen, Branches und Abhängigkeiten bleiben bestehen.
+
+| Paket | Verbindliche Abgrenzung |
+| --- | --- |
+| P1a / #2 | Explizite Nachbarlisten und getrennte Graph-/Layoutvalidierung. Kein allgemeines Orthogonalitäts- oder Vier-Nachbarn-Limit. Test mit fünf eindeutigen Nachbarn sowie Layoutvariation bei unveränderten logischen Eingabe-/Zeitresultaten. Kleiner Layout-/Identitätsvertrag, kein universelles Geometriesystem. |
+| P1b / #3 | Einfacher Handparcours mit mindestens einer unregelmäßigen Stelle: moderate Größenvariation und klar lesbarer schräger Übergang. Anker/Bewegung sinnvoll anpassen, kein größen-/entfernungsabhängiges Warten. |
+| P1c / #4 | Ranglisten auch bei gleichem Graphen mit unterschiedlichen spielrelevanten Layoutdaten trennen. Reine Kosmetik verändert die Identität nicht. |
+| P2a / #5 | Asymmetrische Routen, variable Anschlüsse und Geometrie praktisch erproben; Größenbereiche und Fugentoleranzen dokumentieren. Keine feste Nachbarzahl als Produktregel. |
+| P2b / #6 | Moderate variable Feldformen/-größen und lesbare Übergänge in beiden Grafikprofilen erhalten. Kein grafisch erzwungenes Bewegungslimit; die Gestaltung darf das gespeicherte Layout nicht heimlich verändern. |
+| P3a / #7 | Generator liefert Graph und validiertes räumliches Layout mit eigener kontrollierter Zufallsableitung. Golden-Fälle und Identität binden Layoutdaten; kein willkürlicher vollständiger Polygon-Generator erforderlich. |
+| P3b / #8 | Exportvergleich umfasst räumliche Daten/Hashes und deren Ranglistentrennung. Gleiche Ereignisprotokolle bleiben unabhängig von Darstellungsabständen im Kern gleich schnell. |
+| P4 / #9 | Gesamtabnahme schließt D-010 bis D-013 ein, ohne P0 erneut zu öffnen oder weitere Spielmechaniken vorwegzunehmen. |
 
 ## Gemeinsamer Liefer- und Testvertrag
 
