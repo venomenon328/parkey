@@ -2,7 +2,7 @@
 
 ## Vor Änderungen lesen
 
-Lies `README.md`, `docs/decisions.md`, `docs/implementation-plan.md` und die für den Auftrag relevanten Design-, Architektur-, Roadmap- und Testabschnitte vollständig. Prüfe den tatsächlichen Repository-Stand und das maßgebliche Issue bzw. den aktuellen PR-Review; ein Plan oder eine frühere Chat-Aussage ist kein Nachweis einer Implementierung.
+Lies `README.md`, `docs/decisions.md`, `docs/implementation-plan.md` und die für den Auftrag relevanten Design-, Architektur-, Entwicklungs-, Roadmap- und Testabschnitte vollständig. Prüfe den tatsächlichen Repository-Stand und das maßgebliche Issue bzw. den aktuellen PR-Review; ein Plan oder eine frühere Chat-Aussage ist kein Nachweis einer Implementierung.
 
 ## Entscheidungen und Umfang
 
@@ -10,15 +10,31 @@ Lies `README.md`, `docs/decisions.md`, `docs/implementation-plan.md` und die fü
 - Eine neu ausdrücklich getroffene Nutzerentscheidung aktualisiert zuerst das Entscheidungsregister und die betroffenen Spezifikationen. Ändere bestehende Entscheidungen nachvollziehbar, statt widersprüchliche Ergänzungen anzuhängen.
 - Implementiere nur den beauftragten Umfang. Roadmap-Einträge und angelegte Issues sind keine pauschale Erlaubnis zur Umsetzung sämtlicher Features.
 - Godot und Windows als Hauptplattform sind bestätigt. Ein gemeinsamer Spielkern mit Web-Unterstützung ist das Architekturziel; praktisch nicht geprüfte Plattformunterstützung darf nicht als erfolgreich bezeichnet werden.
-- Abhängige Pakete erst nach Abnahme/Merge ihrer Voraussetzungen beginnen. Spätere Branches vom dann aktuellen main erstellen; nicht sämtliche Pakete vom alten Planungsstand abzweigen.
+- Abhängige Pakete erst nach Abnahme und Merge ihrer Voraussetzungen beginnen. Spätere Branches vom dann aktuellen `main` erstellen; nicht sämtliche Pakete vom alten Planungsstand abzweigen.
 
 ## Dokumentation gehört zur Änderung
 
 Jeder Pull Request, der Verhalten, Konfiguration, Technik oder Umfang ändert, aktualisiert im selben PR die betroffenen Dokumente. Prüfe insbesondere `docs/decisions.md`, Fachspezifikation, Testvertrag, Paketplan und Statusangaben in README/Roadmap. Reine Implementierungsdetails benötigen keinen neuen Grundsatzbeschluss.
 
-Entscheidungsstatus und Begründung stehen im Register. Issues enthalten Arbeitspakete und verlinken auf die Spezifikation; sie ersetzen diese nicht. Die initiale Dokumentation und Paketplanung wurden auf main abgelegt. Implementierungen erfolgen auf den benannten Arbeitsbranches mit kleinen Draft-PRs; nicht automatisch mergen. Bis zur vollständigen Abnahme Draft lassen.
+Entscheidungsstatus und Begründung stehen im Register. Issues enthalten Arbeitspakete und verlinken auf die Spezifikation; sie ersetzen diese nicht. Implementierungen erfolgen auf den benannten Arbeitsbranches mit kleinen Draft-PRs; nicht automatisch mergen. Bis zur vollständigen Abnahme Draft lassen.
 
 Schreibe Projektdokumentation auf Deutsch und Code-Bezeichner auf Englisch. Halte Texte knapp genug zur Pflege. Quellen für zeitabhängige Engine-Aussagen enthalten URL und Prüfdatum. Planungsdateien behaupten keine vorhandenen Tests oder Builds.
+
+## Auftragsmetadaten gehören nicht ins Repository
+
+Auswahl eines konkreten KI-Modells, Reasoning-Stufe, Token-/Kostenabwägungen und Einschätzungen wie `Selbst umsetzbar: Ja/Teilweise/Nein` sind Gesprächs- bzw. Auftragsmetadaten. Sie gehören **nicht** in Repository-Dokumentation, Issues, PR-Beschreibungen oder andere Implementierungsspezifikationen. Diese Angaben werden außerhalb des Repositorys unmittelbar vor einem Auftrag beurteilt.
+
+Kompakte Arbeitsanweisungen dürfen Repository, Branch/PR, maßgebliche Quellen, Tests und Übergaberegeln nennen. Sie enthalten jedoch keine Modellwahl oder Einschätzung der Eigenumsetzbarkeit.
+
+## Verbindliche lokale Werkzeugablage unter Windows
+
+Projektbezogene lokale Entwicklungswerkzeuge werden unter **`E:\Zeuch\Coding\Parkey-Tools`** abgelegt. Keine Parkey-Werkzeuge unter `C:\Tools` oder anderen ad-hoc-Stammverzeichnissen neu anlegen.
+
+- Versionierte Installationen liegen direkt unter dem Stammverzeichnis, z. B. `E:\Zeuch\Coding\Parkey-Tools\Godot-4.7.2`.
+- Stabile Kommando-Shims für den Benutzer-PATH liegen unter `E:\Zeuch\Coding\Parkey-Tools\bin`; nur dieses `bin`-Verzeichnis soll für Parkey dauerhaft in den PATH aufgenommen werden.
+- Von Godot selbst erwartete Benutzerverzeichnisse sind Ausnahmen, insbesondere `%APPDATA%\Godot\export_templates\<version>`. Temporäre Downloads/Entpackstufen dürfen `%TEMP%` verwenden.
+- Bereits versehentlich an anderer Stelle vorhandene Werkzeugordner nicht ohne ausdrücklichen Auftrag löschen. Neue Einrichtung und Dokumentation verwenden jedoch ausschließlich die verbindliche Ablage.
+- Details und Installationsbefehle stehen in `docs/development.md`.
 
 ## Technische Leitplanken
 
@@ -28,18 +44,10 @@ Schreibe Projektdokumentation auf Deutsch und Code-Bezeichner auf Englisch. Halt
 - D-010 bis D-013 beachten: explizite Nachbarlisten, kein allgemeiner Raster-/Orthogonalitäts- oder fester Nachbarzahlzwang. Graph-/Layoutvalidierung trennen; moderate Größenvariation darf keinen zusätzlichen Bewegungs-Cooldown erzeugen. PoC-Bauhilfen nicht zu Kernregeln machen.
 - Keine doppelte Windows-/Web-Spielimplementierung ohne dokumentierte neue Entscheidung.
 - Neue Abhängigkeiten, Dienste und Assets auf Notwendigkeit, Plattformverträglichkeit und Lizenz prüfen. Keine Secrets, lokalen Zugangsdaten oder ungeklärten Fremdassets committen. Keine Projektlizenz, öffentliche Veröffentlichung oder kostenpflichtigen Dienste eigenmächtig festlegen.
-- Pflichtbefehle aus `docs/testing.md` einhalten. P0 hat den Runner mit `smoke`/`all` und die Export-Presets geliefert; weitere geplante Suites nicht als vorhanden behaupten. Unbekannte/leere Suites müssen fehlschlagen.
-
-## Bei Vorbereitung neuer Aufgaben
-
-Unmittelbar vor Entwicklungspaketen oder offenen Nacharbeiten zusätzlich angeben, nicht erst rückblickend:
-
-1. Konkretes GPT-5.6-/GPT-6-Modell und Reasoning-Stufe mit kurzer Abwägung von Komplexität, Risiko und Tokenaufwand. Die Auswahl im Paketplan ist Ausgangspunkt, keine Pflicht zur höchsten Stufe.
-2. Explizit `Selbst umsetzbar: Ja`, `Teilweise` oder `Nein`; aktuelle Möglichkeit von Implementierung, Test, Commit und Push ehrlich beurteilen. Kleine isolierte Korrekturen/Reviews bevorzugt direkt, größere Mehrdateienpakete mit längeren Testzyklen bevorzugt Codex.
-3. Kompakter Codex-Prompt: Repository/Branch, maßgebliches Issue bzw. aktueller PR-Review und verbindliche Dokumente, vollständiger Umsetzungsauftrag, wenige nicht anderweitig dokumentierte Risiken, Pflichtbefehle, Commit/Push und Draft-/Reviewstatus sowie kurze Abschlussmeldung. Keine vollständigen Lieferumfänge, Akzeptanzkriterien oder Reviewpunkte nochmals kopieren.
+- Pflichtbefehle aus `docs/testing.md` einhalten. P0 hat den Runner und die Export-Presets geliefert; P1a ergänzt `core`. Weitere geplante Suites nicht als vorhanden behaupten. Unbekannte/leere Suites müssen fehlschlagen.
 
 ## Tests und Übergabe
 
-Führe verfügbare relevante Tests aus und nenne exakt, was tatsächlich auf welcher Plattform ausgeführt wurde. Export ist kein Spieltest; Headless ist kein Grafiktest. Fehlende Testumgebung lässt die entsprechende Abnahme offen und den PR Draft. Nicht durch gefälschte Berichte oder still übersprungene Suites kompensieren.
+Führe verfügbare relevante Tests aus und nenne exakt, was tatsächlich auf welcher Plattform ausgeführt wurde. Export ist kein Spieltest; Headless ist kein Grafiktest. Fehlende Testumgebung lässt die entsprechende Abnahme offen und den PR Draft. Nicht durch erfundene Berichte oder still übersprungene Suites kompensieren.
 
-Übergabe: Änderungen, Testnachweise, verbleibende Einschränkungen, Commit/PR und nächster klar abgegrenzter Schritt. Reale Nutzerabnahmen können technische Tests ergänzen, aber nicht erfunden werden. Dokumentationspflege erfolgt mit der nächsten tatsächlichen Änderung, nicht automatisch im Hintergrund.
+Übergabe: Änderungen, Testnachweise, verbleibende Einschränkungen, Commit/PR und nächster klar abgegrenzter Schritt. Reale Nutzerabnahmen können technische Tests ergänzen, aber nicht erfunden werden. Dokumentationspflege erfolgt mit der tatsächlichen Änderung, nicht automatisch im Hintergrund.
