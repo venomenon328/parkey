@@ -1,81 +1,79 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit und Status aller Festlegungen stehen im [Entscheidungsregister](decisions.md). Die folgenden Detailregeln sind, soweit nicht durch D-001 bis D-013 abgedeckt, vorgeschlagene PoC-Regeln.
+Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013 sowie das für P1 freigegebene Profil D-014 bis D-018 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. P1 ist noch nicht implementiert.
 
 ## Spielkern
 
 Parkey verbindet räumliches Lesen, Routenentscheidung und präzises Tippen. Der Spieler erkennt erreichbare Buchstabenfelder, wählt einen Weg und setzt ihn unmittelbar in Bewegung um. Wiederholungen sollen bessere Linien, flüssigere Eingaben und persönliche Bestzeiten ermöglichen.
 
-Die im Gespräch gezeigte Bildreferenz dient als visuelle Orientierung: große plastische Tastenkappen, kleine Figur, warme Materialien und eine übersichtliche 3D-Welt. Sie ist keine verbindliche Kameraposition und legt weder die Figur noch alle Materialien endgültig fest. Die Bilddatei selbst ist nicht Bestandteil des Repositorys.
+Die Bildreferenz aus der Projektabstimmung dient als visuelle Orientierung: plastische Tastenkappen, kleine Figur, warme Materialien und eine übersichtliche 3D-Welt. Sie legt weder Kameraposition, Figur noch Materialien endgültig fest. Die Bilddatei selbst ist nicht Bestandteil des Repositorys.
 
 ## Bewegung und Eingabe
 
-Vorgeschlagener Eingabeumfang für P1: A–Z, normalisierte Großschreibung und beidseitige Verbindungen. Die Strecke verwendet explizite Nachbarschaften, keine festen Richtungsslots. Orthogonale und schräg angeordnete Übergänge sind möglich, sofern ihre Erreichbarkeit eindeutig ist; es gibt keinen allgemeinen Raster- oder festen Nachbarzahlzwang (D-010/D-011). Für jeden akzeptierten Tastendruck wird gegen die aktuelle **logische** Position geprüft. Gültige Eingaben können mehrere aufeinanderfolgende Schritte auslösen, bevor das nächste Bild gezeichnet wird. Es gibt keinen Schritt-Cooldown für korrektes Tippen.
+P1 verwendet A–Z, normalisierte Großschreibung und beidseitige explizite Verbindungen. Keine festen Richtungsslots, kein allgemeiner Raster- oder Nachbarzahlzwang. Orthogonale und schräg angeordnete Übergänge sind möglich, sofern ihre Erreichbarkeit eindeutig ist. Jeder Bewegungsversuch wird gegen die aktuelle **logische** Position geprüft. Mehrere gültige Eingaben können vor dem nächsten Renderbild mehrere Schritte auslösen. Kein Schritt-Cooldown für korrektes Tippen.
 
-Die sichtbare Figur folgt diesem Verlauf ohne stetig anwachsenden Rückstand. Sie darf Animationen verkürzen oder zusammenführen, statt jeden alten Einzelschritt vollständig nachzuspielen. Die Rückmeldung für das aktuelle Feld muss zur logisch gültigen Nachbarschaft passen. Bei hoher Geschwindigkeit ist diese Konsistenz wichtiger als eine vollständige Schrittanimation. Auch unterschiedlich große Felder zählen pro gültigem Übergang genau einen Eingabeschritt. Feldgröße und Entfernung dürfen keine zusätzliche Laufzeit, Eingabe oder Sperre erzwingen. Die Darstellung verkürzt/verdichtet nötigenfalls Bewegungen entlang des gewählten Wegs, statt das Tippen zu drosseln (D-012).
+Die sichtbare Figur folgt ohne stetig anwachsenden Rückstand. Sie darf Animationen verkürzen oder zusammenführen, statt jeden alten Einzelschritt vollständig nachzuspielen. Aktives Feld und angezeigte Nachbarschaft bleiben konsistent. Auch unterschiedlich große Felder zählen pro gültigem Übergang genau einen Eingabeschritt. Größe, Entfernung und Winkel erzwingen keine zusätzliche Laufzeit, Eingabe oder Sperre; die Darstellung passt sich entlang des gewählten Wegs dem Tippen an.
 
-Ein gültiger Buchstabe auf der unerwünschten Route ist eine Abzweigung, kein vom Spiel erkennbarer Tippfehler. Rückwärtsgehen ist im vorgeschlagenen Anfangsmodell möglich. Es gibt keine automatische Rücknahme einer subjektiv falschen Entscheidung.
+Ein gültiger Schritt auf einen subjektiv unerwünschten Weg ist keine strafbare Falscheingabe. Rückwärtsgehen erfolgt per Buchstabe des vorherigen Felds, ohne automatische Rücknahme einer Entscheidung.
 
-Automatische Tastenwiederholung durch Gedrückthalten löst keine Schritte aus. Überlappende echte Tastendrücke bleiben erlaubt; der Spieler muss nicht vor jeder Eingabe alle Tasten loslassen. Reine Modifier- und UI-Eingaben sind keine falschen Bewegungsbuchstaben. Für Neustart und Menü dürfen keine normalen A–Z-Eingaben ohne eindeutigen Kontext zweckentfremdet werden.
+Nur neue Key-downs zählen, Echo/Key-up nicht. Überlappende echte Tastendrücke bleiben erlaubt und werden in Empfangsreihenfolge behandelt. Modifier, Shortcuts, Nicht-A–Z-Zeichen und UI-Texteingaben sind keine Bewegungsversuche. Backspace für Quick Restart und Escape für die Menüanforderung sind von normalen Buchstaben und voneinander getrennt.
 
 ## Fehlerpause
 
-Bestätigt ist eine kurze Bewegungssperre. Der vorläufige Wert steht unter T-001, die optionale Kopfschüttelrückmeldung unter T-002. Vorgeschlagene Detailsemantik:
+Im freigegebenen P1-Profil verursacht ein falscher Bewegungsbuchstabe **200 ms** Stillstand am unveränderten Feld. Der Timer läuft weiter; die tatsächliche Pause ist die Strafe, ohne zusätzliche Zeitaddition. Eingaben während der Frist werden verworfen, nicht gepuffert, nicht zusätzlich gezählt und verlängern die Frist nicht. Neue Eingaben ab Fristende werden unabhängig vom Animationsstatus normal geprüft. Dies gilt auch für einen falschen ersten Bewegungsbuchstaben, der zugleich die Zeitmessung startet.
 
-1. Im laufenden Zustand löst ein Bewegungsbuchstabe ohne gültiges Nachbarziel einen Fehler aus. Das aktuelle Feld bleibt unverändert; ein Fehler wird gezählt und eine feste Sperrfrist beginnt.
-2. Während der Sperre werden Bewegungsversuche ignoriert: kein Puffern, kein nachträglicher automatischer Schritt, keine zusätzlichen Fehlerzählungen und kein Neustart der Sperrfrist.
-3. Der Renntimer läuft weiter. Der reale Stillstand ist die Strafe; es wird nicht noch einmal derselbe Betrag auf die Ergebniszeit addiert.
-4. Die erste neue Eingabe ab Ende der Sperrfrist wird normal geprüft, ohne auf ein Animationsende oder einen späteren Physiktick zu warten. Ein dann neuer Fehler kann eine neue Sperre auslösen.
-5. Neustart, Menü und erforderliche UI-Reaktionen dürfen weiterhin funktionieren. Nicht die gesamte Engine oder Zeitmessung pausieren.
+Die vorgeschlagene Kopfschüttelrückmeldung darf die Frist nicht verlängern. Die Figur soll während der Sperre keine alten Vorwärtsanimationen abarbeiten. Der Übergang einer nachlaufenden Darstellung zum tatsächlichen logischen Feld wird gezielt getestet. Quick Restart und Menüanforderung bleiben während der Fehlerpause bedienbar; nicht die gesamte Engine pausieren.
 
-Die sichtbare Figur soll während der Sperre stillstehen bzw. den Kopf schütteln, nicht vorher gepufferte Vorwärtsschritte abarbeiten. Der Übergang von einer eventuell nachlaufenden Darstellung zum unveränderten logischen Feld wird gezielt getestet. Die Fehlerdarstellung darf weder einen anderen vermeintlichen Standort suggerieren noch einen zusätzlichen Stillstand nach Ablauf der Frist erzwingen.
+Ob die verworfenen Eingaben unmittelbar vor Sperrende verständlich wirken, wird im Spieltest geprüft. Spätere Änderungen der Dauer oder Pufferung sind explizite versionierte Regeländerungen, keine unbemerkte Komfortkorrektur.
 
-Zu testen ist insbesondere, ob verworfene Eingaben unmittelbar vor Sperrende nachvollziehbar wirken. Ein eventueller begrenzter Eingabepuffer wäre eine neue, ausdrücklich zu dokumentierende Regel, keine unbemerkte Komfortänderung.
+## Start, Quick Restart, Menü und Ergebnis
 
-## Start, Ziel und Ergebnis
+Der validierte Parcours beginnt auf dem Startfeld in Bereitschaft, Timer null. **Der erste neue Bewegungsbuchstabe startet die Zeit und ist zugleich der erste Bewegungsversuch.** Es gibt keinen Countdown und keinen Enter-Start. Ein falscher erster A–Z-Versuch startet ebenso und wird regulär bestraft. Die Betrachtung der Strecke vor dem ersten Buchstaben ist erlaubt.
 
-Vorgeschlagen: explizites Bereitmachen und ein kurzer Countdown. Ab dem Startsignal läuft die Zeit; Countdown-Eingaben bewegen die Figur nicht. Die Zielzeit entsteht bei der gültigen Eingabe zum Zielfeld und wird genau einmal gespeichert. Eine anschließende Zielanimation verändert sie nicht.
+**Backspace** ist Quick Restart: derselbe Parcours, Startfeld, Zeit/Fehler/Sperre zurückgesetzt und Bereitschaft für den nächsten neuen Bewegungsbuchstaben. **Escape** ist dagegen die eigenständige Anforderung eines klassischen Pausemenüs und setzt die Figur nicht auf Start zurück. Die vollständige Menüoberfläche ist noch nicht Bestandteil von P1a; Details und Wertungsabgrenzung stehen im [P1-Profil](p1-rule-profile.md). Eine Menüunterbrechung eines begonnenen Laufs ermöglicht keine gewertete Fortsetzung.
 
-Der Timer zeigt während des Rennens durchgehend Minuten, Sekunden und drei Nachkommastellen. Anzeigeauflösung ist nicht mit identischer realer Eingabelatenz auf jedem Gerät gleichzusetzen. Zeitmessung und Sortierung verwenden numerische Zeitwerte, keine formatierten Zeichenketten.
+Fokusverlust während eines begonnenen Laufs bricht ihn ab und macht ihn nicht wertbar; Rückkehr startet nichts automatisch. Vor dem ersten Buchstaben existiert noch kein laufender Versuch. Ein schon abgeschlossenes gültiges Ergebnis wird durch späteren Fokusverlust, Menüöffnung oder Restart weder gelöscht noch dupliziert.
 
-Erste Ranglisten sind lokal und gelten jeweils für dieselbe Strecken- und Regelidentität. Fokusverlust, Abbruch oder ein für Trainingszwecke pausierter Lauf erzeugen nach dem vorgeschlagenen Modell keinen gewerteten Abschluss. Detailregeln für Zeitgleichstände werden vor einer Onlinewertung festgelegt.
+Zieleingang beendet die Zeit beim gültigen logischen Schritt, nicht bei der Landung. Genau ein Ergebnis; spätere Animationen oder Speicherantworten ändern es nicht. Timeranzeige während des Rennens in Minuten, Sekunden und drei Nachkommastellen. Numerische monotone Zeitwerte statt Framezählung oder Sortierung formatierter Zeichenketten; Anzeigepräzision ist keine garantierte identische Gerätelatenz.
+
+Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speicherausbau in P1c, nicht Teil des P1a-Kerns. Gleichstandsdetails werden im Speicherpaket festgelegt; Onlinewertung bleibt separat.
 
 ## Kamera und Lesbarkeit
 
-Die vorgeschlagene Kamera ist erhöht, nach unten geneigt und automatisch geführt. Die Figur und das aktuelle Feld bleiben sichtbar; an Kreuzungen werden beide Optionen rechtzeitig erkennbar. Keine notwendigen Mausbewegungen und keine abrupten Kamerasprünge bei jedem Richtungswechsel.
+Die vorgeschlagene Kamera ist erhöht, nach unten geneigt und automatisch geführt. Figur und aktuelles Feld bleiben sichtbar; an Kreuzungen werden Optionen rechtzeitig erkennbar. Keine notwendigen Mausbewegungen oder abrupten Kamerasprünge bei jedem Richtungswechsel.
 
-Erreichbare Nachbarfelder erhalten eine zurückhaltende, nicht ausschließlich farbliche Markierung. Buchstaben müssen auch im Web-Profil sowie ohne teure Effekte lesbar bleiben. Schatten, die Figur, Schärfentiefe und die Benutzeroberfläche dürfen sie nicht verdecken. Gegebenenfalls helfen dezente zusätzliche Buchstabenanzeigen.
+Erreichbare Nachbarn erhalten eine zurückhaltende, nicht ausschließlich farbliche Markierung. Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; nötigenfalls dezente zusätzliche Buchstabenanzeigen.
 
-Während des Laufs genügen Timer, persönliche Bestzeit und Fehlerfeedback. Die ausführliche Rangliste erscheint vorzugsweise nach dem Lauf. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Grafikmerkmale vermittelt werden.
+Während des Laufs genügen Timer, persönliche Bestzeit und Fehlerfeedback. Die ausführliche Rangliste erscheint vorzugsweise nach dem Lauf. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Effekte vermittelt werden.
 
 ## Strecken und Generation
 
 ### Feldgeometrie und erkennbare Übergänge
 
-Das endgültige Streckendesign darf unregelmäßig sein: variable Grundformen, Ausrichtungen, Anordnungen, moderate Größenunterschiede und wechselnde Nachbarzahlen statt bloß eines anderen regelmäßigen Vierer-/Sechser-/Achterrasters. Übermäßig große Felder sind nicht das Ziel. Übersichtliche Passagen und markante Entscheidungspunkte bleiben wichtiger als möglichst viel Zufall. Eine größere Fläche darf beispielsweise entlang eines Randes mehrere kleinere Nachbarn haben; nicht jedes Feld muss gleich viele Ausgänge besitzen.
+Das endgültige Streckendesign darf unregelmäßig sein: variable Grundformen, Ausrichtungen, Anordnungen, moderate Größenunterschiede und wechselnde Nachbarzahlen statt bloß eines anderen regelmäßigen Rasters. Übermäßig große Felder sind nicht das Ziel. Übersichtliche Passagen und markante Entscheidungspunkte bleiben wichtiger als maximaler Zufall. Eine größere Fläche darf an einem Rand mehrere kleinere Nachbarn haben.
 
-Ein deutlich erkennbarer gemeinsamer Randabschnitt kann einen direkten Übergang bilden; dafür muss nicht eine vollständige Feldseite übereinstimmen. Bloße Eckberührung, diagonale Lage im gedachten Raster oder optische Nähe allein erzeugen keinen Übergang. Kleine Fugen sind als konsistentes Gestaltungsmittel möglich, wenn die Begehbarkeit trotzdem klar ist. Sichtbar begehbare Anschlüsse und gespeicherte Verbindungen müssen übereinstimmen; keine unsichtbaren Verbote und keine willkürlichen Fernverbindungen. Größere Sprünge, gesonderte Brückenmechaniken oder Höhenparcours sind damit nicht beschlossen.
+Ein erkennbarer gemeinsamer Randabschnitt kann einen Übergang bilden, auch ohne vollständige Seitenübereinstimmung. Bloße Eckberührung, diagonale Lage in einem gedachten Raster oder optische Nähe allein erzeugen keine Verbindung. Kleine konsistent lesbare Fugen sind möglich. Sichtbar begehbare Anschlüsse und gespeicherte Kanten müssen übereinstimmen; keine unsichtbaren Verbote oder willkürlichen Fernverbindungen. Größere Sprünge, gesonderte Brücken und Höhenparcours sind nicht beschlossen.
 
-Verbindungen werden beim Erstellen/Validieren festgelegt und im Rennen nicht anhand wechselnder Mesh-Kontakte neu erraten. Alle tatsächlich erreichbaren Nachbarn brauchen verschiedene Buchstaben; aus dem verwendeten Alphabet ergibt sich eine sachliche Grenze, aber keine feste Produktvorgabe von vier, sechs oder acht Nachbarn. Ein einzelner Abschnitt darf aus Gründen der Lesbarkeit weniger Optionen haben.
+Nachbarschaften werden beim Erstellen/Validieren festgelegt, nicht im Rennen aus wechselnden Mesh-Kontakten erraten. Alle erreichbaren Nachbarn tragen unterschiedliche Buchstaben; das Alphabet ergibt eine sachliche Grenze, aber keine feste Produktvorgabe von vier, sechs oder acht Nachbarn. Ein Abschnitt darf für die Lesbarkeit weniger Optionen haben.
 
-Für die sichtbare Figur ist ein geeigneter Stand-/Landepunkt innerhalb jedes Felds und ein plausibler Übergangsverlauf vorzusehen. Unterschiedliche Größen ändern die Zahl der nötigen Eingaben pro Übergang nicht. Optisch längere Wege können deshalb weniger Felder haben; die Unterteilung und ersten Optionen müssen vor einer Entscheidung lesbar sein. Größe, Distanz und Animation dürfen den logischen Fortschritt niemals durch Mindestbewegungszeiten verzögern. Konkrete Größen- und Anschlussgrenzen werden an Beispielen geprüft, nicht hier numerisch vorweggenommen.
+Geeignete Stand-/Landepunkte liegen innerhalb der Felder; Übergangsverläufe bleiben plausibel. Optisch längere Wege können weniger Felder haben, daher müssen Unterteilung und erste Optionen vor Entscheidungen lesbar sein. Konkrete Größen-/Anschlussgrenzen werden an Beispielen geprüft und nicht hier als endgültige Zahlenwerte vorweggenommen.
 
 ### PoC und Generierung
 
-Frühe Handstrecken dürfen einfach sein, ohne den gemeinsamen Kern auf dieses Layout festzulegen. P1a prüft die allgemeine Nachbarschaft unter anderem mit fünf eindeutig beschrifteten Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem klar lesbaren nicht rechtwinkligen Übergang. Dafür genügen wenige einfache Feldformen; ein beliebiger Polygon-Generator ist noch nicht nötig.
+Frühe Handstrecken dürfen einfach sein, ohne den Kern auf ihr Layout zu beschränken. P1a prüft unter anderem fünf eindeutig beschriftete Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem nicht rechtwinkligen lesbaren Übergang. Wenige einfache Formen genügen, kein beliebiger Polygon-Generator.
 
-Zunächst werden bewusst entworfene Abschnitte geprüft: flüssiger Korridor, gut einsehbare Gabelung, kurze schwierige Route gegen längere flüssige Route und ein gemeinsames Finale. Alternativwege sollen im ersten Test überwiegend wieder zusammenführen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht für den ersten PoC.
+Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze schwierige gegen längere flüssige Route, gemeinsames Finale. Alternativen führen zunächst überwiegend wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
 
-Eine Routenwahl braucht vorab genügend Information über Verlauf und erste Buchstabensequenzen. Die Länge allein ist nicht die Schwierigkeit: Die Tippbarkeit einer Folge hängt unter anderem von Layout, Eingabemethode und Spielerfahrung ab. Ein anfängliches QWERTZ-Modell ist eine zu prüfende Hypothese, keine allgemeingültige Bewertung menschlichen Tippens.
+Eine Routenwahl benötigt vorher genügend Information über Verlauf und erste Buchstabenfolgen. Tippbarkeit hängt von Tastaturlayout, Eingabemethode und Spielerfahrung ab; ein anfängliches QWERTZ-Modell ist eine zu prüfende Hypothese, keine universelle Ergonomiebewertung.
 
-Die Eindeutigkeitsprüfung betrachtet immer die ganze erreichbare Nachbarschaft. Bereits **A–B–A** ist bei beidseitigen Verbindungen vom mittleren B aus ungültig. An Gabelungen und Zusammenführungen gilt dieselbe Regel. Sichtbare Anordnung und erlaubte Verbindungen müssen übereinstimmen; keine unsichtbaren Verbote zwischen scheinbar begehbaren Nachbarfeldern.
+Die Eindeutigkeitsprüfung betrachtet die gesamte Nachbarschaft. Bereits **A–B–A** ist bei beidseitigen Verbindungen vom mittleren B aus ungültig. Gabelungen, Rückwege und Zusammenführungen erfüllen dieselbe Regel. Sichtbare Anordnung und erlaubte Verbindungen bleiben konsistent.
 
-Der spätere Generator kombiniert geprüfte Abschnittstypen und variiert Topologie, räumliche Anordnung und Beschriftung kontrolliert. Er prüft Zielerreichbarkeit, eindeutige Nachbarschaften, beabsichtigte Verbindungen und brauchbare Alternativen. Die beste Route darf vom Können des Spielers abhängen; sie muss nicht für jeden Menschen dieselbe sein.
+Der spätere Generator kombiniert geprüfte Abschnitte und variiert Topologie, räumliche Anordnung und Beschriftung kontrolliert. Er prüft Erreichbarkeit, Eindeutigkeit, Anschlüsse und brauchbare Alternativen. Die beste Route darf vom Können abhängen.
 
 ### Streckenidentität
 
-Die räumliche Gestaltung beeinflusst das Lesen und die Routenwahl und ist deshalb nicht pauschal Kosmetik. Bei gleichen Buchstaben und Verbindungen, aber anderen relativen Positionen, Grundflächen, Größen, Ausrichtungen oder Übergängen ist die Streckenidentität entsprechend anzupassen. Reine Materialwechsel, Oberflächendetails und nicht spielrelevante Dekoration verändern sie dagegen nicht. Die Trennung gilt bereits für handgebaute Strecken und wird beim Generator fortgeführt; eine andere Identität ist kein Anlass für eine andere Eingabe- oder Zeitregel.
+Räumliche Gestaltung beeinflusst Lesen und Routenwahl und ist keine pauschale Kosmetik. Bei gleichen Buchstaben/Verbindungen, aber anderen relevanten relativen Positionen, Grundflächen, Größen, Ausrichtungen oder Übergängen ändert sich die Streckenidentität. Reine Materialwechsel, Oberflächendetails und nicht spielrelevante Dekoration ändern sie nicht. Dies gilt bereits für Handstrecken; eine andere Identität ist kein Anlass für eine andere Eingabe- oder Zeitregel.
 
 ## Bewusst später
 
-Eigener Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum vorgeschlagenen ersten PoC.
+Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum ersten PoC. Eine fertige Pausemenü-/Übungsfortsetzungsoberfläche ist kein versteckter Pflichtumfang von P1a.

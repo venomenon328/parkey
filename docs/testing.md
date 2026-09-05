@@ -1,22 +1,21 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. P0 liefert die Suite `smoke`, die beiden Export-Presets und CI; die technische und manuelle P0-Abnahme ist vollständig bestanden. Testfälle zu vorgeschlagenen Regeln werden zusammen mit diesen Regeln freigegeben. Fachliche Grundlage: [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist nun **freigegeben, noch nicht implementiert oder getestet**. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
 ## P0-Teststand
 
-Technischer Nachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.official.ed1daf0bf:
+Dokumentierter Nachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.official.ed1daf0bf:
 
-- Import, `--suite all` mit 31 Smoke-Assertions sowie beide Release-Exporte liefen erfolgreich. Ein Aufruf mit unbekannter Suite endete geprüft mit Exitcode 1.
-- Der Windows-Export wurde außerhalb des Editors gestartet. Die sichtbare Diagnose meldete `Windows / Forward+ | aktiv: forward_plus`; Taste mit Buchstabe, Figur mit Kopf und erhöhte Kamera waren sichtbar.
-- Der Web-Export wurde über `python -m http.server` unter 127.0.0.1:8000 in Chrome 152.0.7977.76 geladen. Chrome lud HTML, JavaScript, WASM und PCK über HTTP; die laufende Szene meldete `Web / Compatibility | aktiv: gl_compatibility`. Canvas und WebGL 2 waren aktiv.
-- Automatisierte Browser-Ereignisse prüften zusätzlich den Diagnosepfad: ein Ereignis mit `code=KeyY` und erzeugtem `z` wurde als Z akzeptiert, Shift blieb normalisiert, ein Wiederholungsereignis wurde als Echo und Key-up als verworfen angezeigt.
-- Die abschließende manuelle Hardwaretastaturabnahme ist ebenfalls bestanden: unter Windows und im interaktiven Chrome-Webexport wurden Y/Z, Shift, echtes Gedrückthalten/Echo und überlappende Tasten erfolgreich geprüft. Modifier erzeugten keine normalen Buchstabeneingaben; Browser-Shortcuts und Fokuswechsel führten nicht zu unerwünschten Spieleingaben.
+- Import, `--suite all` mit 31 Smoke-Assertions und beide Release-Exporte erfolgreich; unbekannte Suite geprüft mit Exitcode 1.
+- Windows außerhalb des Editors gestartet, Diagnose `Windows / Forward+ | aktiv: forward_plus`, Taste/Buchstabe, Figur/Kopf und erhöhte Kamera sichtbar.
+- Web über lokalen HTTP-Server unter 127.0.0.1:8000 in Chrome 152.0.7977.76 geladen. HTML, JavaScript, WASM und PCK über HTTP; `Web / Compatibility | aktiv: gl_compatibility`, Canvas/WebGL 2 aktiv.
+- Automatisierte Browserereignisse prüften zusätzlich Unicode-Z bei `code=KeyY`, Shift, Echo und Key-up. Die abschließende Hardwaretastaturabnahme wurde vom Nutzer als vollständig bestanden bestätigt: Y/Z, Shift, echtes Echo, Überlappung und Modifier unter Windows sowie Browser-Shortcuts/Fokus im interaktiven Webexport.
 
-Damit ist P0 vollständig abgenommen. Diese Abnahme belegt die gemeinsame technische Grundlage und reale Tastaturereignisse, noch keinen Parcours, Renntimer oder spätere Spielregeln.
+P0 belegt technische Grundlage und reale Tastaturereignisse, keinen Parcours, Renntimer oder P1-Regeln. Die Regeldokumentation erweitert diesen Nachweis nicht rückwirkend.
 
-## Verbindlicher Test-/Exportvertrag ab P0
+## Verbindlicher Test-/Exportvertrag
 
-`tests/run_tests.gd`, die beiden Export-Presets und die minimale CI **existieren seit P0 und bilden die abgenommene Test-/Exportgrundlage**. `godot` bezeichnet den exakt gepinnten Standard-Editor mit passenden Export-Templates. Ausgabeordner `build/windows` und `build/web` vor Exporten anlegen; Quellcode und Buildausgaben getrennt halten.
+`tests/run_tests.gd`, `smoke`/`all`, Export-Presets und minimale CI existieren seit P0. `godot` bezeichnet den gepinnten Standardeditor mit passenden Export-Templates. Ausgabeordner `build/windows` und `build/web` anlegen; Buildausgaben nicht mit Quellcode verwechseln.
 
 ```sh
 godot --headless --path . --import
@@ -25,97 +24,97 @@ godot --headless --path . --export-release "Windows Desktop" build/windows/parke
 godot --headless --path . --export-release "Web" build/web/index.html
 ```
 
-Unter Windows einen passenden PATH-Eintrag oder den vollständigen Pfad zum Standard-Editor verwenden; die konkrete lokale Schreibweise in der Entwicklungsanleitung dokumentieren. Import und Export benötigen den Editor, nicht bloß eine Export-Template-Datei.
+Windows: passenden PATH/Alias oder vollständigen Editorpfad aus [development.md](development.md) verwenden. Import/Export brauchen den Editor, nicht allein Templates. `--suite` ist unser Benutzerargument nach `--`, kein eingebauter Godot-Testbefehl. CLI-Quelle: https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html (Prüfung der Grundlage: 2026-09-05).
 
-Die CLI-Basis ist in der offiziellen [Godot-Anleitung](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) dokumentiert, geprüft am 2026-09-05. `--suite` ist dagegen **unser in P0 implementiertes Benutzerargument** nach `--`, kein mitgelieferter Godot-Testbefehl.
-
-| Paket | Neue gezielte Suite | Wesentliche automatische Prüfungen |
+| Paket | Neue Suite | Prüfbereich |
 | --- | --- | --- |
-| P0 / #1 | `smoke` | Imports, Szene, Profil-/Eingabegrundlage, Fehler-Exit des Runners |
-| P1a / #2 | `core` | Validator, Zustände, Zeitgrenzen und geordnete Eingaben |
-| P1b / #3 | `integration` | Instanziierte Spielszene, Input/UI/Kern und Darstellung |
-| P1c / #4 | `storage` | Echte temporäre Dateien, Fehlpfade und Wertungstrennung |
-| P2a / #5 | `routes` | Modulanschlüsse, Referenzstrecken, Abschnittszeitmessung |
-| P2b / #6 | `presentation` | Instanziierte Szenen und Profilreferenzen, keine visuelle Ersatzabnahme |
-| P3a / #7 | `generation` | Mindestens 1.000 Seeds, zehn Golden-Fälle und begrenzte Fehlversuche |
-| P3b / #8 | `seed_flow` | Seed-/Sitzungs-/Speicherintegration und Konformitätsfälle |
-| P4 / #9 | `acceptance` | Vollständige Läufe, Wiederholung und Zustandstrennung |
+| P0 / #1 | `smoke` | Imports, Szene, Profile/Eingaben, Fehler-Exit |
+| P1a / #2 | `core` | Graph/Layout, Start durch Eingabe, Zeit/Sperren, Quick Restart, Menüanforderung, Fokus/Ergebnis |
+| P1b / #3 | `integration` | Spielszene, Input/UI/Kern, Darstellung |
+| P1c / #4 | `storage` | Echte Dateien, Fehlpfade, Wertungstrennung |
+| P2a / #5 | `routes` | Module/Anschlüsse, Referenzstrecken, Abschnittszeiten |
+| P2b / #6 | `presentation` | Szenen, Profile und Referenzen; kein Ersatz für Grafiktest |
+| P3a / #7 | `generation` | Mindestens 1.000 Seeds, zehn Golden-Fälle, begrenzte Fehlversuche |
+| P3b / #8 | `seed_flow` | Seed-/Sitzungs-/Speicherintegration und Exportkonformität |
+| P4 / #9 | `acceptance` | Komplette Läufe, Wiederholungen und Zustandstrennung |
 
-Gezielter Aufruf: `godot --headless --path . --script res://tests/run_tests.gd -- --suite core` (Suite entsprechend ersetzen). **`all` führt alle bis zum jeweiligen Paket eingeführten Suites aus.** Folgepakete dürfen alte Tests nicht aus der Sammlung entfernen, um grün zu werden. Ein unbekannter Suitename, null ausgewählte Tests sowie Lade-/Assertion-/Laufzeitfehler müssen einen fehlgeschlagenen Testlauf ergeben. Testanzahl und Ergebnis ausgeben; ein einmal absichtlich fehlschlagender Test prüft den Runner selbst.
+P1a ergänzt `core`; noch keine vorhandene Suite behaupten. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
 
-Beide Exporte bleiben in jedem Paket Pflicht, bei reinen Kernänderungen auch über die vorhandene CI nachweisbar. Reale Plattformprüfungen bleiben dort Pflicht, wo das Issue sie fordert. Keine zweite in Python/JavaScript nachgebaute Kernimplementierung als Testsubstitut; der verwendete GDScript-Code wird getestet.
+Beide Exporte bleiben in jedem Paket Pflicht, bei Kernänderungen auch über erfolgreiche CI auf aktuellem Head nachweisbar. Tests führen den wirklichen GDScript-Code aus, keine Python-/JavaScript-Ersatzimplementierung. Reale Plattformtests gemäß jeweiligem Issue zusätzlich durchführen.
 
-Für P0/P1 ist Web ohne Threads der Ausgangspunkt. Lokal starten mit:
+Für P0/P1 ist Web ohne Threads vorgesehen:
 
 ```sh
 python -m http.server 8000 --bind 127.0.0.1 --directory build/web
 ```
 
-Dann `http://127.0.0.1:8000/` im Browser öffnen; Server nach dem Test beenden. `python` bezeichnet eine installierte Python-3-Laufzeit. Keine Behauptung, eine doppelt angeklickte lokale HTML-Datei genüge. Bei später aktiviertem Threading muss dieses Serving-Rezept samt nötigen Headern ersetzt und erneut geprüft werden. Siehe [Godot Web-Export](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html), geprüft am 2026-09-05.
+`http://127.0.0.1:8000/` im Browser öffnen, Server danach beenden. Python 3 erforderlich. Doppelklick auf HTML ist kein Webnachweis. Bei späterem Threading Serving-Rezept/Header erneut prüfen; Quelle: https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html (Grundlage geprüft 2026-09-05).
 
-## Automatisierte Kernregeln ab P1
+## Kernregeln ab P1a
 
-| Fall | Erwartung im vorgeschlagenen Modell |
+Die folgenden Fälle sind **verpflichtende neue Tests**, keine bereits bestandenen Prüfungen. Die frühere Countdown-Testanforderung ist ersetzt.
+
+| Fall | Erwartung aus `p1-input-start-v1` |
 | --- | --- |
-| Gültiger Nachbarbuchstabe | Genau ein Schritt zum richtigen Feld; neue Nachbarschaft gilt unmittelbar |
-| Mehrere schnelle gültige Ereignisse vor dem nächsten Renderbild | Alle geordnet ausführen; kein pauschales Ein-Schritt-pro-Frame-Limit |
-| Falscher Bewegungsbuchstabe | Standort unverändert, genau ein Fehler, feste Sperrfrist |
-| Gültige und ungültige Eingaben während der Sperre | Keine Bewegung, kein Puffern, keine Verlängerung, keine weiteren Fehler |
-| Eingabe knapp vor / genau am / nach Sperrende | Vorher gesperrt; ab Fristende normal verarbeiten, unabhängig von Animationsstatus |
+| Beliebig lange Bereitschaft | Startfeld und null Laufzeit; keine Uhr startet allein durch Rendern/Warten |
+| Erster gültiger A–Z-Key-down | Startzeit und erster logischer Schritt im selben Ereignis; kein zusätzlich benötigter Starttastendruck |
+| Erster falscher A–Z-Key-down | Startzeit gesetzt, Position bleibt, ein Fehler und 200-ms-Sperre beginnen gleichzeitig |
+| Echo, Key-up, Modifier, Shortcut, Nicht-A–Z, UI-Eingabe vor Start | Kein Start, Schritt oder Fehler; keine spätere Pufferverarbeitung |
+| Noch nicht validierte Strecke / fehlender Fokus / angenommene Menüunterbrechung | Bewegungsereignisse starten keinen Lauf und werden nicht gepuffert |
+| Ein-Schritt-Strecke im kontrollierten Test | Gültiger erster Schritt ins Ziel kann null Mikrosekunden ergeben; kein künstlicher Mindestwert |
+| Nachfolgender gültiger Nachbarbuchstabe | Genau ein Schritt; neue Nachbarschaft gilt unmittelbar |
+| Mindestens 50 gültige Ereignisse ohne Renderfortschritt | Alle geordnet verarbeitet; kein Schritt-pro-Frame-Limit oder Mindestabstand |
+| Falscher Buchstabe während des Laufs | Ein Fehler, unveränderte Position und feste Sperrfrist |
+| Beliebige Bewegungsversuche während der Sperre | Keine Schritte, Puffer, Verlängerung oder weitere Fehler |
+| Neuer Tastendruck vor / genau am / nach Fristende | Vorher gesperrt; ab Fristende normal unabhängig vom Animationsstatus |
 | Neuer Fehler nach Sperrende | Neue reguläre Sperre möglich |
-| Zeit während der Sperre | Renntimer läuft; keine doppelte zusätzliche Zeitaddition |
-| Gedrückthalten / Echo / Loslassen | Keine zusätzlichen Schritte |
-| Überlappende echte Tasten | Kein künstlicher Zwang, erst alle Tasten loszulassen |
-| Groß-/Kleinschreibung und QWERTZ-Y/Z | Gleicher sichtbarer Buchstabe erzeugt den vorgesehenen Schritt |
-| UI/Modifier und Eingaben außerhalb des Laufs | Keine versehentlichen Spielschritte oder Fehler |
-| Ziel mit noch laufender Bewegungsgrafik | Zeit beim logischen Zieleingang festhalten; nur ein Ergebnis speichern |
-| Neustart | Position, Laufstatus, Sperre und Zeit sauber zurücksetzen |
-| Fokusverlust/Abbruch | Lauf nach freigegebener Regel invalidieren; kein gewerteter Abschluss |
-| Lokale Rangliste | Numerische Sortierung, passende Streckenidentität, Laden nach Neustart |
+| Rennzeit während Fehlerpause | Läuft weiter; keine zweite Zeitaddition |
+| Echo/Key-up, überlappende neue Tasten, Shift/Caps, QWERTZ-Y/Z | Profilkonforme Normalisierung und Empfangsreihenfolge ohne Freigabezwang aller Tasten |
+| Backspace aus Bereitschaft, Lauf, Fehlerpause oder nach Abschluss | Derselbe Parcours bereit auf Start, null Zeit/Fehler, keine Sperre oder alten Ereignisse; nächster Buchstabe startet, keine Enter-/Countdownphase |
+| Wiederholtes gehaltenes Backspace/Escape | Keine durch Echo ausgelösten Restart-/Menükaskaden |
+| Escape-Menüanforderung | Eigener Vorgang statt Reset/Quick Restart; Position und Versuch nicht auf Start überschreiben; kein voller Menübau erforderlich |
+| Menüanforderung vor / nach Laufbeginn | Vorher kein Zeitstart; angenommene Unterbrechung blockiert Bewegungen. Begonnener unterbrochener Lauf wird nicht gewertet, keine implizite gewertete Fortsetzung |
+| Fokusverlust während Lauf/Fehlerpause | Abbruch/Invalidierung, keine automatische Fortsetzung bei Rückkehr; Quick Restart möglich |
+| Fokusverlust vor erstem Buchstaben | Kein laufender Versuch/Fehlstart; bei fehlendem Fokus keine Eingaben, danach Bereitschaft möglich |
+| Logischer Zieleingang bei laufender Grafik | Zeit sofort einfrieren und höchstens ein gültiges Ergebnis erzeugen |
+| Fokusverlust, Menü, Restart oder späte Eingaben nach gültigem Abschluss | Bestehendes Ergebnis weder verändern, entwerten noch duplizieren |
+| Gleiche Zeitwerte mehrerer Ereignisse | Reihenfolge des Empfangs entscheidet deterministisch, ohne künstliche Zeitschritte |
 
-Die Uhr wird für Grenztests kontrolliert injiziert. Bei 200 ms Sperre sind insbesondere 199.999, 200.000 und 200.001 Mikrosekunden nach Fehlerbeginn zu prüfen. Tests warten nicht tatsächlich per Sleep auf jede Fehlerpause. Zusätzlich muss der reale Eingabeadapter getestet werden: Ein perfekter Kern prüft keine im Adapter verlorenen Ereignisse. Unterschiedliche Renderfortschritte dürfen bei denselben normalisierten Eingaben/Zeitwerten keine anderen Kernresultate erzeugen.
+Kontrollierte injizierte Uhr statt Sleep. Bei 200 ms insbesondere **199999, 200000 und 200001 µs nach Fehlerbeginn** prüfen, auch wenn der Fehler das erste Laufereignis war. Quick Restart entfernt alte Session-Ereignisse; Tests dürfen nicht nur Kernmethoden korrekt prüfen und den realen Eingabeadapter vergessen.
+
+P1b ergänzt die tatsächliche Start-/Quick-Restart-Verdrahtung, den Timer und UI-Kontext. Ein Backspace im späteren Seed-Textfeld löscht Text und startet keinen Lauf neu. Escape darf dort nicht versehentlich den Quick-Restart-Pfad verwenden. Menüoberfläche/Übungsfortsetzung werden durch diese Testanforderungen nicht vorgezogen.
 
 ## Datenvalidator und Generator
 
-Die folgenden Ergänzungen zu D-010 bis D-013 sind Testaufträge für P1 bis P4, noch keine ausgeführten Nachweise. Schon Handstrecken trennen Graph- und Layoutprüfung: eindeutige IDs, verschiedener vorhandener Start/Zielknoten, gültige Kantenreferenzen, keine Selbst-/Doppelkanten, vereinbarte Symmetrie, Erreichbarkeit und verschiedene Buchstaben in jeder Nachbarschaft. Der allgemeine Validator erzwingt weder ein regelmäßiges Raster noch orthogonale Richtungen oder eine feste Nachbarzahl. A–B–A wird bei beidseitigen Kanten weiterhin abgewiesen.
+Handstrecken trennen Graph- und Layoutprüfung: eindeutige IDs, verschiedener vorhandener Start/Ziel, gültige Kantenreferenzen, keine Selbst-/Doppelkanten, symmetrische P1-Verbindungen, Erreichbarkeit und unterschiedliche Nachbarbuchstaben. Kein allgemeines Raster, Orthogonalitätsgebot oder feste Nachbarzahl. **A–B–A** wird weiterhin zurückgewiesen.
 
-P1a ergänzt einen gültigen Graphfall mit fünf eindeutig beschrifteten Nachbarn und einen Fall mit variabler Nachbarzahl. Unterschiedliche gültige Layouts derselben Topologie werden mit identischen Eingabe-/Zeitprotokollen geprüft: gleiche logische Zustandsfolge, Fehler-/Sperrgrenzen und Zielzeit; keine Abstands-/Größenwartezeit. Geänderte relative Positionen, Grundflächen, Größen, Ausrichtungen oder Übergänge ändern dagegen die räumlich gebundene Streckenidentität. Ein rein kosmetischer Materialwechsel darf sie nicht ändern. P1c prüft die daraus folgende Ranglistentrennung auch mit echten gespeicherten Ergebnissen.
+P1a prüft einen gültigen Graphen mit fünf eindeutigen Nachbarn und variable Nachbarzahlen. Unterschiedliche gültige Layouts derselben Topologie erhalten identische Eingabe-/Zeitprotokolle: gleiche Schritte, Fehler-/Sperrgrenzen und Zielzeit; keine Abstand-/Größenwartezeit. Andere relevante relative Positionen, Grundflächen, Größen, Ausrichtungen oder Übergänge ändern dagegen die Identität. Materialwechsel nicht. Profil-/Start-/Fehlerparameter sind ebenfalls wertungsrelevant; keine Zusammenwertung mit dem alten Countdown-Vorschlag.
 
-Layoutprüfungen für die unterstützten einfachen Formen decken unzulässige Überlappungen, ungültige Formparameter/Anker, klare gemeinsame Randabschnitte, ein größeres Feld neben mehreren kleineren, Eckberührung ohne automatische Verbindung und kleine erlaubte gegenüber unverständlich großen Fugen ab. Sichtbar begehbare Querverbindungen ohne Datenkante und Datenkanten ohne erkennbaren Übergang sind Fehlerfälle. Konkrete Toleranzen gehören zum dokumentierten Layoutprofil, nicht als universelle Geometrieannahme in die RunSession. P1b testet zusätzlich die echte Darstellung an mindestens einer unregelmäßigen Stelle; P2a prüft Modulanschlüsse und menschliche Lesbarkeit.
+Layoutfälle: unzulässige Überlappungen, ungültige Formparameter/Anker, lesbare Randabschnitte, größeres Feld neben mehreren kleineren, Eckkontakt ohne automatische Kante, erlaubte/unerlaubte Fugen, sichtbare Anschlüsse ohne Datenkante und Datenkanten ohne erkennbaren Übergang. Toleranzen werden im kleinen Layoutprofil dokumentiert, nicht als universelle Annahme in RunSession. P1b prüft die Darstellung einer unregelmäßigen Stelle, P2a die menschliche Anschlusslesbarkeit.
 
-Ab P3: viele Seeds automatisch generieren/validieren; feste Referenz-Seeds gegen erwartete kanonische Daten/Hashes prüfen; dieselben Fälle in Windows- und Web-Builds ausführen. Kanonische Graph- und räumliche Layoutdaten müssen in den Referenzen enthalten sein und dürfen sich durch zusätzliche Dekoration, Renderereinstellung oder laufende Kamerabewegung nicht verändern. Kontrollierte Änderungen des Layouts müssen dagegen den Layout-/Streckenhash ändern; beide Fälle explizit testen. Bei Regel-/Generatoränderungen Versions- und Ranglistentrennung prüfen. Ungültige Konfigurationen scheitern mit begrenztem Aufwand und deterministischen Fehlern, nicht mit verdecktem Ersatzseed.
+P1c prüft Ranglistentrennung mit echten gespeicherten Ergebnissen, numerische Sortierung, lokale Gleichstände, Aufbewahrung, Restart/Reload, beschädigte/unbekannte Formate und I/O-Fehler. Abgebrochene oder menüunterbrochene Versuche gelangen nicht in die Wertung. Bereits gültige Ergebnisse bleiben erhalten.
 
-Die Referenzerwartungen nicht zur Testlaufzeit durch denselben ungeprüften Generator neu berechnen. P3a liefert Kernreferenzen; P3b beweist die Ausführung in tatsächlichen Exporten. Erst P3b darf den entsprechenden plattformübergreifenden Nachweis beanspruchen. Kontrollierte Eingaben mit gleicher Zeitbasis prüfen Regelparität, nicht identische reale OS-/Browser-/Hardwarelatenzen.
+Ab P3 viele Seeds erzeugen/validieren und feste erwartete kanonische Graph-/Layoutdaten/Hashes vergleichen. Dekoration, Renderer und laufende Kamerabewegung dürfen sie nicht verändern; relevante Layoutänderung muss die Identität ändern. Regel-/Generatorversionen trennen Wertungen. Ungültige Konfigurationen scheitern begrenzt und deterministisch, nicht durch stillen Ersatzseed.
 
-Strukturelle Gültigkeit ist kein Spielspaßtest. Ob Wege interessant und Buchstabenfolgen unterschiedlich tippbar sind, wird zusätzlich praktisch untersucht.
+Golden-Erwartungen nicht zur Testlaufzeit durch denselben ungeprüften Generator neu erzeugen. P3a liefert Kernreferenzen; erst P3b belegt echte Windows-/Web-Ausführung. Kontrollierte Protokolle prüfen Regelparität, nicht identische menschliche Hardware-/Browserlatenz. Strukturgültigkeit ersetzt keine Spielspaßprüfung.
 
 ## Plattformmatrix
 
 | Prüfung | Windows | Browser |
 | --- | --- | --- |
-| P0-Build | Native Anwendung startet außerhalb des Editors | Export startet über HTTP(S) |
-| Darstellung | Gewähltes Forward+-Profil sichtbar und fehlerfrei | Compatibility ohne fehlende Zeichen, Materialien oder Pflichtsignale |
-| Eingabe | Echte schnelle Eingaben, Layout, Tastenüberlappung | Dieselben Fälle; Fokus und Browser-Shortcuts zusätzlich |
-| Speichern | Ergebnis nach Schließen/Neustart vorhanden | Ergebnis nach Reload/Neustart unter gleicher Origin; eingeschränkten Speicher prüfen |
-| Kernregeln/Konformität | Geordnete Ereignisse und kontrollierte Zeitfälle | Gleiche Protokolle und Seeds ergeben gleiche Kernresultate |
-| Leistung | Auflösung, Hardware, Framezeiten und Eingabegefühl protokolliert | Browser, Hardware und entsprechende Messbedingungen protokolliert |
+| Build | Export außerhalb des Editors startet | Export über HTTP(S) startet |
+| Darstellung | Gewähltes Forward+-Profil sichtbar/fehlerfrei | Compatibility ohne fehlende Pflichtsignale |
+| Eingabe | Reale schnelle Eingaben, Layout, Überlappung | Dieselben Fälle, zusätzlich Fokus/Shortcuts |
+| Speicherung ab P1c | Nach Schließen/Neustart korrekt | Nach Reload/Neustart derselben Origin; eingeschränkten Speicher prüfen |
+| Kernkonformität | Kontrollierte Protokolle/Seeds | Gleiche Protokolle/Seeds, gleiche Kernresultate |
+| Leistung | Hardware, Auflösung, Framezeiten und Eingabegefühl dokumentiert | Browser/Hardware und Messbedingungen dokumentiert |
 
-P0 ist auf einem tatsächlichen Windows-System und in einem Desktop-Chrome-Browser einschließlich Hardwaretastatur abgenommen. Die abschließende P4-Matrix umfasst Windows sowie Chromium und Firefox mit dokumentierten Versionen. Keine Unterstützung weiterer Browser aus einem einzelnen Export ableiten. Ein headless gestarteter Windows-Build allein ist kein Nachweis der Forward+-Darstellung.
+P0 ist auf Windows und Desktop-Chrome einschließlich Hardwaretastatur abgenommen. P4 umfasst Windows, Chromium und Firefox mit dokumentierten Versionen. Keine weitere Plattformunterstützung aus einem Export ableiten; Headless-Windows ist kein Forward+-Grafiknachweis. P3b dokumentiert seinen echten Export-Konformitätslauf hier, sobald implementiert.
 
-P3b ergänzt die genaue Bedienung seines Export-Konformitätslaufs hier, sobald implementiert. Er soll denselben GDScript-Kern/Generator ausführen und konkrete Hash-/Zustandsberichte liefern. Eine frühere native Headless-Ausführung ist kein Browserlauf.
+## Spieltests und Nachweisformat
 
-## Spieltests
+Moderate Größen, variable Nachbarn und schräge Anschlüsse prüfen: Anker auf Feldern, keine Lücken durchschneiden, keine Distanzpausen/falschen Nachbarschaften. Fünf Nachbarn im Kern sind ein Flexibilitätstest, keine Pflicht jeder sichtbaren Kreuzung. Kamera, rückwärtige Nachbarn, Buchstabenverdeckung und Aufholbewegung bei schnellem Tippen beobachten.
 
-Zusätzlich zu D-010 bis D-012 moderate Größenvariation, variable Nachbarzahlen und nicht rechtwinklige Übergänge prüfen: Die Standpunkte liegen auf den Feldern, Animationen schneiden keine Lücken und erzeugen weder distanzabhängige Pausen noch falsche aktive Nachbarschaften. Die Unterteilung größerer/kleinerer Felder bleibt erkennbar; fünf Nachbarn im Kern sind ein Flexibilitätstest, keine Pflicht für jede sichtbare Kreuzung.
+Fehlerfeedback und Fristende müssen verständlich sein. Eingaben nahe Sperrende und wahlloses Tastendrücken praktisch prüfen; Änderungen an Dauer/Puffer explizit versionieren. Routen mit verschiedenen Tippmethoden testen, Zeiten/Fehler/Entscheidungs-/Sichtprobleme getrennt betrachten. Keine unnötigen personenbezogenen Daten; P2a braucht reale Versuche, P2b visuelle Nutzerabnahme und Leistungsbudget.
 
-Besonders beobachten: verdeckte Buchstaben, schwer erkennbare rückwärtige Nachbarn, Kameraschwenks an Gabelungen, sichtbarer Rückstand der Figur bei schnellen Folgen und Übergang in die Fehlerpause. Zeigt die Figur während der Sperre einen anderen Standort als die logisch gültige Nachbarschaft, ist das ein Problem und nicht bloß kosmetisch.
-
-Fehlerpause zunächst mit T-001 prüfen. Ist die Sperre verständlich? Endet das Feedback rechtzeitig? Fühlen sich Eingaben nahe am Sperrende defekt an? Kann wahlloses Tastendrücken konkurrenzfähige Zeiten erzeugen? Änderungen an Dauer/Puffern explizit dokumentieren.
-
-Routen mit unterschiedlichen Tippmethoden testen. Neben Gesamtzeit auch Fehler, gewählte Route und Entscheidungsstellen betrachten. Langsames Lesen, falsche Routenannahmen und eigentliche Tippfehler nicht in einer einzigen Kennzahl verstecken. Aufzeichnungen zunächst lokal und ohne unnötige personenbezogene Daten. P2a benötigt reale Daten und eine ehrliche Stichprobenbeschreibung, P2b eine visuelle Nutzerabnahme und ein festgelegtes Messbudget.
-
-## Nachweisformat und Status
-
-Eine Abnahme nennt Commit, genaue Godot-Version, Exportprofil, Betriebssystem/Browser, ausgeführte Befehle oder manuelle Schritte und Ergebnis. Nicht ausgeführte Prüfungen bleiben offen. Build-Erfolg, Regeltest, visueller Test und subjektiver Spieltest sind getrennte Nachweise. Bericht/Screenshots nur tatsächlich durchgeführter Tests eintragen.
-
-Fehlt ein verpflichtender Nachweis, bleibt der jeweilige Implementierungs-PR Draft und die Abnahme offen; der Nutzer kann reale Tests ergänzen. Eine README-Änderung oder ein gebautes ZIP ersetzt keine Freigabe. P4 prüft die tatsächlich verpackten Artefakte, nicht nur den Editorzustand.
+Jeder Nachweis nennt Commit, Engine, Plattform/Browser, Befehle bzw. manuelle Schritte und Ergebnis. Build-, Regel-, Grafik- und Spieltests getrennt berichten. Neue P1-Freigaben sind kein Testnachweis. Fehlende verpflichtende Tests lassen den PR Draft und Abnahme offen. P4 prüft verpackte Artefakte, nicht nur den Editorstand.

@@ -1,13 +1,13 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-05. Auf Auftrag wurden Issue #1 präzisiert und #2–#9 angelegt. **P0 ist implementiert und vollständig abgenommen; alle späteren Pakete sind Planungsstand.** Die Issues sind ausführbare Arbeitspakete, keine Freigabe aller bisherigen Produktvorschläge. Maßgeblich bleiben [Entscheidungsregister](decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md) und `AGENTS.md`.
+Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 ist abgenommen; P1a ist vorbereitet und das P1-Regelprofil freigegeben, aber noch nicht implementiert.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
 | Paket / Issue | Ergebnis | Start erst nach | Arbeitsbranch | Codex-Empfehlung |
 | --- | --- | --- | --- | --- |
-| P0 / [#1](https://github.com/venomenon328/parkey/issues/1) | Ein Projekt, zwei Exporte, minimale Test-/CI-Grundlage | Beauftragung | `codex/p0-godot-foundation` | GPT-5.6 Terra · High |
-| P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | #1; experimentelles Regelprofil beauftragt | `codex/p1a-run-core` | GPT-5.6 Terra · High |
+| P0 / [#1](https://github.com/venomenon328/parkey/issues/1) | Ein Projekt, zwei Exporte, Test-/CI-Grundlage | Bereits abgenommen | `codex/p0-godot-foundation` | GPT-5.6 Terra · High |
+| P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Voraussetzungen erfüllt; Profil freigegeben | `codex/p1a-run-core` | GPT-5.6 Terra · High |
 | P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | #2 | `codex/p1b-playable-course` | GPT-5.6 Terra · High |
 | P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | #3 | `codex/p1c-local-leaderboards` | GPT-5.6 Terra · Medium |
 | P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | #4; echter P1-Spieltest | `codex/p2a-route-decisions` | GPT-5.6 Terra · High |
@@ -16,73 +16,64 @@ Stand: 2026-09-05. Auf Auftrag wurden Issue #1 präzisiert und #2–#9 angelegt.
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` | GPT-5.6 Terra · High |
 | P4 / [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | #8 | `codex/p4-poc-acceptance` | GPT-5.6 Terra · High |
 
-Abhängigkeiten bedeuten **abgenommen und nach main gemergt**, nicht nur „ein PR wurde eröffnet“. Sie sind in Issues und dieser Tabelle dokumentiert. Ein offenes Issue kann weiterhin durch diese Bedingungen blockiert sein. Die Branchliste legt Namen fest, behauptet aber nicht, dass alle Branches schon existieren. P0 ist abgeschlossen; spätere Branches werden beim jeweiligen Start vom dann aktuellen `main` erstellt.
+Abhängigkeiten bedeuten **abgenommen und nach main gemergt**, nicht nur „ein PR wurde eröffnet“. P0 ist abgeschlossen. Der P1a-Branch enthält die neue Regelfreigabe als Dokumentationsvorbereitung auf Basis von `main` nach PR #11; die Implementierung setzt auf diesem Branch im selben Draft-PR fort. Die Dokumentationsvorbereitung ist kein separates Implementierungspaket und braucht keinen vorgeschalteten Merge. Spätere Branches werden erst beim jeweiligen Start vom dann aktuellen `main` erstellt.
 
-Die einzige vorgesehene Parallelität ist #6/#7 nach #5. Darstellung versus Generator sind getrennte Zuständigkeiten; gemeinsame Verträge nicht unabhängig ändern. Standard bleibt ein Paket pro PR. #8 wartet auf beide Ergebnisse, damit die Integration nicht auf zwei beweglichen Grundlagen erfolgt.
+Nur #6/#7 sind nach #5 für Parallelität vorgesehen. Gemeinsame Datenverträge dürfen dabei nicht unabhängig geändert werden; #8 wartet auf beide Abnahmen. Standard bleibt ein Paket pro PR.
 
 ## Warum dieser Zuschnitt?
 
-P1 wird nicht als Großauftrag aus Eingabelogik, Animation, Kamera und Dateisystem vergeben. Zunächst werden die Regeln ohne Grafik getestet, dann tatsächlich gespielt, anschließend Resultate zuverlässig gespeichert. Der erste praktische Lauf ist damit bereits nach #3 möglich.
+P1 trennt Regeln, Darstellung und Dateisystem: erst testbarer Kern, dann spielbarer Lauf, dann dauerhafte Resultate. Der erste praktische Lauf ist nach #3 möglich. P2 trennt erprobte Entscheidungen von Grafikgestaltung. Der Generator vervielfältigt nur geeignete Abschnitte; P3 trennt Algorithmus von UI-/Speicher-/Plattformintegration. P4 prüft die zusammengesetzte Anwendung und ist keine unbegrenzte Restefeatureliste.
 
-P2 trennt die Spielentscheidung von der Ausarbeitung des Looks. Ein Generator soll nur Abschnitte vervielfältigen, deren Eignung zuvor tatsächlich geprüft wurde. P3 trennt den schwierigen deterministischen Algorithmus von seiner UI-/Speicher-/Plattformintegration. P4 prüft die zusammengesetzte Anwendung und liefert Testpakete, statt eine unbegrenzte Restefeatureliste zu eröffnen.
+## Freigegebenes Regelprofil für P1
 
-## Vorgeschlagenes experimentelles Regelprofil für P1
+**Die Startfreigabe ist erfolgt.** Maßgeblich ist [p1-rule-profile.md](p1-rule-profile.md), Kennung `p1-input-start-v1`, auf Basis von D-014 bis D-018. Kein Countdown und kein Enter-Start. Der erste Bewegungsbuchstabe startet und wirkt im selben Ereignis; Backspace bereitet denselben Parcours neu vor, Escape ist eine andere Menü-/Pause-Anforderung. Fehler-, Rückweg-, Eingabe- und Fokusregeln sind für P1 freigegeben. Der frühere Vorschlag eines Countdowns und einer Escape-Rücksetzung ist abgelöst.
 
-**Noch nicht als endgültige Produktentscheidung bestätigt.** Vor Beginn von #2 dieses Profil ausdrücklich als PoC-Experiment mitbeauftragen oder die Abweichungen dokumentieren. Eine reine Bitte um Issues ersetzt diese Freigabe nicht. Das Profil konkretisiert die vorhandenen Vorschläge P-003 bis P-006, ohne D-001 bis D-013 zu ersetzen. D-010 bis D-013 sind inzwischen bestätigt; die übrigen noch offenen Start-/Fehler-/Fokusdetails bleiben davon getrennt.
+Die Menüoberfläche und spätere Übungsfortsetzung sind nicht Teil von P1a. P1a liefert nur den getrennten Menüanforderungsvertrag; keine zusätzliche Featurephase. Die vollständigen Randfälle stehen absichtlich nur im Profil statt in mehreren konkurrierenden Tabellen.
 
-| Bereich | Konkreter Vorschlag für den Test |
-| --- | --- |
-| Bewegung | A–Z, Groß-/Kleinschreibung gleich; explizite beidseitige Verbindungen und Rückwege. Kein allgemeiner Raster-/Richtungs- oder fester Nachbarzahlzwang; ein gültiger Übergang bleibt ein Eingabeschritt. |
-| Tastatur | Angezeigter Buchstabe zählt. Nur neue Key-down-Ereignisse; Echo/Key-up ignorieren. Shift/Caps dürfen die Großschreibung ändern; Ctrl/Alt/Meta-Kombinationen und Nicht-A–Z-Zeichen sind keine Bewegungsversuche. UI-Texteingaben nicht ans Spiel durchreichen. |
-| Ereignisreihenfolge | Empfangsreihenfolge, auch bei gleichen Zeitwerten; kein künstliches Warten auf alle losgelassenen Tasten. Mehrere gültige Ereignisse ohne Renderfortschritt möglich. |
-| Start | Enter aus Bereit startet einen 3-Sekunden-Countdown. Erst ab festem Startzeitpunkt werden neue Bewegungsereignisse gewertet; keine Countdown-Eingaben puffern. |
-| Restart/Abbruch | Backspace startet denselben Parcours als neuen Versuch über denselben Countdown; Escape bricht ab. Menü-/Steuertasten sind keine falschen Buchstaben. Fokusverlust invalidiert den aktuellen Versuch, keine kostenlos pausierte Wertung. |
-| Fehler | Vorläufig 200 ms Sperre; Timer läuft; währenddessen Bewegungsversuche verwerfen, nicht puffern, nicht nachzählen und Frist nicht verlängern. Ab exakt Fristende neue Eingaben normal prüfen. Keine zusätzliche Zeitaddition. |
-| Ziel | Zeit beim gültigen logischen Zieleingang, genau ein gewertetes Ergebnis. Animationen und Speicherantworten verändern die Zeit nicht. |
-| Zeit/Identität | Monotone Integer-Mikrosekunden, Anzeige mit drei Millisekundennachkommastellen. Wertungsrelevante Einstellungen einschließlich Sperrdauer gehören zur Regelidentität; relevante räumliche Layoutdaten gemäß D-013 zur Streckenidentität. |
+Technische Entscheidungen wie Klassen, internes Zustandsmodell, kanonische Zahlenrepräsentation und Toleranzen des kleinen ebenen Layoutprofils werden im Paket dokumentiert und getestet. Dafür ist keine neue pauschale Nutzerfreigabe nötig. Verhaltensänderungen am freigegebenen Profil werden dagegen nicht eigenmächtig vorgenommen. Profil-/Balancingänderungen berücksichtigen die Wertungsidentität. Weitere Grafik-, Online- und Generatorfragen blockieren P1a nicht.
 
-Countdownlänge und Steuertasten sind hier neue **konkrete Vorschläge**, keine rückwirkend behaupteten Nutzerwünsche. Technische Details wie konkrete Klassennamen dürfen im zuständigen Paket begründet angepasst werden. Ein endgültig anderes Spielverhalten benötigt dagegen eine dokumentierte Entscheidung und passende Tests. Spätere Balancingänderungen verändern die betroffenen Regel-/Wertungsprofile.
+## Nicht rastergebundene Strecken
 
-## Konkretisierung der Pakete: nicht rastergebundene Strecken
-
-D-010 bis D-013 sind auf Nutzerauftrag in die bestehenden Pakete eingearbeitet. P0 bleibt abgeschlossen; diese Dokumentationsänderung implementiert noch keine Geometrie oder neue Tests. Paketgrenzen, Branches und Abhängigkeiten bleiben bestehen.
+D-010 bis D-013 bleiben verbindlich. Die neue Regelfreigabe ändert keine Geometrie- oder Geschwindigkeitsgrundsätze und öffnet P0 nicht erneut.
 
 | Paket | Verbindliche Abgrenzung |
 | --- | --- |
-| P1a / #2 | Explizite Nachbarlisten und getrennte Graph-/Layoutvalidierung. Kein allgemeines Orthogonalitäts- oder Vier-Nachbarn-Limit. Test mit fünf eindeutigen Nachbarn sowie Layoutvariation bei unveränderten logischen Eingabe-/Zeitresultaten. Kleiner Layout-/Identitätsvertrag, kein universelles Geometriesystem. |
-| P1b / #3 | Einfacher Handparcours mit mindestens einer unregelmäßigen Stelle: moderate Größenvariation und klar lesbarer schräger Übergang. Anker/Bewegung sinnvoll anpassen, kein größen-/entfernungsabhängiges Warten. |
-| P1c / #4 | Ranglisten auch bei gleichem Graphen mit unterschiedlichen spielrelevanten Layoutdaten trennen. Reine Kosmetik verändert die Identität nicht. |
-| P2a / #5 | Asymmetrische Routen, variable Anschlüsse und Geometrie praktisch erproben; Größenbereiche und Fugentoleranzen dokumentieren. Keine feste Nachbarzahl als Produktregel. |
-| P2b / #6 | Moderate variable Feldformen/-größen und lesbare Übergänge in beiden Grafikprofilen erhalten. Kein grafisch erzwungenes Bewegungslimit; die Gestaltung darf das gespeicherte Layout nicht heimlich verändern. |
-| P3a / #7 | Generator liefert Graph und validiertes räumliches Layout mit eigener kontrollierter Zufallsableitung. Golden-Fälle und Identität binden Layoutdaten; kein willkürlicher vollständiger Polygon-Generator erforderlich. |
-| P3b / #8 | Exportvergleich umfasst räumliche Daten/Hashes und deren Ranglistentrennung. Gleiche Ereignisprotokolle bleiben unabhängig von Darstellungsabständen im Kern gleich schnell. |
-| P4 / #9 | Gesamtabnahme schließt D-010 bis D-013 ein, ohne P0 erneut zu öffnen oder weitere Spielmechaniken vorwegzunehmen. |
+| P1a / #2 | Explizite Nachbarlisten, getrennte Graph-/Layoutprüfung; kein Orthogonalitäts- oder Vier-Nachbarn-Limit. Fünf-Nachbarn-Test und Layoutvariation bei gleichen logischen Zeiten. Kleiner Layout-/Identitätsvertrag, kein universelles Geometriesystem. |
+| P1b / #3 | Einfacher Handparcours mit unregelmäßiger Stelle, moderaten Größenunterschieden und lesbarem schrägem Übergang. Plausible Anker/Bewegung, kein distanzabhängiges Warten. |
+| P1c / #4 | Relevante Layoutunterschiede trennen Ranglisten auch bei gleichem Graphen; reine Kosmetik nicht. |
+| P2a / #5 | Asymmetrische Routen, variable Anschlüsse und Geometrie erproben; Größenbereiche/Fugen dokumentieren. Keine feste Nachbarzahl als Produktregel. |
+| P2b / #6 | Variable moderate Feldformen/-größen und Übergänge in beiden Profilen erhalten. Kein grafischer Tempodeckel oder heimlich geändertes Layout. |
+| P3a / #7 | Generator liefert Graph und räumliches Layout mit kontrollierten Zufallsableitungen. Identität/Golden-Fälle binden beides; kein beliebiger Polygon-Generator. |
+| P3b / #8 | Exportvergleich umfasst räumliche Daten/Hashes und Ranglistentrennung. Gleiche Eingabeprotokolle ergeben unabhängig von Darstellungsabständen dieselben Kernzeiten. |
+| P4 / #9 | Gesamtabnahme umfasst alle bestätigten und PoC-freigegebenen Entscheidungen, ohne spätere Mechaniken vorwegzunehmen. |
 
 ## Gemeinsamer Liefer- und Testvertrag
 
-Ein Paket liefert Implementierung, passende Tests, gepflegte Dokumentation und konkrete Nachweise. In jedem Issue stehen messbare Abnahmekriterien, Nicht-Ziele und ein kompakter Codex-Prompt. Vollständige Issue-Inhalte werden nicht noch einmal in den Prompt kopiert.
+Jedes Paket liefert Implementierung, passende Tests, gepflegte Dokumentation und konkrete Nachweise. Issues enthalten Abnahme, Nicht-Ziele und kompakte Prompts; der Lieferumfang wird nicht nochmals in Prompts kopiert.
 
-[docs/testing.md](testing.md) definiert die verpflichtenden CLI-Einstiege. **P0 hat den Runner, die Export-Presets und die minimale CI angelegt; diese Grundlage ist abgenommen.** Jedes Folgepaket ergänzt seine Testsuite und hält alle bisherigen Tests sowie beide Exportjobs grün. Unbekannte/leere Testsuiten dürfen nicht erfolgreich durchlaufen.
+[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert. P1a ergänzt `core`; weitere Suites sind noch nicht vorhanden. `all` hält alle bisherigen Tests und beide Exportjobs grün. Unbekannte/leere Suites müssen scheitern.
 
-Reale Grafik, Hardwaretastatur, Browserpersistenz und subjektives Spielgefühl sind separate Nachweise. Eine nicht vorhandene Testumgebung rechtfertigt keine erfundene Abnahme. Für P0 wurden native Windows-/Web-Starts sowie die manuelle Hardwaretastaturprüfung vollständig bestanden. In Folgepaketen kann CI die automatisierbaren Teile übernehmen; fehlende echte Windows-/Spieltests ergänzt der Nutzer. Solange ein verpflichtender Nachweis fehlt, bleibt die jeweilige Abnahme offen und der PR Draft.
+Reale Grafik, Hardwaretastatur, Browserpersistenz und Spielgefühl bleiben gesonderte Nachweise. Keine erfundene Abnahme bei fehlender Umgebung. P0-Starts und Hardwaretests sind bestanden; die neuen P1-Verhaltenstests sind dadurch nicht bereits nachgewiesen. Fehlende verpflichtende Nachweise halten den jeweiligen PR im Draft.
 
 ## Branch, PR und Dokumentationspflege
 
-Vom aktuellen `main` starten, nicht vom alten Planungscommit. Vor Änderungen Issue, Dokumente und tatsächlichen Code lesen. Nach Umsetzung Tests ausführen, Code und zugehörige Dokumentation gemeinsam committen/pushen und einen **Draft-PR gegen main** mit Issue-Verknüpfung erstellen. Nicht automatisch mergen. Erst nach vollständiger technischer und erforderlicher manueller Abnahme in den Review-/Mergeprozess übergehen.
+Vor Änderungen aktuelle Quellen und tatsächlichen Code lesen. Neue Paketbranches von aktuellem `main` erstellen; bei vorbereitetem P1a-Branch dessen Dokumentationscommit erhalten und dort fortfahren. Code und betroffene Dokumentation gemeinsam committen/pushen, Draft-PR gegen `main` mit Issue-Verknüpfung pflegen. Nicht automatisch mergen. Technische und erforderliche manuelle Abnahme müssen dem Review-/Mergeprozess vorausgehen.
 
-README/Roadmap zeigen die Wahrheit: „implementiert, Test X offen“ ist nicht „abgenommen“. Bei neuen Entscheidungen zuerst Register/Spezifikation, dann betroffene noch offene Issues aktualisieren. Umfangreiche neue Erkenntnisse als eigenes enges Folgepaket, nicht in P4 verstecken. Keine öffentliche Release-Veröffentlichung, Hostingkosten oder endgültige Projektlizenz ohne Auftrag.
+Statusangaben trennen freigegeben, implementiert und abgenommen. Bei Entscheidungen Register/Spezifikation und betroffene offene Issues gemeinsam pflegen. Umfangreiche neue Erkenntnisse als enges Folgepaket, nicht in P4 verstecken. Keine öffentliche Veröffentlichung, Hostingkosten oder endgültige Lizenz ohne Auftrag.
 
 ## Codex-Auswahl und Eigenumsetzung
 
-Die Auswahl in der Tabelle ist eine projektspezifische Empfehlung, keine Garantie eines bestimmten Tokenverbrauchs. Begründungen stehen zusätzlich in jedem Issue: Terra High für zusammenhängende Mehrdateienpakete; Terra Medium für den nach stabilen Verträgen isolierten lokalen Speicher; Terra Very High nur für die anspruchsvolle Generator-/Retry-/Determinismussemantik. Astra Medium ist gezielt für den visuellen Ausschnitt vorgesehen, nicht pauschal für jede Aufgabe. Wenn im verwendeten Codex noch nicht verfügbar, ist für #6 **GPT-5.6 Terra · High** die Ausweichwahl.
+Die Auswahl ist eine projektspezifische Empfehlung, keine Garantie für Kosten oder kontospezifische Verfügbarkeit. Terra High für zusammenhängende Mehrdateienpakete; Medium für den isolierten Speicherausbau; Very High gezielt für Generator-/Retry-/Determinismussemantik. Astra Medium für den visuellen Ausschnitt; bei fehlender Verfügbarkeit für #6 Terra High als Ausweichwahl.
 
-**Selbst umsetzbar: Teilweise** für die vollständigen neun Implementierungspakete mit ihren jeweiligen Abnahmen. GitHub-Änderungen, Codebearbeitung, Reviews und Commit/Push sind mit den verfügbaren Werkzeugen möglich. Für P0 standen Godot 4.7.2, Export-Templates sowie Windows- und Chrome-Laufzeit zur Verfügung; Import, Exporte, technische Render-/Eingabediagnosen und die manuelle Hardwaretastaturabnahme wurden erfolgreich durchgeführt. Größere zusammenhängende Implementierungen gehen bevorzugt an Codex mit geeigneter Laufzeit. Kleine isolierte Fehlerbehebungen, Reviews und Dokumentationsänderungen werden bevorzugt direkt übernommen; deren konkrete Testbarkeit wird unmittelbar vor der Aufgabe erneut geprüft.
+**P1a: GPT-5.6 Terra · High.** Zustands-/Zeitgrenzen, Graphinvarianten, Layoutprüfung und Identität rechtfertigen High. Keine vorsorgliche höchste Stufe, solange das Layoutprofil klein bleibt.
 
-Bei späteren Nacharbeiten enthält der Prompt nur Repository/Branch, aktuellen PR-Review, Pflichtbefehle und Übergaberegeln; die Reviewpunkte werden nicht vollständig wiederholt. Modell, Reasoning und Eigenumsetzbarkeit werden unmittelbar vor dem neuen Auftrag erneut beurteilt, nicht nur rückblickend genannt.
+**Selbst umsetzbar: Teilweise** für das vollständige P1a-Paket. Code, Tests, Review, Commit und Push sind mit den verfügbaren Werkzeugen bearbeitbar; die aktuelle tatsächliche Godot-Testlaufzeit ist vor Eigenimplementierung zu prüfen. Der Windows-/Chrome-Erfolg der P0-Umsetzung belegt nicht automatisch eine passende Laufzeit jeder Chat-Umgebung. Erstimplementierung bevorzugt in der bereits funktionierenden Codex-/Godot-Umgebung; kleine isolierte Korrekturen bevorzugt direkt. Die Dokumentationsvorbereitung selbst ist direkt umsetzbar.
+
+Bei Nacharbeiten nur Repository/Branch, aktueller PR-Review, Pflichtbefehle und Übergabevorgaben in den Prompt aufnehmen. Modell, Reasoning und Eigenumsetzbarkeit unmittelbar vor dem neuen Auftrag erneut beurteilen.
 
 ## Quellen zur Werkzeugwahl
 
-Primärquellen geprüft am 2026-09-05; kontospezifische Codex-Verfügbarkeit ist damit nicht nachgewiesen. Die Paket-/Reasoningauswahl bleibt unsere Einschätzung.
+Die bisherigen Primärquellen wurden bei der Planung am 2026-09-05 geprüft; die Paketwahl bleibt eine Einschätzung und beweist keine kontospezifische Verfügbarkeit.
 
 - GPT-5.6-Familie: https://openai.com/index/gpt-5-6/
 - Terra-Modell: https://developers.openai.com/api/docs/models/gpt-5.6-terra
