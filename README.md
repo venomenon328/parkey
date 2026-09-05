@@ -8,7 +8,7 @@ Eine Spielfigur bewegt sich in Third-Person-Ansicht über einen Parcours aus bes
 
 ## Aktueller Stand
 
-Stand: 2026-09-05. Die Dokumentationsbasis und **neun abgegrenzte Umsetzungspakete als Issues #1–#9** sind vorbereitet. P0 / Issue #1 ist auf dem Branch codex/p0-godot-foundation implementiert, aber noch nicht gemergt oder abgenommen: Es gibt nun ein gemeinsames Godot-Projekt, zwei Export-Presets, eine kleine 3D-Diagnoseszene, den Smoke-Runner und CI. Der erste spielbare Parcours, ein Generator, RunSession, Timer und Ranglisten sind weiterhin nicht implementiert. Die technische Windows-/Web-Prüfung ist dokumentiert; die physische Tastaturabnahme bleibt offen, daher bleibt der PR Draft.
+Stand: 2026-09-05. Die Dokumentationsbasis und **neun abgegrenzte Umsetzungspakete als Issues #1–#9** sind vorbereitet. P0 / Issue #1 ist implementiert und vollständig abgenommen: Es gibt ein gemeinsames Godot-Projekt, zwei Export-Presets, eine kleine 3D-Diagnoseszene, den Smoke-Runner und CI. Windows- und Web-Export wurden tatsächlich gestartet; die manuelle Hardwaretastaturabnahme für Y/Z, Shift, echtes Echo, überlappende Tasten sowie Modifier/Browser-Shortcuts und Fokus ist bestanden. Der erste spielbare Parcours, ein Generator, RunSession, Timer und Ranglisten sind weiterhin nicht implementiert.
 
 Bestätigte Anforderungen, vorläufige Testwerte und Vorschläge sind getrennt. **200 ms Fehlerpause** bleiben ein vorläufiger Testwert; das **Kopfschütteln** eine vorgeschlagene Rückmeldung. Das konkrete PoC-Regelprofil wird vor P1a als Experiment beauftragt oder angepasst, nicht stillschweigend zur endgültigen Produktentscheidung erklärt.
 
@@ -27,9 +27,9 @@ Bestätigte Anforderungen, vorläufige Testwerte und Vorschläge sind getrennt. 
 
 ## Nächster Arbeitsschritt
 
-[**Issue #1 — P0: Godot-Grundprojekt, Windows-/Web-Exporte und Testgrundlage**](https://github.com/venomenon328/parkey/issues/1) als Draft prüfen und die noch offene physische Tastaturabnahme nachholen. P1a darf erst nach vollständiger P0-Abnahme und Merge nach main mit ausdrücklich beauftragtem experimentellem Regelprofil beginnen.
+[**Issue #2 — P1a: Testbarer Spielkern mit Streckenvalidierung, Laufzeit und Fehlerpause**](https://github.com/venomenon328/parkey/issues/2) ist das nächste Umsetzungspaket. Vor Beginn wird das in `docs/implementation-plan.md` beschriebene experimentelle PoC-Regelprofil ausdrücklich beauftragt oder angepasst; der Arbeitsbranch entsteht anschließend vom aktuellen `main`.
 
-Anschließend folgen der testbare Kern, ein handgebauter spielbarer Parcours und lokale Bestzeiten. Erst erprobte Routenbausteine werden zufallsgeneriert. Die vollständige Reihenfolge steht im Umsetzungsplan. Spätere Branches erst nach ihren Abhängigkeiten vom dann aktuellen `main` erstellen.
+Danach folgen ein handgebauter spielbarer Parcours und lokale Bestzeiten. Erst erprobte Routenbausteine werden zufallsgeneriert. Die vollständige Reihenfolge steht im Umsetzungsplan. Spätere Branches erst nach ihren Abhängigkeiten vom dann aktuellen `main` erstellen.
 
 ## Zusammenarbeit
 
