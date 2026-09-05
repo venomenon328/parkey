@@ -1,6 +1,17 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. **Geplante Tests; noch keine davon sind implementiert oder ausgeführt.** Testfälle zu vorgeschlagenen Regeln werden zusammen mit diesen Regeln freigegeben. Fachliche Grundlage: [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-05. P0 liefert die Suite smoke, die beiden Export-Presets und CI auf codex/p0-godot-foundation; die Abnahme ist weiterhin offen. Testfälle zu vorgeschlagenen Regeln werden zusammen mit diesen Regeln freigegeben. Fachliche Grundlage: [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+
+## P0-Teststand auf dem Arbeitsbranch
+
+Technischer Nachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.official.ed1daf0bf:
+
+- Import, --suite all mit 31 Smoke-Assertions sowie beide Release-Exporte liefen erfolgreich. Ein Aufruf mit unbekannter Suite endete geprüft mit Exitcode 1.
+- Der Windows-Export wurde außerhalb des Editors gestartet. Die sichtbare Diagnose meldete Windows / Forward+ | aktiv: forward_plus; Taste mit Buchstabe, Figur mit Kopf und erhöhte Kamera waren sichtbar.
+- Der Web-Export wurde über python -m http.server unter 127.0.0.1:8000 in Chrome 152.0.7977.76 geladen. Chrome lud HTML, JavaScript, WASM und PCK über HTTP; die laufende Szene meldete Web / Compatibility | aktiv: gl_compatibility. Canvas und WebGL 2 waren aktiv.
+- Browser-Ereignisse prüften sichtbar: ein Ereignis mit code KeyY und erzeugtem z wurde als Z akzeptiert, Shift blieb normalisiert, ein Wiederholungsereignis wurde als Echo und Key-up als verworfen angezeigt. Diese Ereignisse wurden automatisiert über das Browser-Debugprotokoll eingespeist, nicht über eine physische Tastatur.
+
+Offen bleibt die manuelle Abnahme mit echter Hardwaretastatur: Windows und interaktiver Desktop-Browser müssen Y/Z, Shift, echtes Gedrückthalten/Echo, überlappende Tasten und Browser-Shortcuts in der vorgesehenen Bedienumgebung prüfen. Deshalb bleibt der P0-PR Draft und der Meilenstein unabgenommen.
 
 ## Verbindlicher Test-/Exportvertrag ab P0
 

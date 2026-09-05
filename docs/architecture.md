@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-05. **Planungsstand, keine implementierte Architektur.** Godot und Windows-Fokus sind bestätigt; konkrete Sprache, Module und Exportprofile sind Vorschläge P-001/P-002/P-009 im [Entscheidungsregister](decisions.md).
+Stand: 2026-09-05. P0 implementiert die gemeinsame Godot-/GDScript-Grundlage, Renderprofil-Diagnose, Export-Presets und Eingabenormalisierung auf seinem Draft-Branch. Spielkern, Streckendaten, Speicherung und Generator bleiben Planungsstand. Godot und Windows-Fokus sind bestätigt; konkrete Sprache, Module und Exportprofile sind Vorschläge P-001/P-002/P-009 im [Entscheidungsregister](decisions.md).
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -38,6 +38,8 @@ Echte Tastendruckereignisse werden einzeln und in ihrer empfangenen Reihenfolge 
 Für die Laufzeit ist eine injizierbare monotone Uhr vorgesehen; im Godot-Adapter bietet sich `Time.get_ticks_usec()` an. Start-, Fehler- und Zielzeit verwenden dieselbe Zeitbasis und Integerwerte. Tests übergeben eine kontrollierte Uhr. Die Fehlerfrist wird beim nächsten Eingabeereignis direkt geprüft, nicht nur bei einem Animationssignal oder Physiktick.
 
 Die Uhr garantiert keine identische Ende-zu-Ende-Eingabelatenz auf Windows und im Browser. In P0/P1 wird dokumentiert, an welcher Stelle Eingabezeiten erfasst werden. Künstliche Testereignisse können exakte Regelparität zeigen; reale Hardware-, OS- und Browserlatenzen müssen zusätzlich untersucht werden. Keine Behauptung einer hardwareübergreifend garantierten Millisekundengenauigkeit.
+
+P0 erfasst beim Eintritt in Foundation._unhandled_input mit Time.get_ticks_usec() den Zeitpunkt, zu dem die Anwendung das Ereignis entgegennimmt, und zeigt ihn nur als captured_usec an. Dieser Wert ist weder ein behaupteter OS-/Browserzeitstempel noch ein Renntimer. Die Normalisierung verarbeitet den vom Layout erzeugten Unicodewert (A–Z), Shift, Key-up, Echo und Shortcut-Modifier sichtbar; sie enthält keine RunSession- oder Fehlerregel. P1a darf diesen Empfangspunkt erst mit dem dann beauftragten Uhr- und Regelvertrag verbinden.
 
 ## Streckenmodell und Reproduzierbarkeit
 

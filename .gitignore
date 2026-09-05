@@ -1,0 +1,20 @@
+# Godot editor caches and import artefacts
+.godot/
+.import/
+
+# Local build products
+build/
+
+# Local editor and operating-system files
+.vscode/
+.idea/
+*.tmp
+*.log
+Thumbs.db
+Desktop.ini
+
+# Local credentials and environment overrides
+.env
+.env.*
+!.env.example
+secrets/

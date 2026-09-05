@@ -1,13 +1,13 @@
 # PoC-Roadmap
 
-Stand: 2026-09-05. Die Initialdokumentation und die Paketplanung sind erstellt; **keine Implementierung und keine Spielabnahme sind abgeschlossen**. Issues enthalten den konkreten Lieferumfang, [Umsetzungsplan](implementation-plan.md) und [Teststrategie](testing.md) die gemeinsamen Arbeitsverträge. Die ursprünglichen Meilensteine P0–P3 bleiben erhalten und werden in kleine Pakete zerlegt; P4 ist die abschließende Integrationsabnahme, keine zusätzliche Featurephase.
+Stand: 2026-09-05. Die Initialdokumentation und die Paketplanung sind erstellt. **P0 ist auf seinem Arbeitsbranch implementiert, aber nicht abgenommen oder gemergt.** Issues enthalten den konkreten Lieferumfang, [Umsetzungsplan](implementation-plan.md) und [Teststrategie](testing.md) die gemeinsamen Arbeitsverträge. Die ursprünglichen Meilensteine P0–P3 bleiben erhalten und werden in kleine Pakete zerlegt; P4 ist die abschließende Integrationsabnahme, keine zusätzliche Featurephase.
 
 ## Meilensteine und Pakete
 
 | Meilenstein | Pakete | Überprüfbares Ergebnis | Status |
 | --- | --- | --- | --- |
 | D0 | Dokumentation/Planung | Anforderungen, Architekturvorschlag, neun Issues, Abhängigkeiten, Testvertrag | Dokumentiert |
-| P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Godot-Projekt; Windows/Web gestartet; minimale Tests/Export-CI | Nicht begonnen |
+| P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Godot-Projekt; Windows/Web gestartet; minimale Tests/Export-CI | Implementiert auf codex/p0-godot-foundation; Draft, physische Tastaturabnahme offen |
 | P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Getesteter Kern, handgebauter Third-Person-Lauf, Timer, Fehlerpause, dauerhafte lokale Bestzeiten | Nicht begonnen |
 | P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routenentscheidungen und gestaltete Beispielwelt mit Web-Fallback | Nicht begonnen |
 | P3 | [#7](https://github.com/venomenon328/parkey/issues/7), [#8](https://github.com/venomenon328/parkey/issues/8) | Validierter Seed-Generator, integrierter Spielablauf und nachgewiesene Export-Regelparität | Nicht begonnen |
