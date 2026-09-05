@@ -8,27 +8,28 @@ Eine Spielfigur bewegt sich in Third-Person-Ansicht über einen Parcours aus bes
 
 ## Aktueller Stand
 
-Stand: 2026-09-05. Das Repository enthält die initiale Produkt-, Technik- und PoC-Planung. Es gibt noch kein Godot-Projekt, keinen implementierten Generator, keine automatisierten Spieltests und keine ausführbaren Builds. Die Dokumentation behauptet daher keine bereits nachgewiesene Windows-/Web-Parität.
+Stand: 2026-09-05. Die Dokumentationsbasis und **neun abgegrenzte Umsetzungspakete als Issues #1–#9** sind vorbereitet. Noch kein Paket ist implementiert oder abgenommen. Es gibt kein Godot-Projekt, keinen Generator, keinen ausführbaren Test-Runner und keine Spielbuilds. Dokumentierte Testbefehle beschreiben den ab P0 herzustellenden Vertrag, keine bereits erfolgreichen Tests.
 
-Bestätigte Anforderungen, vorläufige Testwerte und noch nicht freigegebene Vorschläge sind im Entscheidungsregister getrennt. Insbesondere sind **200 ms Fehlerpause ein vorläufiger Testwert** und das **Kopfschütteln eine vorgeschlagene Rückmeldung**, keine endgültig abgestimmten Balancing- oder Animationsvorgaben.
+Bestätigte Anforderungen, vorläufige Testwerte und Vorschläge sind getrennt. **200 ms Fehlerpause** bleiben ein vorläufiger Testwert; das **Kopfschütteln** eine vorgeschlagene Rückmeldung. Das konkrete PoC-Regelprofil wird vor P1a als Experiment beauftragt oder angepasst, nicht stillschweigend zur endgültigen Produktentscheidung erklärt.
 
 ## Dokumentation
 
 | Datei | Inhalt |
 | --- | --- |
-| [Entscheidungen](docs/decisions.md) | Verbindliche Anforderungen, Vorschläge und offene Entscheidungen |
+| [Entscheidungen](docs/decisions.md) | Bestätigte Anforderungen, Vorschläge und offene Entscheidungen |
 | [Spieldesign](docs/game-design.md) | Spielschleife, Eingabe, Fehler, Kamera und Parcours |
-| [Architektur](docs/architecture.md) | Gemeinsamer Spielkern, Windows-/Web-Profile und Datenmodell |
-| [Roadmap](docs/roadmap.md) | Kleine Umsetzungsschritte mit konkreten Abnahmekriterien |
-| [Teststrategie](docs/testing.md) | Regeltests, Plattformprüfungen und Spieltests |
-| [Arbeitsregeln](AGENTS.md) | Vorgaben für Änderungen und die Pflege der Dokumentation |
+| [Architektur](docs/architecture.md) | Gemeinsamer Spielkern und Windows-/Web-Profile |
+| [Roadmap](docs/roadmap.md) | Meilensteine und tatsächlicher Fortschritt |
+| [Umsetzungspakete](docs/implementation-plan.md) | Issues, Abhängigkeiten, Branches, Start-Gates und Codex-Empfehlungen |
+| [Teststrategie](docs/testing.md) | Testvertrag, automatisierte Regeln und reale Plattformabnahme |
+| [Arbeitsregeln](AGENTS.md) | Änderungs-, Dokumentations- und Übergaberegeln |
 
 ## Nächster Arbeitsschritt
 
-**P0: Gemeinsames Godot-Grundprojekt und Windows-/Web-Export nachweisen.** Danach folgt ein spielbarer, handgebauter Testparcours. Der Zufallsgenerator wird erst auf Basis praktisch geprüfter Streckenbausteine umgesetzt. Details stehen in der Roadmap.
+[**Issue #1 — P0: Godot-Grundprojekt, Windows-/Web-Exporte und Testgrundlage**](https://github.com/venomenon328/parkey/issues/1) auf `codex/p0-godot-foundation` umsetzen. Ein gemeinsames Projekt, typisiertes GDScript, Forward+ für Windows und Compatibility für Web werden zuerst praktisch geprüft.
 
-Die vorgeschlagene technische Richtung ist typisiertes GDScript, Forward+ für das hochwertige Windows-Profil und Compatibility für das Web-Profil. Das ist eine zu überprüfende Architektur, noch kein vorhandener Build.
+Anschließend folgen der testbare Kern, ein handgebauter spielbarer Parcours und lokale Bestzeiten. Erst erprobte Routenbausteine werden zufallsgeneriert. Die vollständige Reihenfolge steht im Umsetzungsplan. Spätere Branches erst nach ihren Abhängigkeiten vom dann aktuellen `main` erstellen.
 
 ## Zusammenarbeit
 
-Festlegungen und Änderungen an Spielregeln gehören in dieses Repository, nicht ausschließlich in Chats oder Issue-Kommentare. Änderungen an Regeln, Technik oder Umfang müssen im selben Pull Request die betroffenen Dokumente aktualisieren. Ein Plan gilt nicht automatisch als implementiert oder freigegeben.
+Festlegungen gehören in dieses Repository, nicht ausschließlich in Chats oder Issue-Kommentare. Änderungen an Regeln, Technik oder Umfang aktualisieren im selben PR die betroffenen Dokumente. Ein Plan ist weder Implementierung noch Abnahme. Die jetzt erfolgte Änderung ist ausschließlich Planung/Dokumentation; Implementierungen laufen über die jeweiligen Arbeitsbranches und Draft-PRs.

@@ -1,61 +1,42 @@
 # PoC-Roadmap
 
-Stand: 2026-09-05. Die Reihenfolge ist ein Vorschlag; nur die Dokumentationsinitialisierung ist abgeschlossen. Ein Meilenstein gilt erst mit tatsächlichen Nachweisen als abgenommen. Siehe [Entscheidungen](decisions.md) und [Teststrategie](testing.md).
+Stand: 2026-09-05. Die Initialdokumentation und die Paketplanung sind erstellt; **keine Implementierung und keine Spielabnahme sind abgeschlossen**. Issues enthalten den konkreten Lieferumfang, [Umsetzungsplan](implementation-plan.md) und [Teststrategie](testing.md) die gemeinsamen Arbeitsverträge. Die ursprünglichen Meilensteine P0–P3 bleiben erhalten und werden in kleine Pakete zerlegt; P4 ist die abschließende Integrationsabnahme, keine zusätzliche Featurephase.
 
-## Statusübersicht
+## Meilensteine und Pakete
 
-| Schritt | Ergebnis | Status |
-| --- | --- | --- |
-| D0 | Initiale Anforderungen, Architekturvorschlag, Roadmap und Arbeitsregeln | Dokumentiert |
-| P0 | Ein Godot-Grundprojekt exportiert nach Windows und Web | Nicht begonnen |
-| P1 | Spielbarer handgebauter Testparcours mit Timer, Fehlerpause und lokaler Rangliste | Nicht begonnen |
-| P2 | Routenwahl und Kameralesbarkeit funktionieren in einer gestalteten Beispielumgebung | Nicht begonnen |
-| P3 | Reproduzierbarer, validierter Seed-Generator auf Basis geprüfter Abschnitte | Nicht begonnen |
+| Meilenstein | Pakete | Überprüfbares Ergebnis | Status |
+| --- | --- | --- | --- |
+| D0 | Dokumentation/Planung | Anforderungen, Architekturvorschlag, neun Issues, Abhängigkeiten, Testvertrag | Dokumentiert |
+| P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Godot-Projekt; Windows/Web gestartet; minimale Tests/Export-CI | Nicht begonnen |
+| P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Getesteter Kern, handgebauter Third-Person-Lauf, Timer, Fehlerpause, dauerhafte lokale Bestzeiten | Nicht begonnen |
+| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routenentscheidungen und gestaltete Beispielwelt mit Web-Fallback | Nicht begonnen |
+| P3 | [#7](https://github.com/venomenon328/parkey/issues/7), [#8](https://github.com/venomenon328/parkey/issues/8) | Validierter Seed-Generator, integrierter Spielablauf und nachgewiesene Export-Regelparität | Nicht begonnen |
+| P4 | [#9](https://github.com/venomenon328/parkey/issues/9) | Geprüfte Windows-/Web-Testpakete aus einem Commit samt Bedienung und Abnahmematrix | Nicht begonnen |
 
-## P0 — Gemeinsame technische Grundlage
+## Reihenfolge und sinnvolle Zwischenstände
 
-**Ziel:** Die gewünschte gemeinsame Codebasis früh praktisch nachweisen, bevor Spielsysteme auf ungeprüften Exportannahmen aufbauen.
+`#1 → #2 → #3 → #4 → #5 → (#6 und #7) → #8 → #9`
 
-Umfang: Godot-Standardprojekt mit typisiertem GDScript, genau fixierter Editor-/Template-Version, einer kleinen 3D-Testszene, einer beschrifteten Testtaste, Platzhalterfigur und Kamera. Windows-Forward+- und Web-Compatibility-Profil. Ein einfacher Diagnosebereich zeigt Build/Profil und empfangene Buchstaben; noch keine fertige Spiellogik.
+Nach **#3** kann man erstmals einen kompletten handgebauten Lauf spielen, aber Bestzeiten noch nicht dauerhaft speichern. Nach **#4** ist der erste vollständige handgebaute Spielkern da. Jetzt folgt ein echter Spieltest, bevor Routen und Grafik ausgebaut werden.
 
-**Abnahme:** Beide Builds kommen aus demselben Commit und Projekt. Die Windows-Anwendung startet außerhalb des Editors. Der Web-Export läuft über HTTP(S), nicht nur als lokal doppelt angeklickte HTML-Datei. Figur, Taste und Beschriftung sind in beiden Profilen sichtbar. Reale Tastendrücke einschließlich QWERTZ-Y/Z werden protokolliert; Renderer und Eingabezeitpunkt sind dokumentiert. Build- und Startbefehle sind reproduzierbar. Nicht getestete Betriebssysteme/Browser werden ausdrücklich als offen ausgewiesen.
+Nach **#5** sind die Abschnittsverträge und ihre spielerische Eignung überprüft. **#6 und #7** können dann parallel arbeiten, sofern Darstellung und Generator ihre Zuständigkeiten einhalten. #8 integriert erst nach beiden Merges. Alle anderen Pakete werden standardmäßig nacheinander begonnen; keine monatelang vorab angelegten, veraltenden Arbeitsbranches.
 
-Nicht enthalten: vollständiger Generator, Onlinekonto, Ranglistenserver, finale Figur und finale Materialien. Der konkrete technische Entwurf bleibt bis zum Test ein Vorschlag.
+## Abnahme-Gates
 
-## P1 — Spielbarer Kern
+**P0:** Editor und Export-Templates gemeinsam pinnen; beide Ziele aus demselben Projekt tatsächlich starten. Ein erfolgreicher Export ist noch kein Grafik-/Eingabenachweis.
 
-**Ziel:** Ein kurzer vollständiger Lauf fühlt sich unmittelbar an und lässt sich zuverlässig messen und wiederholen.
+**P1:** Vorgeschlagene Start-/Fehler-/Fokusregeln vor #2 ausdrücklich als PoC-Experiment beauftragen oder ändern. Schnelle korrekte Ereignisse ohne Animationsdeckel, genau definierte Fehlerfrist, einmalige Zielzeit, lesbare Nachbarschaft und Neustart-/Persistenztests prüfen.
 
-Umfang: handgebauter, kleiner Parcours mit Start/Ziel und einer einfachen Gabelung; als Richtgröße etwa 20–40 Felder. Datenbasierte Nachbarschaftsvalidierung, unmittelbare logische Bewegung, aufholende Darstellung, Fehlerpause mit vorläufigem Testwert, Timer, schneller Neustart, Ergebnisschirm und lokale Rangliste. Die vorgeschlagenen Start-/Fehler-/Fokusregeln müssen zu Beginn dieses Schritts bestätigt oder ausdrücklich als PoC-Experiment freigegeben werden.
+**P2:** Vor der Routenwahl genügend Informationen zeigen. Unterschiedliche Tippmethoden praktisch testen, statt nur ein theoretisches Ergonomiemodell zu behaupten. Zielhardware, Auflösung, Leistungsbudget und eine repräsentative visuelle Nutzerabnahme gehören zu #6.
 
-**Abnahme:** Korrekte schnelle Eingabefolgen gehen nicht verloren und werden nicht durch eine Schrittdauer gedeckelt. Falsche Buchstaben sperren Bewegung, nicht Renntimer oder gesamte Anwendung. Keine Bewegungen aus während der Sperre gepufferten Eingaben. Zieleinlauf zählt beim logischen Schritt, genau einmal. Bestzeiten bleiben nach Neustart erhalten. Automatisierte Regeltests und ein tatsächlich durchgespielter Windows-Build liegen vor; Web wird mindestens mit denselben Kernfällen geprüft.
+**P3:** Gültigkeit jeder erzeugten Strecke prüfen, begrenzte Suchversuche, versionierte Identität und feste Referenz-Seeds. Wirkliche Windows-/Web-Konformitätsläufe in #8, nicht zwei native Läufe als Browserbeweis verkaufen.
 
-Die Platzhaltergestaltung ist nur eine Zwischenstufe. Bereits hier müssen Beschriftung, aktuelles Feld und erreichbare Felder lesbar sein.
+**P4:** Gleicher geprüfter Commit für beide Pakete; vollständige Plattformmatrix, bekannte Einschränkungen, Credits und tatsächliche Nutzerabnahme. Kein automatischer öffentlicher Release.
 
-## P2 — Routenwahl und visuelle Beispielstrecke
+## Abschlussumfang
 
-**Ziel:** Nicht nur das Tippen, sondern auch das Spielprinzip aus Routenwahl und Tippbarkeit funktioniert.
+Der vorgeschlagene erste PoC enthält eine gestaltete Windows-Anwendung und eine Web-Version aus demselben Projekt: lesbarer Third-Person-Parcours, Start/Ziel, schnelle korrekte Eingaben, definierte Fehlerpause, Timer mit drei Nachkommastellen, lokale Ranglisten und reproduzierbare Seed-Strecken mit Routenalternativen.
 
-Umfang: mehrere handgestaltete Abschnittstypen mit Zusammenführungen; kurzer schwieriger gegen längeren flüssigen Weg; verbesserte vorausschauende Kamera. Eine konsistente Umgebung mit geeigneten Materialien, Beleuchtung, Figur und dezenter Bewegungs-/Fehlerrückmeldung. Windows-Grafik zuerst ausarbeiten, Web-Fallbacks parallel kontrollieren.
+Nicht Bestandteil: Onlinekonten/-Ranglisten, Cloud-Sync, Ghosts, Tagesparcours, Echtzeit-Mehrspieler, Editor, Shop, automatische Updates oder mehrere Themenwelten. Diese Ideen sind kein verdeckter Zusatzumfang der neun Pakete.
 
-**Abnahme:** Ein Spieler kann vor der Abzweigung eine begründete Wahl treffen. Spieler mit verschiedenen Tippmethoden probieren die Wege; Zeiten und stockende Passagen werden getrennt erfasst. Die als leichter gedachte Route wird nicht ohne Messung so bezeichnet. Häufige Stillstände durch Kameraverdeckung werden behoben. Zielhardware, Auflösung und ein erstes Leistungsbudget sind festgelegt. Beide Grafikprofile bewahren dieselben spielrelevanten Informationen.
-
-An diesem Punkt wird entschieden, welche Abschnittstypen tatsächlich in den Generator gehören. Nicht jede entworfene Gabelung muss erhalten bleiben.
-
-## P3 — Reproduzierbare Strecken
-
-**Ziel:** Geprüfte Inhalte werden zuverlässig und abwechslungsreich aus Seeds erzeugt.
-
-Umfang: kontrollierte Kombination der P2-Abschnitte, Buchstabenvergabe, getrennte Zufallsquellen für Gameplay und Dekoration, Strecken-/Regelversionen, Seed-Eingabe und passende lokale Bestenlisten. Automatisierte Validierung jeder Strecke und feste Referenz-Seeds für beide Plattformen.
-
-**Abnahme:** Gleicher Seed und gleiche relevante Version/Konfiguration ergeben dieselben kanonischen Streckendaten auf beiden Zielplattformen. Alle generierten Strecken sind erreichbar und lokal eindeutig. Tests über viele Seeds finden keine unzulässigen Nachbarschaften oder unbeabsichtigten Verbindungen. Eine reine Dekorationsänderung lässt den Gameplay-Hash unverändert. Stichproben mit echten Spielern ergänzen die strukturellen Tests.
-
-## Abschluss des vorgeschlagenen ersten PoC
-
-Ein kleiner, gestalteter Windows-Build und ein aus demselben Projekt stammender Web-Build enthalten: Start/Ziel, lesbaren Third-Person-Parcours, unbegrenzt schnelle korrekte Schritte im Rahmen der Eingabeverarbeitung, definierte Fehlerpause, millisekundige Timeranzeige, lokale Ranglisten und reproduzierbare Seed-Strecken mit Routenalternativen.
-
-Noch nicht notwendig: öffentliche Online-Ranglisten, Accounts, Ghosts, Tagesparcours, Mehrspieler, Editor, Shop oder mehrere Themenwelten. Diese Punkte sind Erweiterungsideen, keine verdeckten Abnahmekriterien.
-
-## Arbeitsweise
-
-Je Arbeitspaket ein klar begrenztes Issue mit Abnahmekriterien, danach ein kleiner Arbeitsbranch und Pull Request. Dokumentation und Implementierung ändern sich zusammen. Nach einem spielbaren Zwischenstand folgt ein kurzer echter Spieltest, bevor der nächste Ausbau beginnt. Die Roadmap enthält bewusst keine unbelegten Zeitversprechen.
+Statusänderungen nur mit Nachweisen. Wenn Spieltests andere Regeln oder Bausteine nahelegen, die betroffenen Entscheidungen und noch nicht begonnenen Issues aktualisieren, statt am überholten Plan festzuhalten. Es gibt keine unbelegten Zeitversprechen.

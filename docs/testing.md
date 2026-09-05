@@ -1,6 +1,45 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. **Geplante Tests; noch keine davon sind implementiert oder ausgeführt.** Testfälle zu vorgeschlagenen Regeln werden zusammen mit diesen Regeln freigegeben. Fachliche Grundlage: [Spieldesign](game-design.md), [Architektur](architecture.md) und [Entscheidungen](decisions.md).
+Stand: 2026-09-05. **Geplante Tests; noch keine davon sind implementiert oder ausgeführt.** Testfälle zu vorgeschlagenen Regeln werden zusammen mit diesen Regeln freigegeben. Fachliche Grundlage: [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+
+## Verbindlicher Test-/Exportvertrag ab P0
+
+Die folgenden Dateien, Suites und Presets sind Lieferumfang künftiger Pakete. **Sie existieren noch nicht.** P0 legt `tests/run_tests.gd`, die beiden Presets und eine minimale CI an. `godot` bezeichnet den exakt gepinnten Standard-Editor mit passenden Export-Templates. Ausgabeordner `build/windows` und `build/web` vor Exporten anlegen; Quellcode und Buildausgaben getrennt halten.
+
+```sh
+godot --headless --path . --import
+godot --headless --path . --script res://tests/run_tests.gd -- --suite all
+godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
+godot --headless --path . --export-release "Web" build/web/index.html
+```
+
+Unter Windows einen passenden PATH-Eintrag oder den vollständigen Pfad zum Standard-Editor verwenden; die konkrete lokale Schreibweise in der Entwicklungsanleitung dokumentieren. Import und Export benötigen den Editor, nicht bloß eine Export-Template-Datei.
+
+Die CLI-Basis ist in der offiziellen [Godot-Anleitung](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) dokumentiert, geprüft am 2026-09-05. `--suite` ist dagegen **unser erst in P0 zu implementierendes Benutzerargument** nach `--`, kein mitgelieferter Godot-Testbefehl.
+
+| Paket | Neue gezielte Suite | Wesentliche automatische Prüfungen |
+| --- | --- | --- |
+| P0 / #1 | `smoke` | Imports, Szene, Profil-/Eingabegrundlage, Fehler-Exit des Runners |
+| P1a / #2 | `core` | Validator, Zustände, Zeitgrenzen und geordnete Eingaben |
+| P1b / #3 | `integration` | Instanziierte Spielszene, Input/UI/Kern und Darstellung |
+| P1c / #4 | `storage` | Echte temporäre Dateien, Fehlpfade und Wertungstrennung |
+| P2a / #5 | `routes` | Modulanschlüsse, Referenzstrecken, Abschnittszeitmessung |
+| P2b / #6 | `presentation` | Instanziierte Szenen und Profilreferenzen, keine visuelle Ersatzabnahme |
+| P3a / #7 | `generation` | Mindestens 1.000 Seeds, zehn Golden-Fälle und begrenzte Fehlversuche |
+| P3b / #8 | `seed_flow` | Seed-/Sitzungs-/Speicherintegration und Konformitätsfälle |
+| P4 / #9 | `acceptance` | Vollständige Läufe, Wiederholung und Zustandstrennung |
+
+Gezielter Aufruf: `godot --headless --path . --script res://tests/run_tests.gd -- --suite core` (Suite entsprechend ersetzen). **`all` führt alle bis zum jeweiligen Paket eingeführten Suites aus.** Folgepakete dürfen alte Tests nicht aus der Sammlung entfernen, um grün zu werden. Ein unbekannter Suitename, null ausgewählte Tests sowie Lade-/Assertion-/Laufzeitfehler müssen einen fehlgeschlagenen Testlauf ergeben. Testanzahl und Ergebnis ausgeben; ein einmal absichtlich fehlschlagender Test prüft den Runner selbst.
+
+Beide Exporte bleiben in jedem Paket Pflicht, bei reinen Kernänderungen auch über die vorhandene CI nachweisbar. Reale Plattformprüfungen bleiben dort Pflicht, wo das Issue sie fordert. Keine zweite in Python/JavaScript nachgebaute Kernimplementierung als Testsubstitut; der verwendete GDScript-Code wird getestet.
+
+Für P0/P1 ist Web ohne Threads der Ausgangspunkt. Lokal starten mit:
+
+```sh
+python -m http.server 8000 --bind 127.0.0.1 --directory build/web
+```
+
+Dann `http://127.0.0.1:8000/` im Browser öffnen; Server nach dem Test beenden. `python` bezeichnet eine installierte Python-3-Laufzeit. Keine Behauptung, eine doppelt angeklickte lokale HTML-Datei genüge. Bei später aktiviertem Threading muss dieses Serving-Rezept samt nötigen Headern ersetzt und erneut geprüft werden. Siehe [Godot Web-Export](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html), geprüft am 2026-09-05.
 
 ## Automatisierte Kernregeln ab P1
 
@@ -22,15 +61,17 @@ Stand: 2026-09-05. **Geplante Tests; noch keine davon sind implementiert oder au
 | Fokusverlust/Abbruch | Lauf nach freigegebener Regel invalidieren; kein gewerteter Abschluss |
 | Lokale Rangliste | Numerische Sortierung, passende Streckenidentität, Laden nach Neustart |
 
-Die Uhr wird für Grenztests kontrolliert injiziert. Tests warten nicht tatsächlich per Sleep auf jede Fehlerpause. Zusätzlich muss der reale Eingabeadapter getestet werden: Ein perfekter Kern prüft keine im Adapter verlorenen Ereignisse.
+Die Uhr wird für Grenztests kontrolliert injiziert. Bei 200 ms Sperre sind insbesondere 199.999, 200.000 und 200.001 Mikrosekunden nach Fehlerbeginn zu prüfen. Tests warten nicht tatsächlich per Sleep auf jede Fehlerpause. Zusätzlich muss der reale Eingabeadapter getestet werden: Ein perfekter Kern prüft keine im Adapter verlorenen Ereignisse. Unterschiedliche Renderfortschritte dürfen bei denselben normalisierten Eingaben/Zeitwerten keine anderen Kernresultate erzeugen.
 
 ## Datenvalidator und Generator
 
-Schon die handgebauten P1-Strecken müssen dieselben Grundprüfungen bestehen: stabile eindeutige IDs, vorhandener Start/Zielknoten, gültige Verbindungseinträge, erreichbares Ziel und verschiedene Buchstaben in jeder erreichbaren Nachbarschaft. Der Negativtest A–B–A muss bei beidseitigen Verbindungen zurückgewiesen werden. Gabelungen, Rückwege und Zusammenführungen werden ausdrücklich geprüft.
+Schon handgebaute P1-Strecken bestehen dieselben Grundprüfungen: eindeutige IDs/Koordinaten, verschiedener vorhandener Start/Zielknoten, gültige symmetrische orthogonale Verbindungen, erreichbare Strecke und verschiedene Buchstaben in jeder erreichbaren Nachbarschaft. Der Negativtest A–B–A muss bei beidseitigen Verbindungen zurückgewiesen werden. Gabelungen, Rückwege und Zusammenführungen sowie optisch begehbare Querverbindungen werden ausdrücklich geprüft.
 
-Ab P3: viele Seeds automatisch generieren und validieren; feste Referenz-Seeds gegen erwartete kanonische Daten/Hashes prüfen; dieselben Fälle in Windows- und Web-Builds ausführen. Gameplay-Daten dürfen sich durch zusätzliche Dekoration, Renderereinstellung oder Kameraposition nicht verändern. Bei Regel-/Generatoränderungen Versions- und Ranglistentrennung prüfen.
+Ab P3: viele Seeds automatisch generieren/validieren; feste Referenz-Seeds gegen erwartete kanonische Daten/Hashes prüfen; dieselben Fälle in Windows- und Web-Builds ausführen. Gameplay-Daten dürfen sich durch zusätzliche Dekoration, Renderereinstellung oder Kameraposition nicht verändern. Bei Regel-/Generatoränderungen Versions- und Ranglistentrennung prüfen. Ungültige Konfigurationen scheitern mit begrenztem Aufwand und deterministischen Fehlern, nicht mit verdecktem Ersatzseed.
 
-Strukturelle Gültigkeit ist kein Spielspaßtest. Ob Wege interessant und Buchstabenfolgen tatsächlich unterschiedlich tippbar sind, wird zusätzlich praktisch untersucht.
+Die Referenzerwartungen nicht zur Testlaufzeit durch denselben ungeprüften Generator neu berechnen. P3a liefert Kernreferenzen; P3b beweist die Ausführung in tatsächlichen Exporten. Erst P3b darf den entsprechenden plattformübergreifenden Nachweis beanspruchen. Kontrollierte Eingaben mit gleicher Zeitbasis prüfen Regelparität, nicht identische reale OS-/Browser-/Hardwarelatenzen.
+
+Strukturelle Gültigkeit ist kein Spielspaßtest. Ob Wege interessant und Buchstabenfolgen unterschiedlich tippbar sind, wird zusätzlich praktisch untersucht.
 
 ## Plattformmatrix
 
@@ -39,20 +80,24 @@ Strukturelle Gültigkeit ist kein Spielspaßtest. Ob Wege interessant und Buchst
 | P0-Build | Native Anwendung startet außerhalb des Editors | Export startet über HTTP(S) |
 | Darstellung | Gewähltes Forward+-Profil sichtbar und fehlerfrei | Compatibility ohne fehlende Zeichen, Materialien oder Pflichtsignale |
 | Eingabe | Echte schnelle Eingaben, Layout, Tastenüberlappung | Dieselben Fälle; Fokus und Browser-Shortcuts zusätzlich |
-| Speichern | Ergebnis nach Schließen/Neustart vorhanden | Ergebnis nach Reload/Neustart; eingeschränkten Speicher gesondert prüfen |
-| P1-Kernregeln | Geordnete Ereignisse und kontrollierte Zeitfälle | Gleiche Eingabeprotokolle ergeben gleiche Kernresultate |
-| Leistung | Auflösung, Hardware, Bildrate und Eingabegefühl protokolliert | Browser, Hardware und entsprechende Messbedingungen protokolliert |
+| Speichern | Ergebnis nach Schließen/Neustart vorhanden | Ergebnis nach Reload/Neustart unter gleicher Origin; eingeschränkten Speicher prüfen |
+| Kernregeln/Konformität | Geordnete Ereignisse und kontrollierte Zeitfälle | Gleiche Protokolle und Seeds ergeben gleiche Kernresultate |
+| Leistung | Auflösung, Hardware, Framezeiten und Eingabegefühl protokolliert | Browser, Hardware und entsprechende Messbedingungen protokolliert |
 
-Zunächst sind ein tatsächlich verwendetes Windows-System sowie ein Chromium-basierter Browser und Firefox als vorgeschlagene Testziele vorgesehen. Konkrete Versionen und Ergebnisse werden bei Ausführung eingetragen. Keine Unterstützung anderer Browser oder Plattformen aus einem einzelnen erfolgreichen Export ableiten.
+P0 mindestens ein tatsächliches Windows-System und ein Desktop-Browser; die abschließende P4-Matrix umfasst Windows sowie Chromium und Firefox mit dokumentierten Versionen. Keine Unterstützung weiterer Browser aus einem einzelnen Export ableiten. Ein headless gestarteter Windows-Build allein ist kein Nachweis der Forward+-Darstellung.
+
+P3b ergänzt die genaue Bedienung seines Export-Konformitätslaufs hier, sobald implementiert. Er soll denselben GDScript-Kern/Generator ausführen und konkrete Hash-/Zustandsberichte liefern. Eine frühere native Headless-Ausführung ist kein Browserlauf.
 
 ## Spieltests
 
-Besonders beobachten: verdeckte Buchstaben, schwer erkennbare rückwärtige Nachbarn, Kameraschwenks an Gabelungen, sichtbarer Rückstand der Figur bei schnellen Folgen und der Übergang in die Fehlerpause. Zeigt die Figur während der Sperre einen anderen Standort als die logisch gültige Nachbarschaft, ist das ein Problem und nicht bloß kosmetisch.
+Besonders beobachten: verdeckte Buchstaben, schwer erkennbare rückwärtige Nachbarn, Kameraschwenks an Gabelungen, sichtbarer Rückstand der Figur bei schnellen Folgen und Übergang in die Fehlerpause. Zeigt die Figur während der Sperre einen anderen Standort als die logisch gültige Nachbarschaft, ist das ein Problem und nicht bloß kosmetisch.
 
-Fehlerpause zunächst mit dem Wert aus T-001 prüfen. Fragen: Ist die Sperre verständlich? Endet das Feedback rechtzeitig? Fühlen sich Eingaben nahe am Sperrende defekt an? Kann wahlloses Tastendrücken konkurrenzfähige Zeiten erzeugen? Veränderungen an Dauer oder Puffern werden als explizite Regeländerungen dokumentiert.
+Fehlerpause zunächst mit T-001 prüfen. Ist die Sperre verständlich? Endet das Feedback rechtzeitig? Fühlen sich Eingaben nahe am Sperrende defekt an? Kann wahlloses Tastendrücken konkurrenzfähige Zeiten erzeugen? Änderungen an Dauer/Puffern explizit dokumentieren.
 
-Routen mit unterschiedlichen Tippmethoden testen. Neben Gesamtzeit auch Fehler, gewählte Route und Entscheidungsstellen betrachten. Langsames Lesen, falsche Routenannahmen und eigentliche Tippfehler nicht in einer einzigen Kennzahl verstecken. Aufzeichnungen zunächst lokal und ohne unnötige personenbezogene Daten.
+Routen mit unterschiedlichen Tippmethoden testen. Neben Gesamtzeit auch Fehler, gewählte Route und Entscheidungsstellen betrachten. Langsames Lesen, falsche Routenannahmen und eigentliche Tippfehler nicht in einer einzigen Kennzahl verstecken. Aufzeichnungen zunächst lokal und ohne unnötige personenbezogene Daten. P2a benötigt reale Daten und eine ehrliche Stichprobenbeschreibung, P2b eine visuelle Nutzerabnahme und ein festgelegtes Messbudget.
 
-## Nachweisformat
+## Nachweisformat und Status
 
-Eine Abnahme nennt Commit, genaue Godot-Version, Exportprofil, Betriebssystem/Browser, ausgeführte Befehle oder manuelle Schritte und Ergebnis. Nicht ausgeführte Prüfungen bleiben offen. Build-Erfolg, automatisierter Regeltest, visueller Test und subjektiver Spieltest sind getrennte Nachweise.
+Eine Abnahme nennt Commit, genaue Godot-Version, Exportprofil, Betriebssystem/Browser, ausgeführte Befehle oder manuelle Schritte und Ergebnis. Nicht ausgeführte Prüfungen bleiben offen. Build-Erfolg, Regeltest, visueller Test und subjektiver Spieltest sind getrennte Nachweise. Bericht/Screenshots nur tatsächlich durchgeführter Tests eintragen.
+
+Fehlt ein verpflichtender Nachweis, bleibt der Implementierungs-PR Draft und die Abnahme offen; der Nutzer kann reale Tests ergänzen. Eine README-Änderung oder ein gebautes ZIP ersetzt keine Freigabe. P4 prüft die tatsächlich verpackten Artefakte, nicht nur den Editorzustand.

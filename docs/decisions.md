@@ -1,6 +1,6 @@
 # Entscheidungsregister
 
-Stand: 2026-09-05. Quelle der bestätigten Produktentscheidungen ist die initiale Projektabstimmung. Der Implementierungsstand wird separat in der [Roadmap](roadmap.md) geführt.
+Stand: 2026-09-05. Quelle der bestätigten Produktentscheidungen ist die initiale Projektabstimmung. Implementierungsstand: [Roadmap](roadmap.md). Die angelegten Arbeitspakete und ihr experimentelles Startprofil stehen im [Umsetzungsplan](implementation-plan.md).
 
 ## Statusdefinitionen
 
@@ -43,16 +43,17 @@ Stand: 2026-09-05. Quelle der bestätigten Produktentscheidungen ist die initial
 
 Diese Vorschläge können nach ausdrücklicher Bestätigung oder im Rahmen eines entsprechend beauftragten, klar als experimentell ausgewiesenen PoC umgesetzt werden. Sie dürfen nicht stillschweigend als endgültige Entscheidungen umetikettiert werden.
 
-## Offene Entscheidungen
+## Offene Entscheidungen und Zeitpunkt
 
-**Vor bzw. während P1:** Freigabe der vorgeschlagenen Start-, Eingabe- und Fehlerdetails; konkrete Neustart-/Menütasten ohne Konflikt mit A–Z; Verhalten bei gleichzeitigen Eingaben; Umgang mit sichtbarem Bewegungsrückstand beim Fehler.
+**Vor P1a / Issue #2:** Das im [Umsetzungsplan](implementation-plan.md) konkret vorgeschlagene experimentelle Regelprofil beauftragen oder anpassen. Es umfasst als neue Testvorschläge drei Sekunden Countdown, Enter/Backspace/Escape, Modifier-/UI-Verhalten und Ereignisreihenfolge. Diese Konkretisierung ist noch kein bestätigter Nutzerwunsch. Sichtbarer Bewegungsrückstand beim Fehler wird in #3 praktisch geprüft.
 
-**Vor P2/P3:** Zielhardware und Leistungsbudget; endgültige Kameraregeln; gewünschte Streckenlänge; Grenzen des Blicks auf Alternativwege; Modell für Tippbarkeit und Umgang mit weiteren Tastaturlayouts.
+**Vor P2/P3:** Zielhardware, Auflösung und Leistungsbudget für #6; Kamera-/Routenlesbarkeit sowie Tippbarkeit in #5 erproben. Nur tatsächlich geeignete Bausteine für #7 freigeben. Weitere Layouts und endgültige Streckenlängen bleiben offen.
 
-**Vor einer öffentlichen Onlinewertung:** gemeinsamer oder getrennter Windows-/Web-Pool; Regelung für Zeitgleichstände; Konten/Identität; Validierungs- und Missbrauchskonzept; Speicherung von Eingabedaten.
+**Vor einer öffentlichen Onlinewertung:** gemeinsamer oder getrennter Windows-/Web-Pool; Regelung für Zeitgleichstände; Konten/Identität; Validierungs-/Missbrauchskonzept; Speicherung von Eingabedaten. P1c braucht lediglich einen dokumentierten lokalen Gleichstands-/Aufbewahrungsvertrag, keine vorgezogene Onlinearchitektur.
 
-**Vor Veröffentlichung:** Projekt- und Asset-Lizenzen, endgültiger Name/Branding, Vertriebsweg und gegebenenfalls Hosting.
+**Vor Veröffentlichung:** Projekt- und Asset-Lizenzen, endgültiger Name/Branding, Vertriebsweg und gegebenenfalls Hosting. P4 bereitet Testartefakte vor, veröffentlicht nicht automatisch.
 
 ## Änderungshistorie
 
 - 2026-09-05: Initiale Anforderungen dokumentiert. Fehlerpause ergänzt; 200 ms und Kopfschütteln ausdrücklich als vorläufig eingeordnet. Godot und Windows-Fokus bestätigt. Technische und spielerische Empfehlungen getrennt erfasst. Noch keine Implementierungsabnahme.
+- 2026-09-05: Auf Nutzerauftrag neun Umsetzungspakete vorbereitet: bestehendes Issue #1 geschärft, #2–#9 angelegt. Abhängigkeiten, Testvertrag, Modell-/Reasoningempfehlungen und Branchvorgaben dokumentiert. Neue Start-/Steuertastendetails ausschließlich als vorgeschlagenes Experiment erfasst; keine zusätzliche Produktfreigabe und keine Spielimplementierung behauptet.
