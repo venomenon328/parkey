@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das für P1 freigegebene Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-021 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf ist im Draft implementiert und nach der manuellen Rückmeldung noch nachzuarbeiten. Details: [p1b-implementation.md](p1b-implementation.md).
+Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das für P1 freigegebene Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-021 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf und die Review-Nacharbeit sind im Draft implementiert, Re-Review und physische Nutzerabnahme bleiben offen. Details: [p1b-implementation.md](p1b-implementation.md).
 
 ## Spielkern
 
@@ -40,7 +40,7 @@ Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speichera
 
 ## Kamera und Lesbarkeit
 
-**Bevorzugte Bildkomposition nach D-021: Third Person von hinten wie im ursprünglichen Mock.** Die perspektivische Kamera befindet sich hinter der Figur und blickt in die Tiefe des vorausliegenden Parcours. Eine moderate Erhöhung und Neigung nach unten machen Feldoberflächen lesbar; die seitlich erhöhte, isometrisch wirkende Draufsicht des bisherigen Builds ist nicht die gewünschte Standardansicht. Die Richtung gilt bereits für die anstehende P1b-Kameranacharbeit, nicht erst für die spätere Grafikpolitur. Höhe, Abstand, Sichtfeld und genaue Führungsparameter bleiben zu erproben; der Mock wird nicht pixelgenau nachgebaut.
+**Bevorzugte Bildkomposition nach D-021: Third Person von hinten wie im ursprünglichen Mock.** Die perspektivische Kamera befindet sich hinter der Figur und blickt in die Tiefe des vorausliegenden Parcours. Eine moderate Erhöhung und Neigung nach unten machen Feldoberflächen lesbar; die seitlich erhöhte, isometrisch wirkende Draufsicht des bisherigen Builds ist nicht die gewünschte Standardansicht. Die Richtung ist in der P1b-Nacharbeit umgesetzt, nicht auf spätere Grafikpolitur verschoben. Höhe, Abstand, Sichtfeld und genaue Führungsparameter bleiben zu erproben; der Mock wird nicht pixelgenau nachgebaut.
 
 Figur, aktuelles Feld und erreichbare Nachbarn müssen dennoch erkennbar bleiben; an Kreuzungen werden Optionen rechtzeitig sichtbar. Insbesondere rückwärtige Nachbarn dürfen durch die Rückansicht nicht aus der Bedienung verschwinden. Keine notwendigen Mausbewegungen. Die Kamera muss nicht jedem einzelnen Rückschritt durch eine sofortige Kehrtwende folgen; eine geeignete Kurven-/Rückwegführung wird unter diesen Lesbarkeits- und Kontinuitätsanforderungen getestet.
 

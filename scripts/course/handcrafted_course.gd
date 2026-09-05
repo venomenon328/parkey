@@ -7,6 +7,8 @@ extends RefCounted
 const CourseDataScript = preload("res://scripts/core/course_data.gd")
 
 const COURSE_ROTATION_DEG := 18.0
+const BRANCH_OFFSET := 2.15
+const BRANCH_SEPARATOR_WIDTH := 2.3
 const UPPER_ROUTE := "AZKQWERTYUIMOPLXN"
 const LOWER_ROUTE := "AZKDFGHJCVBMOPLXN"
 const RETURN_SAMPLE := "AZKQKZAS"
@@ -32,17 +34,17 @@ static func build() -> CourseData:
 		"start": Vector2(2.0, 2.0),
 		"approach_a": Vector2(2.0, 2.0),
 		"approach_z": Vector2(2.0, 2.0),
-		"fork": Vector2(2.0, 4.2),
+		"fork": Vector2(2.0, 6.3),
 	}
 
 	var upper_ids: Array[String] = []
 	var lower_ids: Array[String] = []
 	var upper_widths := [2.0, 2.0, 2.0, 2.6, 1.4, 2.0, 2.0, 2.0]
 	var lower_widths := [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
-	_add_branch("upper", -1.1, upper_widths, upper_ids, local_positions, sizes)
-	_add_branch("lower", 1.1, lower_widths, lower_ids, local_positions, sizes)
+	_add_branch("upper", -BRANCH_OFFSET, upper_widths, upper_ids, local_positions, sizes)
+	_add_branch("lower", BRANCH_OFFSET, lower_widths, lower_ids, local_positions, sizes)
 	local_positions["merge"] = Vector2(25.2, 0.0)
-	sizes["merge"] = Vector2(2.0, 4.2)
+	sizes["merge"] = Vector2(2.0, 6.3)
 
 	var final_ids := ["final_1", "final_2", "final_3", "final_4", "target"]
 	for index in final_ids.size():

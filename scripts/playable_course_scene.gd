@@ -14,11 +14,14 @@ const MAX_VISUAL_WAYPOINTS := 18
 const MAX_CATCH_UP_SECONDS := 0.35
 const CAMERA_CATCH_UP_SECONDS := 0.45
 const HEAD_SHAKE_SECONDS := 0.24
+const CAMERA_DISTANCE := 6.4
+const CAMERA_HEIGHT := 5.4
+const CAMERA_LOOK_AHEAD := 5.2
 
 @onready var course_root: Node3D = %CourseRoot
 @onready var transition_root: Node3D = %TransitionRoot
 @onready var figure: Node3D = %PlayerFigure
-@onready var figure_head: MeshInstance3D = $PlayerFigure/Head
+@onready var figure_head: Node3D = %HeadPivot
 @onready var camera: Camera3D = %CourseCamera
 @onready var timer_label: Label = %TimerLabel
 @onready var status_label: Label = %StatusLabel
@@ -40,6 +43,7 @@ var handled_event_count := 0
 var completion_view_count := 0
 var course_identity_before_render := ""
 var course_identity_after_render := ""
+var visited_field_ids := {}
 
 var _clock_override: MonotonicClock
 var _has_application_focus := true
@@ -47,6 +51,7 @@ var _visual_budget_seconds := 0.0
 var _camera_budget_seconds := 0.0
 var _head_shake_remaining := 0.0
 var _camera_initialized := false
+var _camera_focus := Vector3.ZERO
 
 
 func configure_for_test(clock: MonotonicClock) -> void:
@@ -67,7 +72,8 @@ func _ready() -> void:
 	_build_environment()
 	_build_course_geometry()
 	course_identity_after_render = session.course_identity()
-	_snap_presentation_to_logical()
+	_reset_visited_fields()
+	_snap_presentation_to_logical(true)
 	_refresh_view(_now_usec())
 	print("Parkey P1b started: fields=%d identity=%s profile=%s renderer=%s" % [
 		course.fields.size(), course_identity_before_render, RenderProfileScript.expected_profile(), RenderProfileScript.current_method(),
@@ -88,6 +94,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var received_usec := _now_usec()
 	var focus_owner := get_viewport().gui_get_focus_owner()
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if focus_owner is LineEdit:
+			focus_owner.release_focus()
+			get_viewport().set_input_as_handled()
+		return
 	var ui_text_input := focus_owner is LineEdit
 	var action := RunInputAdapterScript.normalize(event, true, ui_text_input, _has_application_focus)
 	if action.get("action", "ignored") == "ignored":
@@ -112,7 +123,8 @@ func simulate_focus_lost(received_usec: int = -1) -> Dictionary:
 	_has_application_focus = false
 	var event := session.handle_focus_lost(_now_usec() if received_usec < 0 else received_usec)
 	visual_waypoints.clear()
-	_snap_presentation_to_logical()
+	_visual_budget_seconds = 0.0
+	_reconcile_figure_to_logical()
 	_refresh_view(_now_usec() if received_usec < 0 else received_usec)
 	return event
 
@@ -133,13 +145,16 @@ func _notification(what: int) -> void:
 func _apply_session_event(event: Dictionary, previous_field_id: String, received_usec: int) -> void:
 	match str(event.get("kind", "")):
 		"moved":
+			visited_field_ids[session.current_field_id] = true
 			_append_visual_transition(previous_field_id, session.current_field_id)
 		"finished":
+			visited_field_ids[session.current_field_id] = true
 			_append_visual_transition(previous_field_id, session.current_field_id)
 			_show_result()
 		"error":
 			visual_waypoints.clear()
-			_snap_presentation_to_logical()
+			_visual_budget_seconds = 0.0
+			_reconcile_figure_to_logical()
 			_head_shake_remaining = HEAD_SHAKE_SECONDS
 		"restarted":
 			_reset_presentation()
@@ -160,7 +175,8 @@ func _reset_presentation() -> void:
 	figure_head.rotation_degrees = Vector3.ZERO
 	menu_panel.visible = false
 	result_label.visible = false
-	_snap_presentation_to_logical()
+	_reset_visited_fields()
+	_snap_presentation_to_logical(true)
 
 
 func _build_environment() -> void:
@@ -203,10 +219,10 @@ func _build_field_mesh(node: Node3D, field_id: String, letter: String, layout: D
 	var selection := MeshInstance3D.new()
 	selection.name = "Selection"
 	var selection_mesh := BoxMesh.new()
-	selection_mesh.size = Vector3(size.x + 0.18, 0.12, size.y + 0.18)
+	selection_mesh.size = Vector3(size.x + 0.24, 0.14, size.y + 0.24)
 	selection_mesh.material = _material(Color("f8d66d"), 0.35)
 	selection.mesh = selection_mesh
-	selection.position.y = 0.06
+	selection.position.y = 0.35
 	node.add_child(selection)
 
 	var keycap := MeshInstance3D.new()
@@ -223,6 +239,14 @@ func _build_field_mesh(node: Node3D, field_id: String, letter: String, layout: D
 	keycap.position.y = 0.12 + FIELD_HEIGHT * 0.5
 	node.add_child(keycap)
 
+	var state_surface := MeshInstance3D.new()
+	state_surface.name = "StateSurface"
+	var state_mesh := BoxMesh.new()
+	state_mesh.size = Vector3(maxf(0.4, size.x - 0.12), 0.035, maxf(0.4, size.y - 0.12))
+	state_surface.mesh = state_mesh
+	state_surface.position.y = 0.4575
+	node.add_child(state_surface)
+
 	var label := Label3D.new()
 	label.name = "Letter"
 	label.text = letter
@@ -230,17 +254,17 @@ func _build_field_mesh(node: Node3D, field_id: String, letter: String, layout: D
 	label.outline_size = 16
 	label.modulate = Color("20160f")
 	label.pixel_size = 0.007
-	label.position.y = 0.46
+	label.position = Vector3(0.0, 0.49, -minf(0.55, size.y * 0.28))
 	label.rotation_degrees.x = -90.0
 	node.add_child(label)
 
 	var marker := Label3D.new()
 	marker.name = "StateMarker"
-	marker.font_size = 66
+	marker.font_size = 72
 	marker.outline_size = 10
-	marker.pixel_size = 0.004
-	marker.position = Vector3(0.0, 0.82, 0.0)
-	marker.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	marker.pixel_size = 0.0035
+	marker.position = Vector3(0.0, 0.5, minf(0.5, size.y * 0.28))
+	marker.rotation_degrees.x = -90.0
 	node.add_child(marker)
 
 
@@ -321,56 +345,111 @@ func _advance_head_shake(delta: float) -> void:
 
 
 func _update_camera(delta: float) -> void:
-	var focus := _anchor_world(session.current_field_id)
 	var target_position := camera_target_for_field(session.current_field_id)
-	if not _camera_initialized or delta <= 0.0:
+	var target_focus := camera_focus_for_field(session.current_field_id)
+	if not _camera_initialized:
+		_initialize_camera(target_position, target_focus)
+		return
+	if delta <= 0.0:
+		return
+	var budget := maxf(_camera_budget_seconds, delta)
+	var weight := minf(1.0, delta / budget)
+	camera.position = camera.position.lerp(target_position, weight)
+	_camera_focus = _camera_focus.lerp(target_focus, weight)
+	_camera_budget_seconds = maxf(0.0, _camera_budget_seconds - delta)
+	if _camera_budget_seconds <= 0.0:
 		camera.position = target_position
-		_camera_initialized = true
-	else:
-		var budget := maxf(_camera_budget_seconds, delta)
-		camera.position = camera.position.lerp(target_position, minf(1.0, delta / budget))
-		_camera_budget_seconds = maxf(0.0, _camera_budget_seconds - delta)
-		if _camera_budget_seconds <= 0.0:
-			camera.position = target_position
-	var look_ahead := Vector2(3.0, 0.0).rotated(deg_to_rad(HandcraftedCourseScript.COURSE_ROTATION_DEG))
-	camera.look_at(focus + Vector3(look_ahead.x, 0.0, look_ahead.y), Vector3.UP)
+		_camera_focus = target_focus
+	camera.look_at(_camera_focus, Vector3.UP)
 
 
 func camera_target_for_field(field_id: String) -> Vector3:
-	var focus := _anchor_world(field_id)
-	var local_offset := Vector2(-5.8, 7.2).rotated(deg_to_rad(HandcraftedCourseScript.COURSE_ROTATION_DEG))
-	return Vector3(focus.x + local_offset.x, 8.4, focus.z + local_offset.y)
+	var anchor := _anchor_world(field_id)
+	var forward := course_forward()
+	return anchor - forward * CAMERA_DISTANCE + Vector3.UP * CAMERA_HEIGHT
 
 
-func _snap_presentation_to_logical() -> void:
+func camera_focus_for_field(field_id: String) -> Vector3:
+	return _anchor_world(field_id) + course_forward() * CAMERA_LOOK_AHEAD
+
+
+func course_forward() -> Vector3:
+	var direction := Vector2(1.0, 0.0).rotated(deg_to_rad(HandcraftedCourseScript.COURSE_ROTATION_DEG))
+	return Vector3(direction.x, 0.0, direction.y)
+
+
+func _snap_presentation_to_logical(reset_camera: bool = false) -> void:
 	if session == null or session.current_field_id.is_empty():
 		return
 	figure.position = _anchor_world(session.current_field_id)
 	_update_markers()
-	_update_camera(0.0)
+	if reset_camera:
+		_initialize_camera(
+			camera_target_for_field(session.current_field_id),
+			camera_focus_for_field(session.current_field_id),
+		)
+
+
+func _reconcile_figure_to_logical() -> void:
+	if session == null or session.current_field_id.is_empty():
+		return
+	figure.position = _anchor_world(session.current_field_id)
+	_update_markers()
+
+
+func _initialize_camera(target_position: Vector3, target_focus: Vector3) -> void:
+	camera.position = target_position
+	_camera_focus = target_focus
+	_camera_initialized = true
+	camera.look_at(_camera_focus, Vector3.UP)
 
 
 func _update_markers() -> void:
 	if session == null:
 		return
 	var neighbors := session.course.neighbor_ids(session.current_field_id)
-	for field_id in field_nodes.keys():
+	for raw_field_id in field_nodes.keys():
+		var field_id := str(raw_field_id)
 		var node: Node3D = field_nodes[field_id]
 		var selection: MeshInstance3D = node.get_node("Selection")
+		var keycap: MeshInstance3D = node.get_node("Keycap")
+		var state_surface: MeshInstance3D = node.get_node("StateSurface")
 		var marker: Label3D = node.get_node("StateMarker")
-		if field_id == session.current_field_id:
-			selection.visible = true
-			marker.visible = true
-			marker.text = "●"
-			marker.modulate = Color("fff4bc")
-		elif neighbors.has(field_id):
-			selection.visible = true
-			marker.visible = true
-			marker.text = "◇"
-			marker.modulate = Color("c8f0ff")
-		else:
-			selection.visible = false
-			marker.visible = false
+		var is_current: bool = field_id == session.current_field_id
+		var is_reachable: bool = neighbors.has(field_id)
+		var is_visited: bool = visited_field_ids.has(field_id)
+		keycap.material_override = _material(_default_field_color(field_id), 0.48)
+		selection.visible = is_current or is_reachable
+		selection.material_override = _material(Color("fff1a8") if is_current else Color("62e6dd"), 0.3)
+		state_surface.material_override = _material(
+			Color("f3c84b") if is_current else Color("4cae9f") if is_reachable else Color("607da3") if is_visited else _default_field_color(field_id),
+			0.38,
+		)
+		marker.visible = is_current or is_reachable or is_visited
+		marker.text = "● ✓" if is_current else "◇ ✓" if is_reachable and is_visited else "◇" if is_reachable else "✓"
+		marker.modulate = Color("241b0c") if is_current else Color("062f31") if is_reachable else Color("eef5ff")
+
+
+func field_visual_state(field_id: String) -> Dictionary:
+	if session == null:
+		return {}
+	return {
+		"current": field_id == session.current_field_id,
+		"reachable": session.course.neighbor_ids(session.current_field_id).has(field_id),
+		"visited": visited_field_ids.has(field_id),
+	}
+
+
+func _reset_visited_fields() -> void:
+	visited_field_ids = {session.course.start_id: true}
+
+
+func _default_field_color(field_id: String) -> Color:
+	if field_id == course.start_id:
+		return Color("3e9e75")
+	if field_id == course.target_id:
+		return Color("b95c78")
+	return Color("d78b3d")
 
 
 func _refresh_view(now_usec: int) -> void:

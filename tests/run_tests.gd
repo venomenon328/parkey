@@ -137,6 +137,12 @@ func _assert_vector_close(actual: Vector3, expected: Vector3, tolerance: float, 
 		_fail("%s Expected '%s', received '%s'." % [message, str(expected), str(actual)])
 
 
+func _assert_transform_close(actual: Transform3D, expected: Transform3D, tolerance: float, message: String) -> void:
+	assertions += 1
+	if actual.origin.distance_to(expected.origin) > tolerance or not actual.basis.is_equal_approx(expected.basis):
+		_fail("%s Expected '%s', received '%s'." % [message, str(expected), str(actual)])
+
+
 func _fail(message: String) -> void:
 	failures.append(message)
 	push_error(message)

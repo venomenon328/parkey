@@ -1,6 +1,6 @@
 # P1b: Integration des ersten spielbaren Parcours
 
-Stand: 2026-09-05. **Im Draft-PR #13 implementiert, nach manueller Rückmeldung zu `c4142a1` aber nicht abnahmefähig; Nacharbeiten offen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
+Stand: 2026-09-05. **Im Draft-PR #13 einschließlich der Nacharbeit zu Review 5121935189 implementiert; CI, Re-Review und physische Nutzerabnahme bleiben offen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
 
 Diese Datei konkretisiert die Integration des freigegebenen [P1-Regelprofils](p1-rule-profile.md). D-019 bis D-021 aus dem [Entscheidungsregister](decisions.md) ergänzen Feldstatus, durchgehend flüssige Kameraführung und die bevorzugte perspektivische Rückansicht. Umfang und Abnahmekriterien stehen in Issue #3, allgemeine Prüfungen in [testing.md](testing.md). Es fehlt keine weitere Start-, Eingabe-, Fehler-, Geometrie- oder Darstellungsfreigabe; konkrete finale Gestaltung bleibt offen.
 
@@ -96,19 +96,23 @@ Manuell beide Routen, Rückweg, erster korrekter/falscher Buchstabe, Fehlerpause
 
 Die Übergabe enthält eine kurze konkrete Bedien- und Abnahmeanleitung mit tatsächlichem Streckenverlauf, Startbuchstaben und erreichbaren Teststellen sowie den Buildpfaden. Nach Kursänderungen die Folgen unten und in PR/Tests gemeinsam aktualisieren. Fehlende reale Nutzerprüfung bleibt offen und der PR Draft, auch wenn alle Headless-Tests grün sind. Dieses Paket ist erst nach technischem Review und echter Spielabnahme abgeschlossen.
 
-## 8. Iststand des geprüften Commits und offene Nacharbeit
+## 8. Umgesetzter Nacharbeitsstand und offene Abnahme
 
-`scripts/course/handcrafted_course.gd` ist in `c4142a1` die einzige Quelle der 26 Felder, Buchstaben, Kanten, Grundflächen, Anker und Übergänge. Der gesamte ebene Kurs ist um 18° gedreht. Gabelungs-/Zusammenführungsfelder sind 2,0 × 4,2 Einheiten groß; die obere Passage wechselt von 2,0 auf 2,6 und 1,4 Einheiten Breite. Er besteht die bisherigen Validatorprüfungen. Das beweist nach dem manuellen W–F-Befund gerade nicht die vollständige Anschlusslesbarkeit.
+`scripts/course/handcrafted_course.gd` bleibt die einzige Quelle der 26 Felder, Buchstaben, Kanten, Grundflächen, Anker und Übergänge. Der gesamte ebene Kurs ist um 18° gedreht. Die 2,0 Einheiten tiefen Paralleläste liegen nun bei lokal z = ±2,15 und lassen durchgehend 2,3 Einheiten freie Mitte; die 6,3 Einheiten tiefen Gabelungs-/Zusammenführungsfelder schließen beide Äste explizit an. W–F und repräsentative Paare beider Äste sind damit klar getrennte Nichtnachbarn. Die obere Passage wechselt weiterhin von 2,0 auf 2,6 und 1,4 Einheiten Breite.
 
-Eingabefolgen dieses Prüfstands, nach einer Kursänderung neu abzugleichen:
+Der Validator ergänzt dafür eine bewusst enge P1-Rechteckprüfung: Gleich ausgerichtete Seiten mit mindestens 0,2 Einheiten überlappender Projektion und weniger als 0,4 Einheiten Fuge benötigen eine Graphkante. Das erkennt die alte 0,2-Einheiten-Seitenfuge, erzeugt aber weder Laufzeitnachbarn noch ein allgemeines Polygon-/Sichtbarkeitsmodell. Kurs und repräsentative Nachbar-/Nichtnachbarpaare werden zusätzlich integriert geprüft; endgültige räumliche Lesbarkeit bleibt ein menschliches Kriterium.
+
+Die Bedienfolgen bleiben trotz geänderter räumlicher Streckenidentität:
 
 - obere Route: `AZKQWERTYUIMOPLXN`
 - untere Route: `AZKDFGHJCVBMOPLXN`
 - Rückwegprobe vom oberen Ast bis Start: `AZKQKZAS`
 
-Der Prüfstand speichert höchstens 18 Wegpunkte; für die Figur sind 350 ms, für die Kamera 450 ms Aufholbudget implementiert. Bei Überlauf wird die Figur unmittelbar auf den logischen Anker gesetzt. Die Kameraposition wird interpoliert, die Blickrichtung jedoch unmittelbar auf das logische Feld ausgerichtet; Fehlerabgleich verwendet zusätzlich einen harten Kamerasnap. Diese Implementierungsbeschreibung ist **keine Freigabe der beobachteten Sprünge**. Die Nacharbeit darf Darstellungsparameter und Aufholstrategie ändern, muss aber D-012/D-020 erfüllen und endlichen Rückstand nachweisen. D-021 ersetzt zusätzlich die bisherige isometrisch wirkende Bildkomposition als Zielrichtung durch eine perspektivische Rückansicht; sie ist hier noch nicht als implementiert behauptet.
+Der Prüfstand speichert höchstens 18 Wegpunkte; für die Figur gelten 350 ms, für die Kamera 450 ms Aufholbudget. Ein Figurenüberlauf gleicht nur die Figur an den logischen Anker an. Kamera und geglättetes Blickziel folgen gemeinsam innerhalb des Kamerabudgets; Fehler, Richtungswechsel und Burst verwenden keinen Kamerareset. Nur Initialisierung und ausdrücklicher Quick Restart setzen den Ausgangstransform. Die Rückansicht verwendet vorläufig 6,4 Einheiten Abstand, 5,4 Einheiten Höhe, 5,2 Einheiten Vorausblick und 56° Sichtfeld ohne seitlichen isometrischen Versatz.
 
-Die bisherigen 107 Integrations- bzw. 266 Gesamtassertions und erfolgreichen Exporte/CI gehören zum Prüfstand `c4142a1`. Die Benutzerprüfung hat Erreichbarkeitsdarstellung und Kameraführung beanstandet; Besuchsstatus wurde ausdrücklich ergänzt. Neue Tests, Fehlerbehebung und erneute manuelle Abnahme sind noch ausstehend. P0/P1a werden dadurch nicht rückwirkend als ungeprüft bezeichnet.
+Aktuell, erreichbar, besucht und besucht+erreichbar werden durch sichtbare Oberflächenfarben, vorstehende Ränder und die zusätzlichen Zeichen `●`, `◇` und `✓` kombiniert. Die Besuchsspur beginnt bei Start und folgt ausschließlich akzeptierten logischen Schritten. Der Kopf hat einen asymmetrischen farbigen Orientierungshinweis an einem gemeinsamen Schwenkpivot. HUD und Fokustest verwenden responsive Verankerungen; ein echter linker Klick in freie Spielfläche gibt `LineEdit`-Fokus frei, ohne selbst eine Spielaktion auszulösen.
+
+Der lokale Nacharbeitsnachweis umfasst 156 Integrations- und 317 Gesamtassertions ohne Fehler, erfolgreichen Import sowie beide Release-Exporte; CI steht nach dem Push im PR-Nachweis. Windows- und Chrome-Releaseexport wurden tatsächlich gestartet und mit OS-synthetischen Eingaben gespielt. Diese Läufe prüfen Export, Renderer, Canvas/OS-Ereignispfad und visuelle Sanity, aber nicht physische Hardwaretastatur, menschliche Wahrnehmbarkeit oder Spielgefühl. P0/P1a werden dadurch nicht rückwirkend als ungeprüft bezeichnet.
 
 ## 9. Konkrete manuelle Abnahme nach der Nacharbeit
 

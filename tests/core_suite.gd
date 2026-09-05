@@ -55,6 +55,20 @@ static func _test_layout_validation_and_identity(harness) -> void:
 	harness._assert_true(CourseValidatorScript.validate(corner_contact).is_empty(), "Corner contact without an explicit edge is not an automatic connection.")
 	var angled_split := _angled_split_connection_course()
 	harness._assert_true(CourseValidatorScript.validate(angled_split).is_empty(), "A larger rotated field can have readable slanted transitions to multiple smaller neighbors.")
+	var ambiguous_side_gap := _corner_contact_course()
+	ambiguous_side_gap.layouts["north"]["position"] = [2.0, 2.2]
+	ambiguous_side_gap.layouts["north"]["anchor"] = [2.0, 2.2]
+	harness._assert_true(
+		_errors_contain(CourseValidatorScript.validate_layout(ambiguous_side_gap), "readable side gap without an explicit graph edge"),
+		"A close overlapping side pair without an explicit edge is rejected instead of becoming an invisible wall.",
+	)
+	var clearly_separated := _corner_contact_course()
+	clearly_separated.layouts["north"]["position"] = [2.0, 2.5]
+	clearly_separated.layouts["north"]["anchor"] = [2.0, 2.5]
+	harness._assert_false(
+		_errors_contain(CourseValidatorScript.validate_layout(clearly_separated), "readable side gap without an explicit graph edge"),
+		"The documented half-unit separation is not mistaken for a runtime connection.",
+	)
 
 	var missing_transition := _basic_course()
 	missing_transition.transitions.clear()

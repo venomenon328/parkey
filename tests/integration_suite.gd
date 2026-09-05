@@ -30,6 +30,18 @@ static func _test_handcrafted_course(harness) -> void:
 	harness._assert_true(is_equal_approx(float(course.layouts["upper_4"]["size"][0]), 2.6), "The irregular passage includes a moderately wider field.")
 	harness._assert_true(is_equal_approx(float(course.layouts["upper_5"]["size"][0]), 1.4), "The irregular passage includes a moderately narrower field.")
 	harness._assert_equal(course.layouts["fork"].get("rotation_deg"), 18.0, "The course includes a data-authored slanted orientation.")
+	harness._assert_true(
+		_branch_clearance(course, "upper_2", "lower_2") >= HandcraftedCourseScript.BRANCH_SEPARATOR_WIDTH - 0.001,
+		"The W/F representative pair has a clearly wider separator than a playable transition gap.",
+	)
+	for pair in [["upper_1", "lower_1"], ["upper_4", "lower_4"], ["upper_8", "lower_8"]]:
+		harness._assert_false(course.has_edge(pair[0], pair[1]), "Separated branch fields %s/%s are explicitly non-neighbors." % pair)
+		harness._assert_true(
+			_branch_clearance(course, pair[0], pair[1]) >= HandcraftedCourseScript.BRANCH_SEPARATOR_WIDTH - 0.001,
+			"Separated branch fields %s/%s retain the documented visible clearance." % pair,
+		)
+	for pair in [["fork", "upper_1"], ["fork", "lower_1"], ["upper_8", "merge"], ["lower_8", "merge"]]:
+		harness._assert_true(course.has_edge(pair[0], pair[1]), "Representative visible transition %s/%s has an explicit graph edge." % pair)
 
 	var upper := RunSession.new(course)
 	_drive_letters_direct(upper, HandcraftedCourseScript.UPPER_ROUTE, 1000)
@@ -55,7 +67,8 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	var scene: PlayableCourseScene = fixture["scene"]
 	var clock: MonotonicClock = fixture["clock"]
 	harness._assert_not_null(scene.get_node_or_null("HUD/TimerLabel"), "The real scene initializes its timer HUD in the SceneTree.")
-	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/Head"), "The real scene contains a distinguishable player head.")
+	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Head"), "The real scene contains a distinguishable player head.")
+	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/HeadIndicator"), "The head has an asymmetric orientation signal that makes shaking visible.")
 	harness._assert_not_null(scene.get_node_or_null("CourseCamera"), "The real scene initializes the automatic camera.")
 	harness._assert_equal(scene.field_nodes.size(), 26, "The renderer builds every field from CourseData.")
 	harness._assert_equal(scene.course_identity_after_render, scene.course_identity_before_render, "Scene construction does not mutate course identity.")
@@ -65,6 +78,19 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	scene._process(0.0)
 	harness._assert_equal(scene.session.state, RunSessionScript.State.READY, "Arbitrary scene rendering never starts the waiting run.")
 	harness._assert_equal(scene.timer_label.text, "00:00.000", "The visible timer remains zero throughout readiness.")
+	var ready_start_state := scene.field_visual_state("start")
+	harness._assert_true(ready_start_state["current"] and ready_start_state["visited"], "The start field is visibly current and visited in readiness.")
+	harness._assert_true(scene.field_visual_state("approach_a")["reachable"], "The first reachable field has its own visible state.")
+	harness._assert_false(scene.field_visual_state("approach_z")["visited"], "An untouched non-neighbor remains in the standard state.")
+	var course_identity_before_states := scene.session.course_identity()
+	var camera_to_start := scene.camera_target_for_field("start") - scene._anchor_world("start")
+	harness._assert_true(camera_to_start.dot(scene.course_forward()) < -PlayableCourseSceneScript.CAMERA_DISTANCE + 0.01, "The camera starts behind the figure along the course direction.")
+	harness._assert_true(absf(camera_to_start.dot(Vector3(-scene.course_forward().z, 0.0, scene.course_forward().x))) < 0.001, "The rear camera has no isometric side offset.")
+	harness._assert_true(scene.camera.projection == Camera3D.PROJECTION_PERSPECTIVE, "The reproducible rear composition uses perspective projection.")
+	var viewport_rect := scene.get_viewport().get_visible_rect()
+	harness._assert_true(scene.profile_label.get_global_rect().end.x <= viewport_rect.end.x, "The renderer profile stays inside the responsive top bar.")
+	harness._assert_true(scene.input_test.get_global_rect().end.y <= viewport_rect.end.y, "The bottom-anchored focus control stays inside the viewport.")
+	harness._assert_true(scene.profile_label.clip_contents and scene.profile_label.autowrap_mode != TextServer.AUTOWRAP_OFF, "Long diagnostic profile text wraps and clips inside its assigned HUD region.")
 
 	var fork_layout: Dictionary = scene.course.layouts["fork"]
 	var fork_node: Node3D = scene.field_nodes["fork"]
@@ -85,33 +111,46 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_equal(scene.session.state, RunSessionScript.State.READY, "Echo, key-up and shortcut events do not start through the scene path.")
 	var shifted_a := _key(KEY_A, 65)
 	shifted_a.shift_pressed = true
-	await _push_key(scene, shifted_a)
+	var camera_before_first_move := scene.camera.global_transform
+	scene.get_viewport().push_input(shifted_a)
 	harness._assert_equal(scene.session.current_field_id, "approach_a", "The viewport path uses the first letter as start and movement.")
 	harness._assert_equal(scene.session.start_usec, 10000000, "The scene forwards the captured receipt time unchanged.")
+	harness._assert_transform_close(scene.camera.global_transform, camera_before_first_move, 0.0001, "A logical step does not snap camera position or orientation inside the input callback.")
+	harness._assert_true(scene.field_visual_state("start")["visited"] and scene.field_visual_state("start")["reachable"], "The visited return neighbor combines both states.")
+	harness._assert_true(scene.field_visual_state("approach_a")["current"] and scene.field_visual_state("approach_a")["visited"], "The logical destination becomes current and visited before animation catches up.")
+	await scene.get_tree().process_frame
 	var field_before_ui := scene.session.current_field_id
-	scene.input_test.grab_focus()
-	scene.input_test.text = "AB"
-	scene.input_test.caret_column = scene.input_test.text.length()
+	await _push_mouse_click(scene, scene.input_test.get_global_rect().get_center())
+	harness._assert_equal(scene.get_viewport().gui_get_focus_owner(), scene.input_test, "A real viewport click focuses the LineEdit.")
+	await _push_key(scene, _key(KEY_B, 98))
+	await _push_key(scene, _key(KEY_C, 99))
+	harness._assert_equal(scene.input_test.text, "bc", "Real viewport key events enter text in the focused LineEdit.")
 	clock.current_usec = 10000100
 	await _push_key(scene, _key(KEY_BACKSPACE))
 	harness._assert_equal(scene.session.current_field_id, field_before_ui, "A focused LineEdit consumes Backspace without Quick Restart.")
 	harness._assert_equal(scene.session.state, RunSessionScript.State.RUNNING, "UI text editing does not alter the active run.")
-	harness._assert_equal(scene.input_test.text, "A", "The focused LineEdit performs its own Backspace edit.")
+	harness._assert_equal(scene.input_test.text, "b", "The focused LineEdit performs its own Backspace edit.")
 	clock.current_usec = 10000200
 	await _push_key(scene, _key(KEY_Z, 122))
 	harness._assert_equal(scene.session.current_field_id, field_before_ui, "A focused LineEdit consumes letters without movement.")
-	harness._assert_equal(scene.input_test.text, "Az", "The focused LineEdit receives the typed letter.")
-	scene.input_test.release_focus()
+	harness._assert_equal(scene.input_test.text, "bz", "The focused LineEdit receives the typed letter.")
+	var position_before_canvas_click := scene.session.current_field_id
+	await _push_mouse_click(scene, Vector2(1050.0, 520.0))
+	harness._assert_true(scene.get_viewport().gui_get_focus_owner() != scene.input_test, "A real click in free gameplay space releases text focus.")
+	harness._assert_equal(scene.session.current_field_id, position_before_canvas_click, "The canvas refocus click itself neither starts nor moves the run.")
 	var qwertz_z := _key(KEY_Z, 122)
 	qwertz_z.physical_keycode = KEY_Y
 	clock.current_usec = 10000300
 	await _push_key(scene, qwertz_z)
 	harness._assert_equal(scene.session.current_field_id, "approach_z", "The scene uses visible Unicode Z even on physical Y.")
 	harness._assert_true(not scene.visual_waypoints.is_empty(), "The presentation may still be following valid movement when another input arrives.")
+	harness._assert_equal(scene.session.course_identity(), course_identity_before_states, "Visited and reachable presentation state never mutates course identity.")
 
 	clock.current_usec = 10000400
 	await _push_key(scene, _key(KEY_BACKSPACE))
 	harness._assert_true(scene.visual_waypoints.is_empty(), "Restart during visual movement cancels its old route immediately.")
+	harness._assert_equal(scene.visited_field_ids.size(), 1, "Quick Restart clears the old visit trail.")
+	harness._assert_true(scene.visited_field_ids.has("start"), "Quick Restart restores only the visited start field.")
 	var repeated_backspace := _key(KEY_BACKSPACE)
 	repeated_backspace.echo = true
 	await _push_key(scene, repeated_backspace)
@@ -163,6 +202,8 @@ static func _test_lock_restart_menu_and_focus(harness) -> void:
 	harness._assert_equal(scene.session.lock_until_usec, 300000, "The integrated P1 lock lasts exactly 200,000 microseconds.")
 	harness._assert_true(scene.lock_label.visible, "The integrated lock has immediate visible feedback.")
 	harness._assert_vector_close(scene.figure.position, scene._anchor_world("start"), 0.0001, "Error feedback reconciles visible and logical positions.")
+	harness._assert_true(scene._head_shake_remaining > 0.0, "Error feedback starts the visible asymmetric head-pivot motion.")
+	harness._assert_equal(scene.visited_field_ids.size(), 1, "A rejected first letter does not add a visited field.")
 
 	clock.current_usec = 299999
 	scene._process(0.0)
@@ -257,6 +298,9 @@ static func _test_fast_input_and_presentation_budget(harness) -> void:
 	harness._assert_equal(scene.session.elapsed_usec(500000), 0, "The integration adds no frame- or distance-based minimum time.")
 	harness._assert_true(scene.visual_waypoints.size() <= PlayableCourseSceneScript.MAX_VISUAL_WAYPOINTS, "The presentation queue has a central finite bound.")
 	harness._assert_true(scene.visual_snap_count > 0, "An excessive burst uses the documented immediate correction strategy.")
+	var camera_before_zero_delta := scene.camera.global_transform
+	scene._update_camera(0.0)
+	harness._assert_transform_close(scene.camera.global_transform, camera_before_zero_delta, 0.0001, "Zero delta never reinitializes an already active camera.")
 	scene._advance_visual(PlayableCourseSceneScript.MAX_CATCH_UP_SECONDS)
 	harness._assert_vector_close(scene.figure.position, scene._anchor_world("start"), 0.0001, "The bounded burst tail follows its remaining route and reaches the logical anchor.")
 
@@ -268,25 +312,70 @@ static func _test_fast_input_and_presentation_budget(harness) -> void:
 	scene._advance_visual(PlayableCourseSceneScript.MAX_CATCH_UP_SECONDS)
 	harness._assert_true(scene.visual_waypoints.is_empty(), "Presentation catches up within the central 350 ms budget.")
 	harness._assert_vector_close(scene.figure.position, scene._anchor_world(scene.session.current_field_id), 0.0001, "Catch-up ends on the logical data anchor.")
-	scene._update_camera(PlayableCourseSceneScript.CAMERA_CATCH_UP_SECONDS)
+	var camera_before_follow := scene.camera.position
+	var focus_before_follow := scene._camera_focus
+	var direction_before_follow := -scene.camera.global_basis.z
+	scene._update_camera(0.05)
+	harness._assert_true(scene.camera.position.distance_to(camera_before_follow) > 0.001, "A small frame advances camera position continuously.")
+	harness._assert_true(scene.camera.position.distance_to(scene.camera_target_for_field(scene.session.current_field_id)) > 0.001, "A small frame does not jump straight to the camera goal.")
+	harness._assert_true(scene._camera_focus.distance_to(focus_before_follow) > 0.001, "The camera focus advances together with position instead of snapping on input.")
+	harness._assert_true(scene._camera_focus.distance_to(scene.camera_focus_for_field(scene.session.current_field_id)) > 0.001, "The smoothed look target remains between its old and new goals after a small frame.")
+	harness._assert_true(direction_before_follow.angle_to(-scene.camera.global_basis.z) < deg_to_rad(5.0), "A small follow frame cannot abruptly reorient the camera.")
+	var camera_before_error := scene.camera.global_transform
+	clock.current_usec = 511100
+	scene.get_viewport().push_input(_key(KEY_X, 120))
+	harness._assert_transform_close(scene.camera.global_transform, camera_before_error, 0.0001, "An error reconciles the figure without snapping camera position or orientation.")
+	await scene.get_tree().process_frame
+	scene._update_camera(PlayableCourseSceneScript.CAMERA_CATCH_UP_SECONDS - 0.05)
 	harness._assert_vector_close(scene.camera.position, scene.camera_target_for_field(scene.session.current_field_id), 0.0001, "The camera catches up within its central 450 ms budget.")
+	harness._assert_vector_close(scene._camera_focus, scene.camera_focus_for_field(scene.session.current_field_id), 0.0001, "The camera look target catches up within the same finite budget.")
 
-	clock.current_usec = 520000
+	clock.current_usec = 720000
 	await _push_key(scene, _key(KEY_BACKSPACE))
-	var start_without_frames := 521000
+	clock.current_usec = 721000
+	await _push_key(scene, _key(KEY_A, 97))
+	scene._update_camera(0.08)
+	var camera_during_forward := scene.camera.global_transform
+	clock.current_usec = 722000
+	scene.get_viewport().push_input(_key(KEY_S, 115))
+	harness._assert_transform_close(scene.camera.global_transform, camera_during_forward, 0.0001, "A rapid return step cannot hard-turn or relocate the camera in the input callback.")
+	await scene.get_tree().process_frame
+	var direction_before_return_follow := -scene.camera.global_basis.z
+	scene._update_camera(0.04)
+	harness._assert_true(scene.camera.position.distance_to(scene.camera_target_for_field("start")) > 0.001, "A direction change remains a gradual camera correction.")
+	harness._assert_true(direction_before_return_follow.angle_to(-scene.camera.global_basis.z) < deg_to_rad(5.0), "A return follow frame keeps camera orientation continuous.")
+
+	clock.current_usec = 730000
+	await _push_key(scene, _key(KEY_BACKSPACE))
+	var camera_before_route_burst := scene.camera.global_transform
+	for index in HandcraftedCourseScript.UPPER_ROUTE.length():
+		clock.current_usec = 731000 + index
+		var burst_letter := HandcraftedCourseScript.UPPER_ROUTE.substr(index, 1)
+		scene.get_viewport().push_input(_key(burst_letter.unicode_at(0), burst_letter.unicode_at(0)))
+	harness._assert_equal(scene.session.state, RunSessionScript.State.FINISHED, "A complete route burst reaches the logical target before any render frame.")
+	harness._assert_transform_close(scene.camera.global_transform, camera_before_route_burst, 0.0001, "A full route burst cannot cut the camera to its final field.")
+	scene._update_camera(0.03)
+	harness._assert_true(scene.camera.position.distance_to(scene.camera_target_for_field("target")) > 0.001, "The burst camera begins with a continuous partial catch-up step.")
+	scene._update_camera(PlayableCourseSceneScript.CAMERA_CATCH_UP_SECONDS - 0.03)
+	harness._assert_vector_close(scene.camera.position, scene.camera_target_for_field("target"), 0.0001, "The burst camera reaches its final position at the finite budget boundary.")
+	harness._assert_vector_close(scene._camera_focus, scene.camera_focus_for_field("target"), 0.0001, "The burst look target reaches the same finite budget boundary.")
+
+	clock.current_usec = 820000
+	await _push_key(scene, _key(KEY_BACKSPACE))
+	var start_without_frames := 821000
 	for index in 50:
 		clock.current_usec = start_without_frames
 		var letter := "A" if index % 2 == 0 else "S"
 		scene.get_viewport().push_input(_key(KEY_A if letter == "A" else KEY_S, letter.unicode_at(0)))
 	await harness.process_frame
 	var state_without_frames := [scene.session.current_field_id, scene.session.elapsed_usec(start_without_frames), scene.session.error_count]
-	clock.current_usec = 530000
+	clock.current_usec = 830000
 	await _push_key(scene, _key(KEY_BACKSPACE))
 	for index in 50:
-		clock.current_usec = 531000
+		clock.current_usec = 831000
 		var letter := "A" if index % 2 == 0 else "S"
 		await _push_key(scene, _key(KEY_A if letter == "A" else KEY_S, letter.unicode_at(0)))
-	var state_with_frames := [scene.session.current_field_id, scene.session.elapsed_usec(531000), scene.session.error_count]
+	var state_with_frames := [scene.session.current_field_id, scene.session.elapsed_usec(831000), scene.session.error_count]
 	harness._assert_equal(state_with_frames, state_without_frames, "Different render progress produces the same controlled core state and time.")
 	_scene_cleanup(scene)
 	await harness.process_frame
@@ -306,7 +395,21 @@ static func _scene_fixture(harness) -> Dictionary:
 
 
 static func _push_key(scene: PlayableCourseScene, event: InputEventKey) -> void:
-	scene.get_viewport().push_input(event)
+	scene.get_viewport().push_input(event, true)
+	await scene.get_tree().process_frame
+
+
+static func _push_mouse_click(scene: PlayableCourseScene, position: Vector2) -> void:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.position = position
+	event.global_position = position
+	event.pressed = true
+	scene.get_viewport().push_input(event, true)
+	await scene.get_tree().process_frame
+	event = event.duplicate()
+	event.pressed = false
+	scene.get_viewport().push_input(event, true)
 	await scene.get_tree().process_frame
 
 
@@ -332,3 +435,12 @@ static func _key(keycode: Key, unicode: int = 0) -> InputEventKey:
 	event.unicode = unicode
 	event.pressed = true
 	return event
+
+
+static func _branch_clearance(course: CourseData, first_id: String, second_id: String) -> float:
+	var first: Dictionary = course.layouts[first_id]
+	var second: Dictionary = course.layouts[second_id]
+	var first_position := Vector2(float(first["position"][0]), float(first["position"][1]))
+	var second_position := Vector2(float(second["position"][0]), float(second["position"][1]))
+	var delta := (second_position - first_position).rotated(deg_to_rad(-float(first["rotation_deg"])))
+	return absf(delta.y) - (float(first["size"][1]) + float(second["size"][1])) * 0.5

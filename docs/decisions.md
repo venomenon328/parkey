@@ -26,7 +26,7 @@ Stand: 2026-09-05. Quelle ist die Projektabstimmung einschließlich freier Strec
 
 ## Für P1 freigegebene Entscheidungen
 
-Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle. Der testbare P1a-Kern ist über PR #12 abgenommen und gemergt; der sichtbare P1b-Spielablauf ist im Draft-PR #13 implementiert, aber nach manueller Rückmeldung und Review noch nachzuarbeiten.
+Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle. Der testbare P1a-Kern ist über PR #12 abgenommen und gemergt; der sichtbare P1b-Spielablauf und die Review-Nacharbeit sind im Draft-PR #13 implementiert, aber noch nicht vollständig abgenommen.
 
 | ID | Entscheidung |
 | --- | --- |
@@ -44,7 +44,7 @@ Die getrennte Menü-/Wertungsbehandlung, Start-/Zielgrenzen und Paketabgrenzung 
 | --- | --- |
 | D-019 | Bereits betretene Felder und aktuell über die gespeicherten Verbindungen erreichbare Nachbarfelder haben einen klar erkennbaren visuellen Status gegenüber dem Standard. Auch das aktuelle Feld bleibt eindeutig. Besuchsstatus und Erreichbarkeit sind kombinierbare Informationen: Ein besuchter Nachbar darf weiterhin als erreichbar erkennbar sein. Die endgültige Gestaltung ist offen; eine gut lesbare provisorische Darstellung ist bereits für P1b erforderlich. |
 | D-020 | Die Kamera bewegt sich innerhalb eines Versuchs kontinuierlich und flüssig, ohne Jump-Cuts, schlagartiges Neuausrichten oder Reset bei Tastendrücken. Position und Blickrichtung/Blickziel müssen gemeinsam berücksichtigt werden. Auch Fehler, Rückwege, Gabelungen und schnelles Aufholen dürfen keinen Kameraschnitt auslösen. Eine notwendige Figurenkorrektur darf nicht die Kamera hart versetzen. Initiale Aufstellung und ausdrücklich ausgelöster Quick Restart sind getrennte Lebenszyklusvorgänge, keine Ausnahme für normale Eingaben. |
-| D-021 | Bevorzugte Gestaltungsrichtung ist eine perspektivische Third-Person-Rückansicht wie im ursprünglichen Mock-Screenshot: Kamera hinter der Figur mit Blick auf den vorausliegenden Parcours, nicht die seitlich erhöhte, isometrisch wirkende Draufsicht des P1b-Prüfstands. Diese Richtung wird bei den aktuellen P1b-Korrekturen berücksichtigt; genaue Höhe, Abstand, Neigung, Sichtfeld und Kurven-/Rückwegführung bleiben zu erproben. Eine moderate Erhöhung für lesbare Feldoberflächen ist zulässig. D-020 sowie die Lesbarkeit des aktuellen Felds, aller erreichbaren Nachbarn und der Routenoptionen bleiben verbindlich. |
+| D-021 | Bevorzugte Gestaltungsrichtung ist eine perspektivische Third-Person-Rückansicht wie im ursprünglichen Mock-Screenshot: Kamera hinter der Figur mit Blick auf den vorausliegenden Parcours, nicht die seitlich erhöhte, isometrisch wirkende Draufsicht des P1b-Prüfstands. Diese Richtung ist in der aktuellen P1b-Nacharbeit umgesetzt; genaue Höhe, Abstand, Neigung, Sichtfeld und Kurven-/Rückwegführung bleiben zu erproben. Eine moderate Erhöhung für lesbare Feldoberflächen ist zulässig. D-020 sowie die Lesbarkeit des aktuellen Felds, aller erreichbaren Nachbarn und der Routenoptionen bleiben verbindlich. |
 
 Konkretisierung für P1b: Besuchsstatus wird aus akzeptierten logischen Feldwechseln je Versuch geführt, nicht aus einer nachlaufenden Figur oder gedrückten, aber verworfenen Tasten. Das besetzte Startfeld ist bereits besucht; Quick Restart setzt die Besuchshistorie auf diesen Ausgangszustand zurück. Rückwege verlieren die Information nicht. Der Status verändert weder Streckendaten/-identität noch Kanten, Buchstaben oder Wertungsregeln. Eine sichtbare Fläche/Umrandung mit zusätzlichem Formsignal ist eine mögliche Darstellung, keine festgelegte finale Farbpalette.
 
@@ -55,7 +55,7 @@ D-011 wird durch den manuellen Befund am W-Feld bekräftigt: Eine als normal beg
 | ID | Wert/Idee | Einordnung |
 | --- | --- | --- |
 | T-001 | Fehlerpause zunächst **200 ms** | Durch D-016 für das erste Profil freigegeben; weiterhin kein endgültiges Balancing. Zentral konfigurieren und wertungsrelevante Änderungen versionieren. |
-| T-002 | Kleine Kopfschüttelanimation bei einem Fehler | Für P1b vorläufig umgesetzt, Erkennbarkeit aber noch nachzuarbeiten bzw. manuell zu prüfen. Die Rückmeldung verlängert die definierte Sperrdauer nicht und darf spielrelevante Zeichen nicht verdecken. |
+| T-002 | Kleine Kopfschüttelanimation bei einem Fehler | Für P1b mit asymmetrischem Kopfsignal und gemeinsamem Pivot nachgearbeitet; technische Auslösung ist geprüft, menschliche Wahrnehmbarkeit bleibt manuell abzunehmen. Die Rückmeldung verlängert die definierte Sperrdauer nicht und darf spielrelevante Zeichen nicht verdecken. |
 
 ## Umsetzungsvorschläge und abgelöste Einträge
 
@@ -69,7 +69,7 @@ D-011 wird durch den manuellen Befund am W-Feld bekräftigt: Eine als normal beg
 | P-006 | Zunächst lokale Ranglisten je Strecken-/Regelidentität, noch kein Online-Dienst | Geplanter Lieferumfang von P1c; Speicher-/Onlinefragen blockieren den P1a-Kern nicht. Keine automatische Windows-/Web-Synchronisierung. |
 | P-007 | Automatische perspektivische Third-Person-Rückansicht gemäß D-021; lesbare Nachbarn und rechtzeitig sichtbare Verzweigungen | Der bisherige P1b-Prüfstand ist weder als Kamerarichtung noch hinsichtlich flüssiger Bewegung abgenommen. D-020/D-021 leiten die Nacharbeit; finale Kameraparameter bleiben offen. |
 | P-008 | Zuerst handgebaute Teststrecken, danach modulbasierte Seed-Generierung | Erst gute Abschnittstypen finden, dann reproduzierbar kombinieren. |
-| P-009 | Unabhängige logische Position und aufholende visuelle Bewegung; keine unbeschränkte Animationswarteschlange | Endliche Wegpunktgrenze und Aufholbudget sind implementiert, aber noch nicht visuell abgenommen. D-003/D-012/D-020 bleiben verbindlich; ein endliches Budget rechtfertigt keine Kameraschnitte. |
+| P-009 | Unabhängige logische Position und aufholende visuelle Bewegung; keine unbeschränkte Animationswarteschlange | Endliche Wegpunktgrenze und Aufholbudgets sind implementiert. Die Kamera-Nacharbeit führt Position und Blickziel gemeinsam und trennt Figurenkorrektur vom Kamerareset; automatisierte sowie OS-synthetische Exportläufe sind bestanden, physische Nutzerabnahme bleibt offen. D-003/D-012/D-020 bleiben verbindlich. |
 
 Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Entscheidungen. Statusänderungen erfolgen nachvollziehbar.
 
@@ -77,7 +77,7 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 
 **P1a / Issue #2:** Abgeschlossen. Regelprofil, Datenformat, kleines ebenes Layoutprofil, Zahlenpräzision und Toleranzen sind dokumentiert und technisch abgenommen. Merge über PR #12: `5ddf921fdf3736f9e521b8e37b833139beee636f`. Keine neue Freigabe des Kernprofils erforderlich.
 
-**P1b / Issue #3:** Im Draft-PR #13 implementiert, jedoch nicht abgenommen. Die manuelle Rückmeldung zu `c4142a1` beanstandet irreführende Seitenanschlüsse, unzureichende Feldzustände und Kamerasprünge. [p1b-implementation.md](p1b-implementation.md) und der aktuelle PR-Review konkretisieren die Nacharbeit einschließlich Integrationsregressionen und echter Windows-/Chrome-Spielprüfung. D-019 bis D-021 benötigen keine erneute Freigabe; die bevorzugte Rückansicht wird bereits in der Kameranacharbeit berücksichtigt. Escape ist von Quick Restart getrennt; vollständige Menü-/Fortsetzungsoberfläche und Persistenz bleiben außerhalb des Pakets.
+**P1b / Issue #3:** Im Draft-PR #13 einschließlich der Nacharbeit zu Review 5121935189 implementiert, jedoch noch nicht abgenommen. Die parallelen Äste sind deutlich getrennt, Feldzustände einschließlich Besuchsspur umgesetzt, Maus-Rückfokus integriert und Kameraposition/-blickziel kontinuierlich geführt. Automatisierte Tests und echte Exportstarts mit OS-synthetischen Eingaben sind bestanden; CI auf dem neuen Commit, Re-Review und physische Nutzerabnahme bleiben offen. D-019 bis D-021 benötigen keine erneute Freigabe. Escape ist von Quick Restart getrennt; vollständige Menü-/Fortsetzungsoberfläche und Persistenz bleiben außerhalb des Pakets.
 
 **Vor P2/P3:** Zielhardware, Auflösung und Leistungsbudget für #6; Kamera-/Routenlesbarkeit sowie Tippbarkeit in #5 erproben. Nur geeignete Bausteine für #7 freigeben. Weitere Tastaturlayouts und endgültige Streckenlängen bleiben offen. Größenbereiche, Mindestbreiten lesbarer Randübergänge und Fugentoleranzen sind an Testabschnitten zu erproben. Höhenwechsel, Sprung-/Brückenmechaniken und ein beliebiger Polygon-Generator sind nicht mitbeauftragt.
 
@@ -96,3 +96,4 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 - 2026-09-05: P1b-Handkurs, Spielszene, HUD, begrenztes visuelles Aufholen und `integration`-Suite im Draft-PR #13 umgesetzt. Das Regelprofil bleibt unverändert; Review und vollständige manuelle Plattformabnahme stehen getrennt aus.
 - 2026-09-05: Manuelle P1b-Rückmeldung erfasst. D-019 ergänzt den sichtbaren Besuchsstatus und bekräftigt die Nachbarmarkierung; D-020 präzisiert durchgehend flüssige Kameraführung. D-011 gilt auch für optisch irreführende Seitenfugen. Dokumentation und Review sind noch keine Fehlerbehebung oder Abnahme.
 - 2026-09-05: D-021 hält die Nutzerpräferenz für eine perspektivische Rückansicht nach dem ursprünglichen Mock fest, statt der isometrisch wirkenden seitlichen Draufsicht. Kameranacharbeit in P1b berücksichtigt diese Richtung zusammen mit D-020; konkrete Parameter und manuelle Abnahme bleiben offen.
+- 2026-09-05: Review-Nacharbeit in PR #13 implementiert: klare Asttrennung samt enger P1-Negativprüfung, kombinierbare Feldzustände/Besuchsspur, kontinuierliche Rückkamera, echter Canvas-Rückfokus und sichtbarer Kopfhinweis. OS-synthetische Exportläufe ersetzen weiterhin keine physische Nutzerabnahme.
