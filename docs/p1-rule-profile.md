@@ -1,6 +1,6 @@
 # Freigegebenes P1-Regelprofil
 
-Stand: 2026-09-05. **Für den PoC freigegeben; in P1a auf `codex/p1a-run-core` implementiert, aber noch nicht abgenommen.** Profilkennung: `p1-input-start-v1`. Grundlage sind die Nutzerentscheidungen D-014 bis D-018 im [Entscheidungsregister](decisions.md); D-001 bis D-013 bleiben unverändert. Diese Datei ist die maßgebliche Detailspezifikation für P1a und seine Folgepakete. Die früheren Vorschläge eines Enter-Starts, Countdowns und Escape-Abbruchs mit Rücksetzen sind ersetzt.
+Stand: 2026-09-05. **Für den PoC freigegeben; der P1a-Kern ist über PR #12 abgenommen und gemergt. Die sichtbare P1b-Integration ist vorbereitet, noch nicht implementiert.** Profilkennung: `p1-input-start-v1`. Grundlage sind die Nutzerentscheidungen D-014 bis D-018 im [Entscheidungsregister](decisions.md); D-001 bis D-013 bleiben unverändert. Diese Datei ist die maßgebliche Detailspezifikation für P1a und seine Folgepakete. Die früheren Vorschläge eines Enter-Starts, Countdowns und Escape-Abbruchs mit Rücksetzen sind ersetzt.
 
 ## 1. Bereitschaft und Start durch den ersten Buchstaben
 
@@ -17,13 +17,13 @@ Startzeit und erster Schritt bzw. Fehler verwenden exakt denselben Zeitwert. Ein
 | Aktion | Bedeutung und Vertrag |
 | --- | --- |
 | **Backspace / Quick Restart** | Aktuellen Versuch verwerfen und dieselbe Strecke in den Bereitschaftszustand zurücksetzen: Startfeld, null Zeit, null Fehler, keine Sperre und keine alten Eingaben. Erst der nächste neue Bewegungsbuchstabe startet den neuen Versuch. Kein Countdown. Bereits abgeschlossene Ergebnisse bleiben erhalten; kein zweiter Abschluss des alten Versuchs. |
-| **Escape / Pausemenü** | Eigenständige Menü-/Pause-Anforderung, **kein Quick Restart und kein Rücksetzen auf das Startfeld**. Die aktuelle Position und der bisherige Versuch dürfen nicht durch einen Reset-Handler überschrieben werden. Die Menüoberfläche ist noch nicht Teil von P1a. |
+| **Escape / Pausemenü** | Eigenständige Menü-/Pause-Anforderung, **kein Quick Restart und kein Rücksetzen auf das Startfeld**. Die aktuelle Position und der bisherige Versuch dürfen nicht durch einen Reset-Handler überschrieben werden. Die Menüoberfläche war nicht Teil von P1a; P1b benötigt nur eine minimale sichtbare Rückmeldung. |
 
 Beide Steuertasten sind keine Bewegungsbuchstaben und verursachen keine Fehlerstrafe. Sie sind auch während einer Fehlerpause bedienbar. Wiederholungsereignisse dürfen keine Restart-/Menükaskade auslösen; Texteingaben in UI-Feldern haben Vorrang, insbesondere Backspace zum Löschen im Textfeld.
 
-P1a benötigt für Escape nur einen eigenen testbaren Menüanforderungsvertrag bzw. ein Signal, nicht bereits ein vollständiges Menü oder eine Fortsetzungsoberfläche. Quick Restart und Menüanforderung dürfen nicht auf dieselbe Reset-Funktion abgebildet werden. Solange eine Menüunterbrechung angenommen ist, gehen keine Bewegungsereignisse in den Lauf. Eine Menüöffnung vor dem ersten Buchstaben startet keinen Timer; nach Rückkehr bleibt der Versuch bereit.
+P1a liefert für Escape einen eigenen testbaren Menüanforderungsvertrag, nicht bereits ein vollständiges Menü oder eine Fortsetzungsoberfläche. Quick Restart und Menüanforderung dürfen nicht auf dieselbe Reset-Funktion abgebildet werden. Solange eine Menüunterbrechung angenommen ist, gehen keine Bewegungsereignisse in den Lauf. Eine Menüöffnung vor dem ersten Buchstaben startet keinen Timer; nach Rückkehr bleibt der Versuch bereit.
 
-Wertungskonkretisierung: Die bestätigte Regel „keine gewertete Pause mit anschließendem Fortsetzen“ bleibt erhalten. Wird ein bereits gestarteter Lauf über das Pausemenü unterbrochen, ist er nicht mehr ranglistenfähig; Escape löscht ihn dennoch nicht wie Backspace. Ein späteres Fortsetzen zu Übungszwecken kann separat ergänzt werden und darf die Wertbarkeit nicht wiederherstellen. Diese Fortsetzungsfunktion ist kein Lieferumfang von P1a. Ein neuer gewerteter Versuch benötigt Quick Restart. Menüöffnung nach Zieleingang entwertet ein bereits abgeschlossenes gültiges Ergebnis nicht.
+Wertungskonkretisierung: Die bestätigte Regel „keine gewertete Pause mit anschließendem Fortsetzen“ bleibt erhalten. Wird ein bereits gestarteter Lauf über das Pausemenü unterbrochen, ist er nicht mehr ranglistenfähig; Escape löscht ihn dennoch nicht wie Backspace. Ein späteres Fortsetzen zu Übungszwecken kann separat ergänzt werden und darf die Wertbarkeit nicht wiederherstellen. Diese Fortsetzungsfunktion ist kein Lieferumfang von P1a/P1b. Ein neuer gewerteter Versuch benötigt Quick Restart. Menüöffnung nach Zieleingang entwertet ein bereits abgeschlossenes gültiges Ergebnis nicht.
 
 ## 3. Fehlerpause
 
@@ -51,9 +51,9 @@ Laufzeitbasis sind monotone Integer-Mikrosekunden. Die spätere HUD-Anzeige hat 
 
 ## 6. Paketgrenze und Nachweis
 
-P1a implementiert und testet Daten-/Validierungsverträge, RunSession, Beginn durch Eingabe, Fehlerfrist, Quick Restart, getrennte Menüanforderung, Fokusinvalidierung und einmaliges Ergebnis. Kein Countdown-Zustand erforderlich. Die Implementierung ist bis zur vollständigen technischen und Review-Abnahme weiterhin Draft.
+P1a implementiert und testet Daten-/Validierungsverträge, RunSession, Beginn durch Eingabe, Fehlerfrist, Quick Restart, getrennte Menüanforderung, Fokusinvalidierung und einmaliges Ergebnis. Kein Countdown-Zustand erforderlich. Der Kern wurde nach Review-Nacharbeit auf `617015d` abgenommen und über PR #12 nach `main` gemergt (`5ddf921fdf3736f9e521b8e37b833139beee636f`).
 
-P1b integriert diese Regeln in den spielbaren Parcours. Menügestaltung, umfangreiche Pause-/Fortsetzungslogik, persistente Speicherung und Generator werden nicht vorgezogen. Verbindliche Grenz- und Regressionstests stehen in [docs/testing.md](testing.md) und Issue #2. Die Freigabe des Profils ersetzt weder den P1a-Testnachweis noch die Abnahme.
+P1b integriert diese Regeln in den spielbaren Parcours; konkrete Integrationsvorgaben stehen in [p1b-implementation.md](p1b-implementation.md). Vollständige Menügestaltung, umfangreiche Pause-/Fortsetzungslogik, persistente Speicherung und Generator werden nicht vorgezogen. Verbindliche Grenz- und Regressionstests stehen in [testing.md](testing.md) und den jeweiligen Issues. Die Kernabnahme ersetzt nicht den Nachweis der sichtbaren Integration und ihrer echten Spielabnahme.
 
 ## 7. Technische Festlegungen der P1a-Implementierung
 
@@ -65,4 +65,4 @@ Ein Anker muss höchstens 0,001 Einheiten außerhalb der Grundfläche liegen. Je
 
 `course-identity-v1` bildet einen SHA-256 über kanonisch sortierte Graph-, Layout- und Profilwerte. Zahlen werden mit drei Nachkommastellen serialisiert; Übergangsrichtung und Punktreihenfolge werden für die Identität normalisiert. `material`, `surface`, `decoration` und `display_name` sind ausdrücklich kosmetisch und gehen nicht ein. Relevante Lage, Form, Größe, Drehung, Anker, Übergang sowie `p1-input-start-v1` mit Fehlerfrist dagegen schon. Damit bleiben Grafik und Bewegung vom Kern getrennt, Wertungen aber nicht versehentlich vermischt.
 
-`RunSession` akzeptiert nur bereits vollständig validierte Daten. Sie verwendet injizierbare monotone Integer-Mikrosekunden und verarbeitet gleichzeitige Ereignisse in Aufruf-/Empfangsreihenfolge. Der Eingabeadapter nutzt den P0-`KeyInputNormalizer`, behandelt Backspace und Escape getrennt und übergibt UI-, Fokus- und Kontextereignisse nicht an die Session. Die Session speichert keine Dateien; ihr einmaliges Ergebnis ist ein Kernereignis für P1c.
+`RunSession` akzeptiert nur bereits vollständig validierte Daten. Sie verwendet injizierbare monotone Integer-Mikrosekunden und verarbeitet gleichzeitige Ereignisse in Aufruf-/Empfangsreihenfolge. Der Eingabeadapter nutzt den P0-`KeyInputNormalizer`, behandelt Backspace und Escape getrennt und übergibt UI-, Fokus- und Kontextereignisse nicht als Bewegungsversuche an die Session. Fokusverlust meldet die Szenenintegration separat an den Kern. Die Session speichert keine Dateien; ihr einmaliges Ergebnis ist ein Kernereignis für P1c.

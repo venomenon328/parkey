@@ -1,14 +1,14 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 ist abgenommen; P1a ist in Draft-PR #12 implementiert und wird mit Review/Abnahme abgeschlossen.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
+Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 und P1a sind abgenommen und gemergt; P1b ist zur Umsetzung vorbereitet, noch nicht implementiert.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
-| Paket / Issue | Ergebnis | Start erst nach | Arbeitsbranch |
+| Paket / Issue | Ergebnis | Start erst nach / Stand | Arbeitsbranch |
 | --- | --- | --- | --- |
-| P0 / [#1](https://github.com/venomenon328/parkey/issues/1) | Ein Projekt, zwei Exporte, Test-/CI-Grundlage | Abgenommen | `codex/p0-godot-foundation` |
-| P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Implementiert in PR #12; Review/Abnahme | `codex/p1a-run-core` |
-| P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | #2 abgenommen und gemergt | `codex/p1b-playable-course` |
+| P0 / [#1](https://github.com/venomenon328/parkey/issues/1) | Ein Projekt, zwei Exporte, Test-/CI-Grundlage | Abgenommen und gemergt | `codex/p0-godot-foundation` |
+| P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Abgenommen, PR #12 gemergt | `codex/p1a-run-core` |
+| P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | Voraussetzung #2 erfüllt; Umsetzung vorbereitet | `codex/p1b-playable-course` |
 | P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | #3 | `codex/p1c-local-leaderboards` |
 | P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | #4; echter P1-Spieltest | `codex/p2a-route-decisions` |
 | P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | #5; Zielhardware/Budget klären | `codex/p2b-visual-slice` |
@@ -16,7 +16,7 @@ Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` |
 | P4 / [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | #8 | `codex/p4-poc-acceptance` |
 
-Abhängigkeiten bedeuten **abgenommen und nach `main` gemergt**, nicht nur „ein PR wurde eröffnet“. P0 ist abgeschlossen. Der P1a-Branch enthält Regelfreigabe und Kernimplementierung im selben Draft-PR auf Basis von `main` nach PR #11. Spätere Branches werden erst beim jeweiligen Start vom dann aktuellen `main` erstellt.
+Abhängigkeiten bedeuten **abgenommen und nach `main` gemergt**, nicht nur „ein PR wurde eröffnet“. P0 und P1a sind abgeschlossen. P1a-Merge: `5ddf921fdf3736f9e521b8e37b833139beee636f`. Darauf basiert die P1b-Vorbereitung. Dokumentation und anschließende Implementierung werden auf demselben P1b-Branch/PR geführt; keinen separaten Dokumentationsmerge verlangen. Spätere Branches werden erst beim jeweiligen Start vom dann aktuellen `main` erstellt.
 
 Nur #6/#7 sind nach #5 für Parallelität vorgesehen. Gemeinsame Datenverträge dürfen dabei nicht unabhängig geändert werden; #8 wartet auf beide Abnahmen. Standard bleibt ein Paket pro PR.
 
@@ -28,7 +28,15 @@ P1 trennt Regeln, Darstellung und Dateisystem: erst testbarer Kern, dann spielba
 
 Maßgeblich ist [p1-rule-profile.md](p1-rule-profile.md), Kennung `p1-input-start-v1`, auf Basis von D-014 bis D-018. Kein Countdown und kein Enter-Start. Der erste Bewegungsbuchstabe startet und wirkt im selben Ereignis; Backspace bereitet denselben Parcours neu vor, Escape ist eine getrennte Menü-/Pause-Anforderung. Fehler-, Rückweg-, Eingabe- und Fokusregeln sind für P1 freigegeben.
 
-Die Menüoberfläche und eine spätere Übungsfortsetzung sind nicht Teil von P1a. P1a liefert nur den getrennten Menüanforderungsvertrag. Technische Entscheidungen wie Klassen, internes Zustandsmodell, kanonische Zahlenrepräsentation und Toleranzen des kleinen ebenen Layoutprofils werden im Paket dokumentiert und getestet. Verhaltensänderungen am freigegebenen Profil werden dagegen nicht eigenmächtig vorgenommen; Profil-/Balancingänderungen berücksichtigen die Wertungsidentität.
+Die vollständige Menüoberfläche und eine spätere Übungsfortsetzung sind nicht Teil von P1a/P1b. P1a liefert den getrennten Menüanforderungsvertrag, P1b eine minimale sichtbare Rückmeldung dafür. Technische Entscheidungen wie Klassen, internes Zustandsmodell, kanonische Zahlenrepräsentation und Toleranzen des kleinen ebenen Layoutprofils werden im zuständigen Paket dokumentiert und getestet. Verhaltensänderungen am freigegebenen Profil werden nicht eigenmächtig vorgenommen; Profil-/Balancingänderungen berücksichtigen die Wertungsidentität.
+
+## P1b: konkreter nächster Auftrag
+
+Issue #3 und [p1b-implementation.md](p1b-implementation.md) konkretisieren die Integration auf dem abgenommenen Kern. Erforderlich sind ein validierter Handparcours mit etwa 20–40 Feldern und Gabelung/Zusammenführung, unregelmäßiger Stelle, sichtbarer Figur, automatischer Kamera, Timer, Fehlerfeedback und Quick Restart. Die Spielszene ersetzt den regulären P0-Einstieg, die P0-Diagnose bleibt separat erhalten.
+
+Kernregeln nicht in der Darstellung nachbauen. Eingabe-/UI-Fokus, Aufholen entlang des richtigen Wegs, Fristende ohne neue Eingabe, Abbrechen alter Animationen beim Restart und einmaliger Zieleingang sind zentrale Integrationsrisiken. Darstellungsparameter zentral festlegen und testen; keine neue Produktfreigabe für jede Kamerakonstante verlangen. Ein vollständiges Pausemenü, Persistenz und Generator bleiben außerhalb.
+
+Die neue Suite `integration` muss die wirkliche Spielszene verwenden. Nach Headless-Tests und Exporten folgt die reale Abnahme eines Windows-Laufs und eines HTTP-Web-Laufs in Chrome mit physischer Tastatur. Dafür eine konkrete Bedien-/Testanleitung und Artefaktpfade liefern. Keine automatische Abnahme allein aufgrund grüner CI.
 
 ## Nicht rastergebundene Strecken
 
@@ -36,7 +44,7 @@ D-010 bis D-013 bleiben verbindlich. Die P1-Regelfreigabe ändert keine Geometri
 
 | Paket | Verbindliche Abgrenzung |
 | --- | --- |
-| P1a / #2 | Explizite Nachbarlisten, getrennte Graph-/Layoutprüfung; kein Orthogonalitäts- oder Vier-Nachbarn-Limit. Fünf-Nachbarn-Test und Layoutvariation bei gleichen logischen Zeiten. Kleiner Layout-/Identitätsvertrag, kein universelles Geometriesystem. |
+| P1a / #2 | Explizite Nachbarlisten, getrennte Graph-/Layoutprüfung; kein Orthogonalitäts- oder Vier-Nachbarn-Limit. Fünf-Nachbarn-Test, gedrehter Mehrfachanschluss und Layoutvariation bei gleichen logischen Zeiten abgenommen. |
 | P1b / #3 | Einfacher Handparcours mit unregelmäßiger Stelle, moderaten Größenunterschieden und lesbarem schrägem Übergang. Plausible Anker/Bewegung, kein distanzabhängiges Warten. |
 | P1c / #4 | Relevante Layoutunterschiede trennen Ranglisten auch bei gleichem Graphen; reine Kosmetik nicht. |
 | P2a / #5 | Asymmetrische Routen, variable Anschlüsse und Geometrie erproben; Größenbereiche/Fugen dokumentieren. Keine feste Nachbarzahl als Produktregel. |
@@ -49,13 +57,13 @@ D-010 bis D-013 bleiben verbindlich. Die P1-Regelfreigabe ändert keine Geometri
 
 Jedes Paket liefert Implementierung, passende Tests, gepflegte Dokumentation und konkrete Nachweise. Issues enthalten Abnahmekriterien und Nicht-Ziele; kompakte Arbeitsanweisungen wiederholen den Lieferumfang nicht unnötig.
 
-[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert. P1a ergänzt `core`; weitere Suites entstehen erst in ihren Paketen. `all` führt alle bis dahin vorhandenen Suites aus. Unbekannte oder leere Suites müssen scheitern.
+[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert. P1a hat `core` ergänzt. `integration` ist vorbereitet, aber noch nicht implementiert; weitere Suites entstehen erst in ihren Paketen. `all` führt alle bis dahin vorhandenen Suites aus. Unbekannte oder leere Suites müssen scheitern.
 
-Reale Grafik, Hardwaretastatur, Browserpersistenz und Spielgefühl bleiben gesonderte Nachweise. Keine erfundene Abnahme bei fehlender Umgebung. P0-Starts und Hardwaretests sind bestanden; neue P1-Regeltests werden separat nachgewiesen. Fehlende verpflichtende Nachweise halten den jeweiligen PR im Draft.
+Reale Grafik, Hardwaretastatur, Browserpersistenz und Spielgefühl bleiben gesonderte Nachweise. Keine erfundene Abnahme bei fehlender Umgebung. P0-Starts und Hardwaretests sowie der P1a-Kern sind bestanden; der sichtbare P1b-Spielablauf ist dadurch noch nicht abgenommen. Fehlende verpflichtende Nachweise halten den jeweiligen PR im Draft.
 
 ## Branch, PR und Dokumentationspflege
 
-Vor Änderungen aktuelle Quellen und tatsächlichen Code lesen. Neue Paketbranches von aktuellem `main` erstellen. Code und betroffene Dokumentation gemeinsam committen/pushen, Draft-PR gegen `main` mit Issue-Verknüpfung pflegen. Nicht automatisch mergen. Technische und erforderliche manuelle Abnahme müssen dem Merge vorausgehen.
+Vor Änderungen aktuelle Quellen und tatsächlichen Code lesen. Neue Paketbranches von aktuellem `main` erstellen; vorhandene Vorbereitungscommits bei Fortführung erhalten. Code und betroffene Dokumentation gemeinsam committen/pushen, Draft-PR gegen `main` mit Issue-Verknüpfung pflegen. Nicht automatisch mergen. Technische und erforderliche manuelle Abnahme müssen dem Merge vorausgehen.
 
 Statusangaben trennen freigegeben, implementiert und abgenommen. Bei Entscheidungen Register/Spezifikation und betroffene offene Issues gemeinsam pflegen. Umfangreiche neue Erkenntnisse als enges Folgepaket behandeln, nicht in P4 verstecken. Keine öffentliche Veröffentlichung, Hostingkosten oder endgültige Lizenz ohne Auftrag.
 

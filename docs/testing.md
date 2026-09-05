@@ -1,6 +1,6 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist freigegeben; P1a implementiert seine `core`-Suite im Draft, die technische Abnahme bleibt offen. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist freigegeben und der P1a-Kern abgenommen/gemergt. P1b samt `integration`-Suite ist zur Umsetzung vorbereitet, noch nicht implementiert. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
 ## P0-Teststand
 
@@ -13,9 +13,15 @@ Dokumentierter Nachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.o
 
 P0 belegt technische Grundlage und reale Tastaturereignisse, keinen Parcours, Renntimer oder P1-Regeln. Die Regeldokumentation erweitert diesen Nachweis nicht rückwirkend.
 
+## P1a-Teststand und Abnahme
+
+Issue #2 / PR #12 ist nach gezielter Review-Nacharbeit auf `617015da51edb6ef9df85a450ff16a478e0fbe64` abgenommen. Der Implementierungsnachweis unter Windows mit Godot 4.7.2 nennt erfolgreichen Import, `core` mit **127 Assertions / 0 Failures**, `all` mit **158 Assertions / 0 Failures** und beide erfolgreichen Release-Exporte. CI-Lauf `33972097170` auf diesem Head erfolgreich.
+
+Der Re-Review prüfte insbesondere den gültigen 30°-Großfeld-/Mehrfachanschluss und die typfeste Validierung von `neighbors = 42`. Merge-Commit: `5ddf921fdf3736f9e521b8e37b833139beee636f`. Auch der anschließende `main`-CI-Lauf `33972595464` war erfolgreich. Dies sind Kern-/Buildnachweise; kein sichtbarer P1b-Parcours und kein P1b-Spielgefühl wurden damit abgenommen.
+
 ## Verbindlicher Test-/Exportvertrag
 
-`tests/run_tests.gd`, `smoke`/`all`, Export-Presets und minimale CI existieren seit P0. `godot` bezeichnet den gepinnten Standardeditor mit passenden Export-Templates. Ausgabeordner `build/windows` und `build/web` anlegen; Buildausgaben nicht mit Quellcode verwechseln.
+`tests/run_tests.gd`, `smoke`/`all`, Export-Presets und minimale CI existieren seit P0; `core` seit P1a. `godot` bezeichnet den gepinnten Standardeditor mit passenden Export-Templates. Ausgabeordner `build/windows` und `build/web` anlegen; Buildausgaben nicht mit Quellcode verwechseln.
 
 ```sh
 godot --headless --path . --import
@@ -24,7 +30,7 @@ godot --headless --path . --export-release "Windows Desktop" build/windows/parke
 godot --headless --path . --export-release "Web" build/web/index.html
 ```
 
-Windows: passenden PATH/Alias oder vollständigen Editorpfad aus [development.md](development.md) verwenden. Import/Export brauchen den Editor, nicht allein Templates. `--suite` ist unser Benutzerargument nach `--`, kein eingebauter Godot-Testbefehl. CLI-Quelle: https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html (Prüfung der Grundlage: 2026-09-05).
+Windows: den stabilen PATH-Shim oder vollständigen Editorpfad aus [development.md](development.md) verwenden. Import/Export brauchen den Editor, nicht allein Templates. `--suite` ist unser Benutzerargument nach `--`, kein eingebauter Godot-Testbefehl. CLI-Quelle: https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html (Prüfung der Grundlage: 2026-09-05).
 
 | Paket | Neue Suite | Prüfbereich |
 | --- | --- | --- |
@@ -38,7 +44,7 @@ Windows: passenden PATH/Alias oder vollständigen Editorpfad aus [development.md
 | P3b / #8 | `seed_flow` | Seed-/Sitzungs-/Speicherintegration und Exportkonformität |
 | P4 / #9 | `acceptance` | Komplette Läufe, Wiederholungen und Zustandstrennung |
 
-P1a ergänzt die echte GDScript-Suite `core`. Sie prüft Graph/Layout, Identität, Eingabeadapter, Start, Sperrgrenzen, Restart, Menü, Fokus und einmalige Ergebnisse mit einer injizierten Uhr. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
+Die echte GDScript-Suite `core` prüft Graph/Layout, Identität, Eingabeadapter, Start, Sperrgrenzen, Restart, Menü, Fokus und einmalige Ergebnisse mit einer injizierten Uhr. `integration` und spätere Suites sind noch nicht implementiert. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
 
 Beide Exporte bleiben in jedem Paket Pflicht, bei Kernänderungen auch über erfolgreiche CI auf aktuellem Head nachweisbar. Tests führen den wirklichen GDScript-Code aus, keine Python-/JavaScript-Ersatzimplementierung. Reale Plattformtests gemäß jeweiligem Issue zusätzlich durchführen.
 
@@ -52,7 +58,7 @@ python -m http.server 8000 --bind 127.0.0.1 --directory build/web
 
 ## Kernregeln ab P1a
 
-Die folgenden Fälle sind **verpflichtende neue Tests**, keine bereits bestandenen Prüfungen. Die frühere Countdown-Testanforderung ist ersetzt.
+Die folgenden Fälle bilden den dauerhaften Regel-/Regressionstestvertrag. Der konkrete P1a-Nachweis steht oben; Szenen-, UI- und Darstellungsfälle sind zusätzlich durch P1b zu beweisen. Die frühere Countdown-Testanforderung ist ersetzt.
 
 | Fall | Erwartung aus `p1-input-start-v1` |
 | --- | --- |
@@ -82,7 +88,27 @@ Die folgenden Fälle sind **verpflichtende neue Tests**, keine bereits bestanden
 
 Kontrollierte injizierte Uhr statt Sleep. Bei 200 ms insbesondere **199999, 200000 und 200001 µs nach Fehlerbeginn** prüfen, auch wenn der Fehler das erste Laufereignis war. Quick Restart entfernt alte Session-Ereignisse; Tests dürfen nicht nur Kernmethoden korrekt prüfen und den realen Eingabeadapter vergessen.
 
-P1b ergänzt die tatsächliche Start-/Quick-Restart-Verdrahtung, den Timer und UI-Kontext. Ein Backspace im späteren Seed-Textfeld löscht Text und startet keinen Lauf neu. Escape darf dort nicht versehentlich den Quick-Restart-Pfad verwenden. Menüoberfläche/Übungsfortsetzung werden durch diese Testanforderungen nicht vorgezogen.
+P1b ergänzt die tatsächliche Start-/Quick-Restart-Verdrahtung, den Timer und UI-Kontext. Ein Backspace im späteren Seed-Textfeld löscht Text und startet keinen Lauf neu. Escape darf dort nicht versehentlich den Quick-Restart-Pfad verwenden. Vollständige Menüoberfläche/Übungsfortsetzung werden durch diese Testanforderungen nicht vorgezogen.
+
+## P1b: Szenenintegration und reale Spielabnahme
+
+Issue #3 und [p1b-implementation.md](p1b-implementation.md) sind der konkrete nächste Auftrag. Zusätzlich zum gemeinsamen Vertrag:
+
+```sh
+godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
+```
+
+Die Suite ist erst zu implementieren. Sie muss die wirkliche Spielszene im SceneTree initialisieren und mindestens einen Lauf über ihren Event-/UI-Pfad ausführen. Kein Ersatz durch Tests, die ausschließlich `RunSession.handle_letter()` aufrufen oder Quelltextmuster suchen. Der Runner wartet auf ausstehende Szenentests; ein vorzeitiges erfolgreiches Beenden ist kein Testnachweis.
+
+Zu prüfen sind beide Routen und Rückwege, richtige/falsche Ersteingabe, Fehlerfrist, mindestens 50 schnelle Ereignisse bei unterschiedlichen Renderfortschritten, `LineEdit`-Fokus, Menü/Fokusverlust, Restart während Bewegungs-/Fehlerfeedback und einmalige Zielzeit. Standpunkte/Drehung/Übergänge entsprechen den Kursdaten; Szenenaufbau und Renderprofil ändern die Identität nicht. Vorhandene P0-Diagnose erhalten; nur die absichtlich geänderte Hauptszenen-Assertion anpassen.
+
+Darstellungsgrenzen sind zentral zu dokumentieren und zu testen: keine anwachsende Animationswarteschlange, Aufholen innerhalb des erklärten Budgets, kein Abschneiden über falsche Wege, keine alten Callbacks nach Restart. Die Sperranzeige endet nach Fristablauf auch ohne neue Eingabe; sie darf nicht allein an einem alten `LOCKED`-Enum hängen. Ein gespeichertes `last_result` erzeugt nach Restart keinen falschen erneuten Abschluss.
+
+HUD-Grenztests: `59.999.999 µs → 00:59.999` und `60.000.000 µs → 01:00.000`; ganzzahlige Anzeige, Originalzeit unverändert. Ein Zieleingang während noch laufender Grafik friert Ergebnis und Anzeige zum logischen Zeitpunkt ein.
+
+Reale Abnahme: Windows-Export mit Forward+ und über HTTP gestarteter Chrome-Web-Export mit Compatibility jeweils tatsächlich durchspielen. Beide Routen, Rückweg, Fehler/Restart/Menü/Fokus, Y/Z, Shift, Echo/Überlappung und ein schneller Burst mit physischer Tastatur prüfen. Lesbarkeit auch beim Fenstergrößenwechsel kontrollieren. Commit, Engine, OS/Browser, Hardware/Auflösung, ausgeführte Schritte und offene Befunde dokumentieren. Firefox bleibt verpflichtend bei P4, nicht zusätzliches P1b-Gate.
+
+Keine Persistenz- oder Generatorabnahme vorziehen. Die P1b-Übergabe liefert die konkrete Bedien-/Testanleitung und Artefaktpfade. Ein fehlender echter Spieltest bleibt offen; grüne CI ersetzt ihn nicht.
 
 ## Datenvalidator und Generator
 

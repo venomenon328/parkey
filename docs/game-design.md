@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013 sowie das für P1 freigegebene Profil D-014 bis D-018 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist im Draft implementiert; der sichtbare P1-Spielablauf folgt erst in P1b.
+Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013 sowie das für P1 freigegebene Profil D-014 bis D-018 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf ist gemäß [p1b-implementation.md](p1b-implementation.md) zur Umsetzung vorbereitet, noch nicht implementiert.
 
 ## Spielkern
 
@@ -22,7 +22,7 @@ Nur neue Key-downs zählen, Echo/Key-up nicht. Überlappende echte Tastendrücke
 
 Im freigegebenen P1-Profil verursacht ein falscher Bewegungsbuchstabe **200 ms** Stillstand am unveränderten Feld. Der Timer läuft weiter; die tatsächliche Pause ist die Strafe, ohne zusätzliche Zeitaddition. Eingaben während der Frist werden verworfen, nicht gepuffert, nicht zusätzlich gezählt und verlängern die Frist nicht. Neue Eingaben ab Fristende werden unabhängig vom Animationsstatus normal geprüft. Dies gilt auch für einen falschen ersten Bewegungsbuchstaben, der zugleich die Zeitmessung startet.
 
-Die vorgeschlagene Kopfschüttelrückmeldung darf die Frist nicht verlängern. Die Figur soll während der Sperre keine alten Vorwärtsanimationen abarbeiten. Der Übergang einer nachlaufenden Darstellung zum tatsächlichen logischen Feld wird gezielt getestet. Quick Restart und Menüanforderung bleiben während der Fehlerpause bedienbar; nicht die gesamte Engine pausieren.
+Die in P1b zu erprobende Kopfschüttelrückmeldung darf die Frist nicht verlängern. Die Figur soll während der Sperre keine alten Vorwärtsanimationen abarbeiten. Der Übergang einer nachlaufenden Darstellung zum tatsächlichen logischen Feld wird gezielt getestet. Quick Restart und Menüanforderung bleiben während der Fehlerpause bedienbar; nicht die gesamte Engine pausieren.
 
 Ob die verworfenen Eingaben unmittelbar vor Sperrende verständlich wirken, wird im Spieltest geprüft. Spätere Änderungen der Dauer oder Pufferung sind explizite versionierte Regeländerungen, keine unbemerkte Komfortkorrektur.
 
@@ -30,21 +30,21 @@ Ob die verworfenen Eingaben unmittelbar vor Sperrende verständlich wirken, wird
 
 Der validierte Parcours beginnt auf dem Startfeld in Bereitschaft, Timer null. **Der erste neue Bewegungsbuchstabe startet die Zeit und ist zugleich der erste Bewegungsversuch.** Es gibt keinen Countdown und keinen Enter-Start. Ein falscher erster A–Z-Versuch startet ebenso und wird regulär bestraft. Die Betrachtung der Strecke vor dem ersten Buchstaben ist erlaubt.
 
-**Backspace** ist Quick Restart: derselbe Parcours, Startfeld, Zeit/Fehler/Sperre zurückgesetzt und Bereitschaft für den nächsten neuen Bewegungsbuchstaben. **Escape** ist dagegen die eigenständige Anforderung eines klassischen Pausemenüs und setzt die Figur nicht auf Start zurück. Die vollständige Menüoberfläche ist noch nicht Bestandteil von P1a; Details und Wertungsabgrenzung stehen im [P1-Profil](p1-rule-profile.md). Eine Menüunterbrechung eines begonnenen Laufs ermöglicht keine gewertete Fortsetzung.
+**Backspace** ist Quick Restart: derselbe Parcours, Startfeld, Zeit/Fehler/Sperre zurückgesetzt und Bereitschaft für den nächsten neuen Bewegungsbuchstaben. **Escape** ist dagegen die eigenständige Anforderung eines klassischen Pausemenüs und setzt die Figur nicht auf Start zurück. Die vollständige Menüoberfläche ist nicht Bestandteil von P1a/P1b; für P1b genügt eine minimale sichtbare Menü-/Unterbrechungsrückmeldung. Details und Wertungsabgrenzung stehen im [P1-Profil](p1-rule-profile.md). Eine Menüunterbrechung eines begonnenen Laufs ermöglicht keine gewertete Fortsetzung.
 
 Fokusverlust während eines begonnenen Laufs bricht ihn ab und macht ihn nicht wertbar; Rückkehr startet nichts automatisch. Vor dem ersten Buchstaben existiert noch kein laufender Versuch. Ein schon abgeschlossenes gültiges Ergebnis wird durch späteren Fokusverlust, Menüöffnung oder Restart weder gelöscht noch dupliziert.
 
 Zieleingang beendet die Zeit beim gültigen logischen Schritt, nicht bei der Landung. Genau ein Ergebnis; spätere Animationen oder Speicherantworten ändern es nicht. Timeranzeige während des Rennens in Minuten, Sekunden und drei Nachkommastellen. Numerische monotone Zeitwerte statt Framezählung oder Sortierung formatierter Zeichenketten; Anzeigepräzision ist keine garantierte identische Gerätelatenz.
 
-Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speicherausbau in P1c, nicht Teil des P1a-Kerns. Gleichstandsdetails werden im Speicherpaket festgelegt; Onlinewertung bleibt separat.
+Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speicherausbau in P1c, nicht Teil des P1a-Kerns oder der P1b-Integration. P1b zeigt das aktuelle Ergebnis ohne Persistenz. Gleichstandsdetails werden im Speicherpaket festgelegt; Onlinewertung bleibt separat.
 
 ## Kamera und Lesbarkeit
 
-Die vorgeschlagene Kamera ist erhöht, nach unten geneigt und automatisch geführt. Figur und aktuelles Feld bleiben sichtbar; an Kreuzungen werden Optionen rechtzeitig erkennbar. Keine notwendigen Mausbewegungen oder abrupten Kamerasprünge bei jedem Richtungswechsel.
+Die für P1b vorgesehene Testkamera ist erhöht, nach unten geneigt und automatisch geführt. Figur und aktuelles Feld bleiben sichtbar; an Kreuzungen werden Optionen rechtzeitig erkennbar. Keine notwendigen Mausbewegungen oder abrupten Kamerasprünge bei jedem Richtungswechsel. Konkrete Darstellungsparameter werden im Test erprobt, nicht als endgültiges Kameradesign ausgegeben.
 
 Erreichbare Nachbarn erhalten eine zurückhaltende, nicht ausschließlich farbliche Markierung. Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; nötigenfalls dezente zusätzliche Buchstabenanzeigen.
 
-Während des Laufs genügen Timer, persönliche Bestzeit und Fehlerfeedback. Die ausführliche Rangliste erscheint vorzugsweise nach dem Lauf. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Effekte vermittelt werden.
+Während des P1b-Laufs genügen Timer und Fehlerfeedback, nach Abschluss Zeit und Fehlerzahl. Eine persönliche Bestzeit und ausführliche Rangliste kommen mit dem separaten Speicherausbau. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Effekte vermittelt werden.
 
 ## Strecken und Generation
 
@@ -60,7 +60,7 @@ Geeignete Stand-/Landepunkte liegen innerhalb der Felder; Übergangsverläufe bl
 
 ### PoC und Generierung
 
-Frühe Handstrecken dürfen einfach sein, ohne den Kern auf ihr Layout zu beschränken. P1a prüft unter anderem fünf eindeutig beschriftete Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem nicht rechtwinkligen lesbaren Übergang. Wenige einfache Formen genügen, kein beliebiger Polygon-Generator.
+Frühe Handstrecken dürfen einfach sein, ohne den Kern auf ihr Layout zu beschränken. P1a prüft unter anderem fünf eindeutig beschriftete Nachbarn und einen gedrehten größeren Knoten mit zwei kleineren Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem nicht rechtwinkligen lesbaren Übergang. Wenige einfache Formen genügen, kein beliebiger Polygon-Generator.
 
 Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze schwierige gegen längere flüssige Route, gemeinsames Finale. Alternativen führen zunächst überwiegend wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
 
@@ -76,4 +76,4 @@ Räumliche Gestaltung beeinflusst Lesen und Routenwahl und ist keine pauschale K
 
 ## Bewusst später
 
-Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum ersten PoC. Eine fertige Pausemenü-/Übungsfortsetzungsoberfläche ist kein versteckter Pflichtumfang von P1a.
+Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum ersten PoC. Eine fertige Pausemenü-/Übungsfortsetzungsoberfläche ist kein versteckter Pflichtumfang von P1a/P1b.

@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a implementiert auf seinem Draft-Branch den testbaren Spielkern, Streckendaten und Validierung; sichtbarer Parcours, Speicherung und Generator bleiben unimplementiert. Für P1a sind [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 zusätzlich zu D-001 bis D-013 verbindlich; siehe [Entscheidungsregister](decisions.md).
+Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a ist über PR #12 abgenommen und nach `main` gemergt: testbarer Spielkern, Streckendaten und Validierung. P1b ist zur Umsetzung vorbereitet; sichtbarer Parcours, Speicherung und Generator bleiben unimplementiert. [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 sind zusätzlich zu D-001 bis D-013 verbindlich; die nächste Integration ist in [p1b-implementation.md](p1b-implementation.md) konkretisiert. Siehe [Entscheidungsregister](decisions.md).
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -33,13 +33,19 @@ P1a liefert `CourseData`, `CourseValidator`, `CourseIdentity`, `RuleProfile`, `M
 
 Neue Tastendrücke werden einzeln und in Empfangsreihenfolge verarbeitet, nicht auf ein einmaliges Polling je Frame reduziert. `InputEventKey` unterscheidet `pressed`, `echo`, Unicode und physische Position. Der vorhandene Normalizer wertet die erzeugten A–Z-Zeichen aus; Groß-/Kleinschreibung, Echo, Key-up und Shortcut-Modifier werden gemäß P1-Profil behandelt. UI-Texteingaben dürfen nicht zugleich Spieleingaben sein.
 
-**Start ist ein Eingabeübergang, kein Countdown-Zustand:** In Bereitschaft setzt das erste zulässige Bewegungsereignis den Startzeitpunkt und durchläuft im selben Aufruf die normale Nachbarprüfung. Ein erster Fehler beginnt Zeit und Fehlerfrist gemeinsam. Backspace ist eine separate Quick-Restart-Aktion zurück in Bereitschaft; Enter ist kein notwendiger Start. Escape liefert eine andere Menüanforderung und darf nicht durch denselben Reset-Pfad umgesetzt werden. Der volle Menü-/Fortsetzungsablauf ist nicht Teil von P1a; der kleine Vertrag aus [p1-rule-profile.md](p1-rule-profile.md) genügt.
+**Start ist ein Eingabeübergang, kein Countdown-Zustand:** In Bereitschaft setzt das erste zulässige Bewegungsereignis den Startzeitpunkt und durchläuft im selben Aufruf die normale Nachbarprüfung. Ein erster Fehler beginnt Zeit und Fehlerfrist gemeinsam. Backspace ist eine separate Quick-Restart-Aktion zurück in Bereitschaft; Enter ist kein notwendiger Start. Escape liefert eine andere Menüanforderung und darf nicht durch denselben Reset-Pfad umgesetzt werden. Der volle Menü-/Fortsetzungsablauf ist nicht Teil von P1a/P1b; der kleine Vertrag aus [p1-rule-profile.md](p1-rule-profile.md) und eine minimale sichtbare P1b-Rückmeldung genügen.
 
 Eine injizierbare monotone Uhr verwendet Integer-Mikrosekunden; der Godot-Adapter kann `Time.get_ticks_usec()` nutzen. Start, Fehler und Ziel nutzen dieselbe Zeitbasis; Tests liefern kontrollierte Zeitwerte. Fehlerfrist beim nächsten Ereignis direkt prüfen, nicht erst an einem Animation-/Physiksignal. Nach Restart sind alte Ereignisse, Sperren und Sitzungsergebnisse getrennt; kein nachträgliches Ausführen alter Eingaben.
 
-P0 nimmt beim Eintritt in `Foundation._unhandled_input` den Zeitwert als `captured_usec`. Das ist der Anwendungsempfang, kein behaupteter OS-/Browserereigniszeitstempel und noch kein Renntimer. P1a stellt den Adapter- und Uhrvertrag für genau diesen Zeitwert bereit; die Verdrahtung in die sichtbare Spielszene erfolgt erst in P1b. Unterschiedliche Hardware-, OS- und Browserlatenzen bleiben möglich; Regeltests sind kein Nachweis identischer realer Latenz oder garantierter Millisekundengenauigkeit.
+P0 nimmt beim Eintritt in `Foundation._unhandled_input` den Zeitwert als `captured_usec`. Das ist der Anwendungsempfang, kein behaupteter OS-/Browserereigniszeitstempel und noch kein Renntimer. P1a stellt den Adapter- und Uhrvertrag für genau diesen Zeitwert bereit; die Verdrahtung in die sichtbare Spielszene erfolgt in P1b. Unterschiedliche Hardware-, OS- und Browserlatenzen bleiben möglich; Regeltests sind kein Nachweis identischer realer Latenz oder garantierter Millisekundengenauigkeit.
 
 Die Menüanforderung darf keinen automatischen Reset auslösen; eine angenommene Menüunterbrechung lässt keine Bewegungen passieren und keine gewertete Fortsetzung zu. Fokusverlust während eines Laufs ist gesondert als Abbruch/Invalidierung zu behandeln. Vor Beginn existiert kein Lauf zu invalidieren; gültige abgeschlossene Ergebnisse bleiben unverändert. Keine fertige Menüoberfläche zur Voraussetzung der Kernimplementierung machen.
+
+## P1b-Integrationsgrenzen
+
+Die echte Spielszene wird zum gemeinsamen Export-Einstieg; P0 bleibt separat als Diagnose startbar. Ein Szenencontroller verbindet Daten/Validator, einen Eingabepfad, Session und Darstellung. Kein zusätzlich aktiver P0-Empfänger, keine doppelte Regelimplementierung und keine automatische Nachbarschaft aus Meshkontakten. `_ready`, GUI-Fokus und der Viewport-Eingabepfad werden in `integration` tatsächlich durchlaufen.
+
+Darstellung und HUD lesen logischen Zustand, Fristen und Ergebnis. Die Sperranzeige darf nicht allein auf dem bis zum nächsten Bewegungsereignis erhaltenen `LOCKED`-Enum beruhen. `last_result` darf nach Restart nicht versehentlich einen neuen Abschlussbildschirm auslösen. Verzögerte Kamera-/Tween-/Fehlerrückmeldungen eines alten Versuchs werden beim Reset ungültig. Die Details stehen ausschließlich in [p1b-implementation.md](p1b-implementation.md).
 
 ## Streckenmodell und Reproduzierbarkeit
 
@@ -61,7 +67,7 @@ Determinismus braucht stabile Iterationsordnung und getrennte kontrollierte Zufa
 
 Projektdatei im Root, Szenen in `scenes/`, Code nach Bedarf in `scripts/core/`, `scripts/input/`, `scripts/presentation/`, `scripts/storage/`, Daten/Assets/Tests in entsprechenden Verzeichnissen. Verzeichnisse erst bei Bedarf anlegen. Caches, Builds und Secrets nicht versionieren; notwendige Quellassets, Szenen und UID-Dateien schon.
 
-P0 liefert Smoke-Runner, zwei Export-Presets, Buildanleitung und CI. P1a ergänzt `core` und hält die bestehende Kette grün. Tatsächliche grafische Windows-/HTTP(S)-Web-Starts bleiben eigene Abnahmen; erfolgreiche Headless-Exporte ersetzen sie nicht. P1a enthält noch keinen sichtbaren Spielablauf.
+P0 liefert Smoke-Runner, zwei Export-Presets, Buildanleitung und CI. P1a hat `core` ergänzt und hält die bestehende Kette grün. Tatsächliche grafische Windows-/HTTP(S)-Web-Starts bleiben eigene Abnahmen; erfolgreiche Headless-Exporte ersetzen sie nicht. Der sichtbare P1b-Spielablauf ist vorbereitet, noch nicht implementiert.
 
 P1c erhält versionierte lokale Ergebnisdaten und klare Fehlerbehandlung beim Laden/Schreiben; Browserpersistenz/Reload getrennt prüfen. Spielbarkeit bleibt unabhängig von späterer Onlinewertung. Die Kernsession übernimmt keine Dateisystem-/Serverzuständigkeit.
 
