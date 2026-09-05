@@ -1,6 +1,7 @@
 extends SceneTree
 
 const KeyInputNormalizer = preload("res://scripts/input/key_input_normalizer.gd")
+const CoreSuite = preload("res://tests/core_suite.gd")
 
 var assertions := 0
 var failures: Array[String] = []
@@ -9,15 +10,18 @@ var failures: Array[String] = []
 func _initialize() -> void:
 	var suite := _requested_suite(OS.get_cmdline_user_args())
 	if suite.is_empty():
-		_fail("Missing value for --suite. Available suites: smoke, all.")
+		_fail("Missing value for --suite. Available suites: smoke, core, all.")
 		_finish()
 		return
-	if suite != "smoke" and suite != "all":
-		_fail("Unknown suite '%s'. Available suites: smoke, all." % suite)
+	if suite != "smoke" and suite != "core" and suite != "all":
+		_fail("Unknown suite '%s'. Available suites: smoke, core, all." % suite)
 		_finish()
 		return
 
-	_run_smoke_suite()
+	if suite == "smoke" or suite == "all":
+		_run_smoke_suite()
+	if suite == "core" or suite == "all":
+		CoreSuite.run(self)
 	_finish()
 
 

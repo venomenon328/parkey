@@ -12,7 +12,7 @@ Das Streckenmodell ist nicht auf ein regelmäßiges Raster oder eine feste Nachb
 
 Stand: 2026-09-05. P0 / Issue #1 ist implementiert und vollständig abgenommen: gemeinsames Godot-Projekt, zwei Export-Presets, kleine 3D-Diagnoseszene, Smoke-Runner und CI. Windows-/Web-Starts und manuelle Hardwaretastaturtests für Y/Z, Shift, Echo, Überlappung, Modifier/Browser-Shortcuts und Fokus sind bestanden.
 
-**P1a / Issue #2 ist vorbereitet; sein Regelprofil ist freigegeben.** Die Dokumentationsvorbereitung liegt auf `codex/p1a-run-core` und wird mit der Umsetzung in demselben Draft-PR fortgeführt. Auf `main` wird dadurch noch keine P1-Implementierung behauptet. Der erste Parcours, RunSession, Renntimer, Ranglisten und Generator sind weiterhin nicht implementiert.
+**P1a / Issue #2 ist auf `codex/p1a-run-core` implementiert und bleibt bis zur Abnahme Draft.** Der testbare Kern enthält `CourseData`, getrennte Graph-/Layoutvalidierung, versionierte Identität, `RunSession`, monotone Uhr und den Eingabeadapter; die neue GDScript-Suite heißt `core`. Auf `main` wird dadurch noch keine P1-Implementierung behauptet. Ein sichtbarer Parcours, Kamera/Animation, HUD, dauerhafte Ranglisten und Generator sind weiterhin nicht implementiert.
 
 Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Eine fertige Menüoberfläche gehört nicht zu P1a. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
 
@@ -32,7 +32,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-[**Issue #2 — P1a: Testbarer Spielkern mit Streckenvalidierung, Laufzeit und Fehlerpause**](https://github.com/venomenon328/parkey/issues/2) auf dem vorbereiteten Branch `codex/p1a-run-core` umsetzen. Keine erneute Freigabe des bereits bestätigten Profils verlangen und nicht auf einen separaten Merge dieser Vorbereitungsdokumente warten. Vor Arbeitsbeginn Branch, Issue und aktuelle Dokumente abgleichen; keine Implementierung späterer Pakete vorziehen.
+[**Draft-PR #12 zu Issue #2**](https://github.com/venomenon328/parkey/pull/12) prüfen: Der P1a-Kern ist auf dem vorbereiteten Branch umgesetzt; automatisierte Regel-/Exportnachweise und Review entscheiden über die Abnahme. Keine erneute Freigabe des bereits bestätigten Profils verlangen. Vor dem nächsten Paket müssen #2 abgenommen und nach `main` gemergt sein; keine spätere Implementierung vorziehen.
 
 Danach folgen der handgebaute spielbare Parcours und lokale Bestzeiten. Erst erprobte Routenbausteine werden zufallsgeneriert. Spätere Branches entstehen nach ihren Abhängigkeiten vom dann aktuellen `main`.
 

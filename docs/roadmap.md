@@ -1,6 +1,6 @@
 # PoC-Roadmap
 
-Stand: 2026-09-05. **P0 ist abgenommen. P1a ist vorbereitet; das P1-Regelprofil ist freigegeben, seine Implementierung steht noch aus.** Issues beschreiben den Lieferumfang; [Umsetzungsplan](implementation-plan.md), [P1-Regelprofil](p1-rule-profile.md) und [Teststrategie](testing.md) enthalten die gemeinsamen Verträge. P4 ist Integrationsabnahme, keine zusätzliche Featurephase.
+Stand: 2026-09-05. **P0 ist abgenommen. P1a ist im Draft implementiert; Regelprofil, technische Nachweise und Review sind noch nicht abgenommen.** Issues beschreiben den Lieferumfang; [Umsetzungsplan](implementation-plan.md), [P1-Regelprofil](p1-rule-profile.md) und [Teststrategie](testing.md) enthalten die gemeinsamen Verträge. P4 ist Integrationsabnahme, keine zusätzliche Featurephase.
 
 ## Meilensteine und Pakete
 
@@ -8,7 +8,7 @@ Stand: 2026-09-05. **P0 ist abgenommen. P1a ist vorbereitet; das P1-Regelprofil 
 | --- | --- | --- | --- |
 | D0 | Dokumentation/Planung | Anforderungen, Architektur, neun Issues, Abhängigkeiten und Testvertrag | Dokumentiert; P1-Freigabe auf vorbereitetem P1a-Branch ergänzt |
 | P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Projekt, Windows/Web, minimale Tests/CI | Abgenommen: automatisierte Prüfungen, native Starts und Hardwaretastaturtests |
-| P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Kern, Handparcours, Timer, Fehlerpause, dauerhafte Bestzeiten | #2 vorbereitet und Profil freigegeben; Spielimplementierung noch nicht begonnen |
+| P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Kern, Handparcours, Timer, Fehlerpause, dauerhafte Bestzeiten | #2 im Draft implementiert; Abnahme und Merge offen |
 | P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | Nicht begonnen |
 | P3 | [#7](https://github.com/venomenon328/parkey/issues/7), [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Generator, Integration und Export-Regelparität | Nicht begonnen |
 | P4 | [#9](https://github.com/venomenon328/parkey/issues/9) | Geprüfte Testpakete aus einem Commit samt Abnahmematrix | Nicht begonnen |
@@ -17,7 +17,7 @@ Stand: 2026-09-05. **P0 ist abgenommen. P1a ist vorbereitet; das P1-Regelprofil 
 
 `#1 → #2 → #3 → #4 → #5 → (#6 und #7) → #8 → #9`
 
-Nächstes Paket: **#2 / P1a**, auf dem mit Dokumentation vorbereiteten Branch `codex/p1a-run-core`. Die Freigabe ist erfolgt; kein zusätzlicher vorgeschalteter Dokumentationsmerge erforderlich. Codex setzt die Implementierung im selben Draft-PR fort. Nach #3 ist ein vollständiger Handlauf spielbar; nach #4 werden Bestzeiten dauerhaft gespeichert. Danach folgt ein echter Spieltest vor weiterem Ausbau.
+Nächster Schritt: **#2 / P1a technisch prüfen und abnehmen**, auf `codex/p1a-run-core` im bestehenden Draft-PR. Die Freigabe ist erfolgt; ein zusätzlicher vorgeschalteter Dokumentationsmerge war nicht erforderlich. Erst nach Abnahme und Merge folgt #3. Nach #3 ist ein vollständiger Handlauf spielbar; nach #4 werden Bestzeiten dauerhaft gespeichert. Danach folgt ein echter Spieltest vor weiterem Ausbau.
 
 Nach #5 sind Abschnittsverträge und Eignung geprüft. #6/#7 können dann bei stabilen Verträgen parallel laufen; #8 wartet auf beide Merges. Sonst beginnt ein Paket nach seiner Abhängigkeit vom aktuellen `main`.
 

@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. Spielkern, Streckendaten, Speicherung und Generator bleiben unimplementiert. Für P1a sind nun [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 zusätzlich zu D-001 bis D-013 verbindlich; siehe [Entscheidungsregister](decisions.md).
+Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a implementiert auf seinem Draft-Branch den testbaren Spielkern, Streckendaten und Validierung; sichtbarer Parcours, Speicherung und Generator bleiben unimplementiert. Für P1a sind [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 zusätzlich zu D-001 bis D-013 verbindlich; siehe [Entscheidungsregister](decisions.md).
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -27,7 +27,7 @@ Das gemeinsame Backend ist zunächst die geteilte lokale Spiellogik. Ein lokaler
 | Ergebnisablage | Gewertete Resultate speichern/laden | Nachträgliche Änderung der bestimmten Zielzeit |
 | Generator, später | Reproduzierbare geprüfte `CourseData` | Rendererabhängige Regeln oder dekorative Zufälle als Gameplay-Zufall |
 
-Kernklassen sollen ohne gerenderte 3D-Szene testbar sein, etwa als kleine GDScript-`RefCounted`-Klassen. Kein separates Service-Framework erforderlich. Bewegung ist ein Wechsel zwischen verbundenen Feldern, keine physikalische Kollisionssimulation.
+P1a liefert `CourseData`, `CourseValidator`, `CourseIdentity`, `RuleProfile`, `MonotonicClock`, `RunSession` und `RunInputAdapter` als kleine GDScript-`RefCounted`-Klassen. Sie sind ohne gerenderte 3D-Szene testbar; ein separates Service-Framework ist nicht erforderlich. Bewegung ist ein Wechsel zwischen verbundenen Feldern, keine physikalische Kollisionssimulation. Details des absichtlich kleinen Layoutformats, der Toleranzen und der Identitätsserialisierung stehen im [P1-Regelprofil](p1-rule-profile.md).
 
 ## Ereignisse und Zeit
 
@@ -37,7 +37,7 @@ Neue Tastendrücke werden einzeln und in Empfangsreihenfolge verarbeitet, nicht 
 
 Eine injizierbare monotone Uhr verwendet Integer-Mikrosekunden; der Godot-Adapter kann `Time.get_ticks_usec()` nutzen. Start, Fehler und Ziel nutzen dieselbe Zeitbasis; Tests liefern kontrollierte Zeitwerte. Fehlerfrist beim nächsten Ereignis direkt prüfen, nicht erst an einem Animation-/Physiksignal. Nach Restart sind alte Ereignisse, Sperren und Sitzungsergebnisse getrennt; kein nachträgliches Ausführen alter Eingaben.
 
-P0 nimmt beim Eintritt in `Foundation._unhandled_input` den Zeitwert als `captured_usec`. Das ist der Anwendungsempfang, kein behaupteter OS-/Browserereigniszeitstempel und noch kein Renntimer. P1a verbindet diesen Empfangspunkt mit dem jetzt freigegebenen Uhr-/Regelvertrag. Unterschiedliche Hardware-, OS- und Browserlatenzen bleiben möglich; Regeltests sind kein Nachweis identischer realer Latenz oder garantierter Millisekundengenauigkeit.
+P0 nimmt beim Eintritt in `Foundation._unhandled_input` den Zeitwert als `captured_usec`. Das ist der Anwendungsempfang, kein behaupteter OS-/Browserereigniszeitstempel und noch kein Renntimer. P1a stellt den Adapter- und Uhrvertrag für genau diesen Zeitwert bereit; die Verdrahtung in die sichtbare Spielszene erfolgt erst in P1b. Unterschiedliche Hardware-, OS- und Browserlatenzen bleiben möglich; Regeltests sind kein Nachweis identischer realer Latenz oder garantierter Millisekundengenauigkeit.
 
 Die Menüanforderung darf keinen automatischen Reset auslösen; eine angenommene Menüunterbrechung lässt keine Bewegungen passieren und keine gewertete Fortsetzung zu. Fokusverlust während eines Laufs ist gesondert als Abbruch/Invalidierung zu behandeln. Vor Beginn existiert kein Lauf zu invalidieren; gültige abgeschlossene Ergebnisse bleiben unverändert. Keine fertige Menüoberfläche zur Voraussetzung der Kernimplementierung machen.
 

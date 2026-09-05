@@ -1,13 +1,13 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 ist abgenommen; P1a ist vorbereitet und das P1-Regelprofil freigegeben, aber noch nicht implementiert.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md) und `AGENTS.md`.
+Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 ist abgenommen; P1a ist auf seinem Draft-Branch implementiert, aber noch nicht abgenommen.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
 | Paket / Issue | Ergebnis | Start erst nach | Arbeitsbranch | Codex-Empfehlung |
 | --- | --- | --- | --- | --- |
 | P0 / [#1](https://github.com/venomenon328/parkey/issues/1) | Ein Projekt, zwei Exporte, Test-/CI-Grundlage | Bereits abgenommen | `codex/p0-godot-foundation` | GPT-5.6 Terra · High |
-| P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Voraussetzungen erfüllt; Profil freigegeben | `codex/p1a-run-core` | GPT-5.6 Terra · High |
+| P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Implementiert im Draft; technische Abnahme und Review offen | `codex/p1a-run-core` | GPT-5.6 Terra · High |
 | P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | #2 | `codex/p1b-playable-course` | GPT-5.6 Terra · High |
 | P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | #3 | `codex/p1c-local-leaderboards` | GPT-5.6 Terra · Medium |
 | P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | #4; echter P1-Spieltest | `codex/p2a-route-decisions` | GPT-5.6 Terra · High |
@@ -16,7 +16,7 @@ Stand: 2026-09-05. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` | GPT-5.6 Terra · High |
 | P4 / [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | #8 | `codex/p4-poc-acceptance` | GPT-5.6 Terra · High |
 
-Abhängigkeiten bedeuten **abgenommen und nach main gemergt**, nicht nur „ein PR wurde eröffnet“. P0 ist abgeschlossen. Der P1a-Branch enthält die neue Regelfreigabe als Dokumentationsvorbereitung auf Basis von `main` nach PR #11; die Implementierung setzt auf diesem Branch im selben Draft-PR fort. Die Dokumentationsvorbereitung ist kein separates Implementierungspaket und braucht keinen vorgeschalteten Merge. Spätere Branches werden erst beim jeweiligen Start vom dann aktuellen `main` erstellt.
+Abhängigkeiten bedeuten **abgenommen und nach main gemergt**, nicht nur „ein PR wurde eröffnet“. P0 ist abgeschlossen. Der P1a-Branch enthält die neue Regelfreigabe und die Kernimplementierung im selben Draft-PR auf Basis von `main` nach PR #11. Die Dokumentationsvorbereitung brauchte keinen vorgeschalteten Merge. Spätere Branches werden erst beim jeweiligen Start vom dann aktuellen `main` erstellt.
 
 Nur #6/#7 sind nach #5 für Parallelität vorgesehen. Gemeinsame Datenverträge dürfen dabei nicht unabhängig geändert werden; #8 wartet auf beide Abnahmen. Standard bleibt ein Paket pro PR.
 
@@ -51,7 +51,7 @@ D-010 bis D-013 bleiben verbindlich. Die neue Regelfreigabe ändert keine Geomet
 
 Jedes Paket liefert Implementierung, passende Tests, gepflegte Dokumentation und konkrete Nachweise. Issues enthalten Abnahme, Nicht-Ziele und kompakte Prompts; der Lieferumfang wird nicht nochmals in Prompts kopiert.
 
-[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert. P1a ergänzt `core`; weitere Suites sind noch nicht vorhanden. `all` hält alle bisherigen Tests und beide Exportjobs grün. Unbekannte/leere Suites müssen scheitern.
+[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert. P1a ergänzt die vorhandene `core`-Suite; weitere Suites sind noch nicht vorhanden. `all` hält alle bisherigen Tests und beide Exportjobs grün. Unbekannte/leere Suites müssen scheitern.
 
 Reale Grafik, Hardwaretastatur, Browserpersistenz und Spielgefühl bleiben gesonderte Nachweise. Keine erfundene Abnahme bei fehlender Umgebung. P0-Starts und Hardwaretests sind bestanden; die neuen P1-Verhaltenstests sind dadurch nicht bereits nachgewiesen. Fehlende verpflichtende Nachweise halten den jeweiligen PR im Draft.
 

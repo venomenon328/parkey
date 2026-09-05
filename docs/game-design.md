@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013 sowie das für P1 freigegebene Profil D-014 bis D-018 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. P1 ist noch nicht implementiert.
+Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013 sowie das für P1 freigegebene Profil D-014 bis D-018 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist im Draft implementiert; der sichtbare P1-Spielablauf folgt erst in P1b.
 
 ## Spielkern
 

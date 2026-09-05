@@ -1,6 +1,6 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist nun **freigegeben, noch nicht implementiert oder getestet**. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist freigegeben; P1a implementiert seine `core`-Suite im Draft, die technische Abnahme bleibt offen. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
 ## P0-Teststand
 
@@ -38,7 +38,7 @@ Windows: passenden PATH/Alias oder vollständigen Editorpfad aus [development.md
 | P3b / #8 | `seed_flow` | Seed-/Sitzungs-/Speicherintegration und Exportkonformität |
 | P4 / #9 | `acceptance` | Komplette Läufe, Wiederholungen und Zustandstrennung |
 
-P1a ergänzt `core`; noch keine vorhandene Suite behaupten. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
+P1a ergänzt die echte GDScript-Suite `core`. Sie prüft Graph/Layout, Identität, Eingabeadapter, Start, Sperrgrenzen, Restart, Menü, Fokus und einmalige Ergebnisse mit einer injizierten Uhr. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
 
 Beide Exporte bleiben in jedem Paket Pflicht, bei Kernänderungen auch über erfolgreiche CI auf aktuellem Head nachweisbar. Tests führen den wirklichen GDScript-Code aus, keine Python-/JavaScript-Ersatzimplementierung. Reale Plattformtests gemäß jeweiligem Issue zusätzlich durchführen.
 

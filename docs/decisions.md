@@ -26,7 +26,7 @@ Stand: 2026-09-05. Quelle ist die Projektabstimmung einschließlich freier Strec
 
 ## Für P1 freigegebene Entscheidungen
 
-Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle; noch kein P1-Spielcode ist damit implementiert.
+Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle; der testbare P1a-Kern ist auf seinem Draft-Branch implementiert, ein sichtbarer P1-Spielablauf aber noch nicht.
 
 | ID | Entscheidung |
 | --- | --- |
@@ -63,7 +63,7 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 
 ## Offene Entscheidungen und Zeitpunkt
 
-**P1a / Issue #2:** Das Regelprofil ist freigegeben; es fehlt keine weitere Start-/Fehler-/Fokusfreigabe. Technische Ausgestaltung von Datenformat, wenigen einfachen ebenen Formen, Zahlenpräzision und vorläufigen Layouttoleranzen erfolgt im Paket mit Dokumentation und Tests. Keine universelle Polygon-Engine. Die Unterlagen liegen als Vorbereitung auf `codex/p1a-run-core`; die Umsetzung setzt dort fort, ohne auf einen separaten Dokumentationsmerge zu warten.
+**P1a / Issue #2:** Das Regelprofil ist freigegeben; es fehlt keine weitere Start-/Fehler-/Fokusfreigabe. Die technische Ausgestaltung von Datenformat, wenigen einfachen ebenen Formen, Zahlenpräzision und vorläufigen Layouttoleranzen ist in [p1-rule-profile.md](p1-rule-profile.md) dokumentiert und im Draft implementiert. Keine universelle Polygon-Engine. Technische Abnahme und Review bleiben offen; kein separater Dokumentationsmerge war erforderlich.
 
 **P1b / Issue #3:** Sichtbarer Bewegungsrückstand beim Fehler und bei hoher Tippgeschwindigkeit praktisch prüfen. Escape bleibt von Quick Restart getrennt; eine vollständige Menü-/Fortsetzungsoberfläche wird nicht vorausgesetzt.
 
@@ -79,3 +79,4 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 - 2026-09-05: Neun Umsetzungspakete vorbereitet. Start-/Steuertastendetails zunächst nur als Experiment vorgeschlagen, keine Produktfreigabe behauptet.
 - 2026-09-05: D-010 bis D-013 nach Nutzerbestätigung ergänzt; P-004, Spezifikation, Tests und Pakete angepasst. P0 bleibt abgenommen.
 - 2026-09-05: D-014 bis D-018 und `p1-input-start-v1` nach Nutzerfreigabe dokumentiert. Start per erstem Buchstaben ersetzt Countdown/Enter; Quick Restart und Escape-Menü getrennt. Fehler-, Rückweg-, Eingabe- und Fokusregeln für P1 freigegeben. Vorbereitung auf P1a-Branch, noch keine Implementierungsabnahme.
+- 2026-09-05: P1a-Kern auf `codex/p1a-run-core` implementiert: getrennte Graph-/Layoutvalidierung, versionierte Strecken-/Regelidentität, monotone Zeit, Eingabeadapter und RunSession. Die P1-Freigabe bleibt davon getrennt; technische Abnahme, Review und Merge stehen noch aus.

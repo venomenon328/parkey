@@ -1,6 +1,6 @@
 # Freigegebenes P1-Regelprofil
 
-Stand: 2026-09-05. **Für den PoC freigegeben, noch nicht implementiert.** Profilkennung: `p1-input-start-v1`. Grundlage sind die Nutzerentscheidungen D-014 bis D-018 im [Entscheidungsregister](decisions.md); D-001 bis D-013 bleiben unverändert. Diese Datei ist die maßgebliche Detailspezifikation für P1a und seine Folgepakete. Die früheren Vorschläge eines Enter-Starts, Countdowns und Escape-Abbruchs mit Rücksetzen sind ersetzt.
+Stand: 2026-09-05. **Für den PoC freigegeben; in P1a auf `codex/p1a-run-core` implementiert, aber noch nicht abgenommen.** Profilkennung: `p1-input-start-v1`. Grundlage sind die Nutzerentscheidungen D-014 bis D-018 im [Entscheidungsregister](decisions.md); D-001 bis D-013 bleiben unverändert. Diese Datei ist die maßgebliche Detailspezifikation für P1a und seine Folgepakete. Die früheren Vorschläge eines Enter-Starts, Countdowns und Escape-Abbruchs mit Rücksetzen sind ersetzt.
 
 ## 1. Bereitschaft und Start durch den ersten Buchstaben
 
@@ -51,6 +51,18 @@ Laufzeitbasis sind monotone Integer-Mikrosekunden. Die spätere HUD-Anzeige hat 
 
 ## 6. Paketgrenze und Nachweis
 
-P1a implementiert und testet Daten-/Validierungsverträge, RunSession, Beginn durch Eingabe, Fehlerfrist, Quick Restart, getrennte Menüanforderung, Fokusinvalidierung und einmaliges Ergebnis. Kein Countdown-Zustand erforderlich. Konkrete Klassennamen und interne Zustände sind technische Entscheidungen, müssen aber die obigen Unterschiede erhalten.
+P1a implementiert und testet Daten-/Validierungsverträge, RunSession, Beginn durch Eingabe, Fehlerfrist, Quick Restart, getrennte Menüanforderung, Fokusinvalidierung und einmaliges Ergebnis. Kein Countdown-Zustand erforderlich. Die Implementierung ist bis zur vollständigen technischen und Review-Abnahme weiterhin Draft.
 
-P1b integriert diese Regeln in den spielbaren Parcours. Menügestaltung, umfangreiche Pause-/Fortsetzungslogik, persistente Speicherung und Generator werden nicht vorgezogen. Verbindliche Grenz- und Regressionstests stehen in [docs/testing.md](testing.md) und Issue #2. Die Freigabe des Profils ist kein Nachweis bereits ausgeführter P1-Tests.
+P1b integriert diese Regeln in den spielbaren Parcours. Menügestaltung, umfangreiche Pause-/Fortsetzungslogik, persistente Speicherung und Generator werden nicht vorgezogen. Verbindliche Grenz- und Regressionstests stehen in [docs/testing.md](testing.md) und Issue #2. Die Freigabe des Profils ersetzt weder den P1a-Testnachweis noch die Abnahme.
+
+## 7. Technische Festlegungen der P1a-Implementierung
+
+`CourseData` verwendet `course-data-v1`: stabile Feld-IDs aus ASCII-Buchstaben, Ziffern, `_` und `-`, einen A–Z-Buchstaben je Feld, explizite Nachbar-IDs sowie getrennte `layouts` und `transitions`. Start und Ziel sind vorhandene, verschiedene IDs. Der Graph bleibt frei von Richtungs-Slots und Nachbarzahlgrenzen; P1 verlangt beidseitig eingetragene Kanten.
+
+Das kleine Layoutprofil `p1-layout-v1` beschreibt eine ebene relative `[x, z]`-Koordinate. Unterstützt sind `rectangle` (Mitte, Breite/Tiefe, Drehung und Anker) und `circle` (Mitte, Radius und Anker). Alle Lage-, Größen-, Anker- und Drehwerte liegen auf einem Raster von **0,001** Einheiten. Rechteckseiten liegen zwischen **0,5** und **12,0** Einheiten, Kreisradien zwischen **0,25** und **6,0**; das sind P1-Gültigkeitsgrenzen für moderate Beispiele, kein späteres Weltmaß.
+
+Ein Anker muss höchstens 0,001 Einheiten außerhalb der Grundfläche liegen. Jede logische Kante benötigt genau einen Übergang mit `from`/`to` und je zwei Randpunkten. Die Punkte müssen höchstens 0,01 Einheiten vom Feldrand liegen, die Randabschnitte mindestens 0,2 Einheiten lang sein und die beiden Abschnitte dürfen — auch bei umgekehrter Punktreihenfolge — höchstens 0,15 Einheiten auseinanderliegen. Übergänge ohne Datenkante, doppelte Übergänge, Datenkanten ohne Übergang und Flächenüberlappungen sind ungültig; reiner Eckkontakt erzeugt keine Kante.
+
+`course-identity-v1` bildet einen SHA-256 über kanonisch sortierte Graph-, Layout- und Profilwerte. Zahlen werden mit drei Nachkommastellen serialisiert; Übergangsrichtung und Punktreihenfolge werden für die Identität normalisiert. `material`, `surface`, `decoration` und `display_name` sind ausdrücklich kosmetisch und gehen nicht ein. Relevante Lage, Form, Größe, Drehung, Anker, Übergang sowie `p1-input-start-v1` mit Fehlerfrist dagegen schon. Damit bleiben Grafik und Bewegung vom Kern getrennt, Wertungen aber nicht versehentlich vermischt.
+
+`RunSession` akzeptiert nur bereits vollständig validierte Daten. Sie verwendet injizierbare monotone Integer-Mikrosekunden und verarbeitet gleichzeitige Ereignisse in Aufruf-/Empfangsreihenfolge. Der Eingabeadapter nutzt den P0-`KeyInputNormalizer`, behandelt Backspace und Escape getrennt und übergibt UI-, Fokus- und Kontextereignisse nicht an die Session. Die Session speichert keine Dateien; ihr einmaliges Ergebnis ist ein Kernereignis für P1c.
