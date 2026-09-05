@@ -1,21 +1,22 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. P0 liefert die Suite smoke, die beiden Export-Presets und CI auf codex/p0-godot-foundation; die Abnahme ist weiterhin offen. Testfälle zu vorgeschlagenen Regeln werden zusammen mit diesen Regeln freigegeben. Fachliche Grundlage: [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-05. P0 liefert die Suite `smoke`, die beiden Export-Presets und CI; die technische und manuelle P0-Abnahme ist vollständig bestanden. Testfälle zu vorgeschlagenen Regeln werden zusammen mit diesen Regeln freigegeben. Fachliche Grundlage: [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
-## P0-Teststand auf dem Arbeitsbranch
+## P0-Teststand
 
 Technischer Nachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.official.ed1daf0bf:
 
-- Import, --suite all mit 31 Smoke-Assertions sowie beide Release-Exporte liefen erfolgreich. Ein Aufruf mit unbekannter Suite endete geprüft mit Exitcode 1.
-- Der Windows-Export wurde außerhalb des Editors gestartet. Die sichtbare Diagnose meldete Windows / Forward+ | aktiv: forward_plus; Taste mit Buchstabe, Figur mit Kopf und erhöhte Kamera waren sichtbar.
-- Der Web-Export wurde über python -m http.server unter 127.0.0.1:8000 in Chrome 152.0.7977.76 geladen. Chrome lud HTML, JavaScript, WASM und PCK über HTTP; die laufende Szene meldete Web / Compatibility | aktiv: gl_compatibility. Canvas und WebGL 2 waren aktiv.
-- Browser-Ereignisse prüften sichtbar: ein Ereignis mit code KeyY und erzeugtem z wurde als Z akzeptiert, Shift blieb normalisiert, ein Wiederholungsereignis wurde als Echo und Key-up als verworfen angezeigt. Diese Ereignisse wurden automatisiert über das Browser-Debugprotokoll eingespeist, nicht über eine physische Tastatur.
+- Import, `--suite all` mit 31 Smoke-Assertions sowie beide Release-Exporte liefen erfolgreich. Ein Aufruf mit unbekannter Suite endete geprüft mit Exitcode 1.
+- Der Windows-Export wurde außerhalb des Editors gestartet. Die sichtbare Diagnose meldete `Windows / Forward+ | aktiv: forward_plus`; Taste mit Buchstabe, Figur mit Kopf und erhöhte Kamera waren sichtbar.
+- Der Web-Export wurde über `python -m http.server` unter 127.0.0.1:8000 in Chrome 152.0.7977.76 geladen. Chrome lud HTML, JavaScript, WASM und PCK über HTTP; die laufende Szene meldete `Web / Compatibility | aktiv: gl_compatibility`. Canvas und WebGL 2 waren aktiv.
+- Automatisierte Browser-Ereignisse prüften zusätzlich den Diagnosepfad: ein Ereignis mit `code=KeyY` und erzeugtem `z` wurde als Z akzeptiert, Shift blieb normalisiert, ein Wiederholungsereignis wurde als Echo und Key-up als verworfen angezeigt.
+- Die abschließende manuelle Hardwaretastaturabnahme ist ebenfalls bestanden: unter Windows und im interaktiven Chrome-Webexport wurden Y/Z, Shift, echtes Gedrückthalten/Echo und überlappende Tasten erfolgreich geprüft. Modifier erzeugten keine normalen Buchstabeneingaben; Browser-Shortcuts und Fokuswechsel führten nicht zu unerwünschten Spieleingaben.
 
-Offen bleibt die manuelle Abnahme mit echter Hardwaretastatur: Windows und interaktiver Desktop-Browser müssen Y/Z, Shift, echtes Gedrückthalten/Echo, überlappende Tasten und Browser-Shortcuts in der vorgesehenen Bedienumgebung prüfen. Deshalb bleibt der P0-PR Draft und der Meilenstein unabgenommen.
+Damit ist P0 vollständig abgenommen. Diese Abnahme belegt die gemeinsame technische Grundlage und reale Tastaturereignisse, noch keinen Parcours, Renntimer oder spätere Spielregeln.
 
 ## Verbindlicher Test-/Exportvertrag ab P0
 
-Die folgenden Dateien, Suites und Presets sind Lieferumfang künftiger Pakete. **Sie existieren noch nicht.** P0 legt `tests/run_tests.gd`, die beiden Presets und eine minimale CI an. `godot` bezeichnet den exakt gepinnten Standard-Editor mit passenden Export-Templates. Ausgabeordner `build/windows` und `build/web` vor Exporten anlegen; Quellcode und Buildausgaben getrennt halten.
+`tests/run_tests.gd`, die beiden Export-Presets und die minimale CI **existieren seit P0 und bilden die abgenommene Test-/Exportgrundlage**. `godot` bezeichnet den exakt gepinnten Standard-Editor mit passenden Export-Templates. Ausgabeordner `build/windows` und `build/web` vor Exporten anlegen; Quellcode und Buildausgaben getrennt halten.
 
 ```sh
 godot --headless --path . --import
@@ -26,7 +27,7 @@ godot --headless --path . --export-release "Web" build/web/index.html
 
 Unter Windows einen passenden PATH-Eintrag oder den vollständigen Pfad zum Standard-Editor verwenden; die konkrete lokale Schreibweise in der Entwicklungsanleitung dokumentieren. Import und Export benötigen den Editor, nicht bloß eine Export-Template-Datei.
 
-Die CLI-Basis ist in der offiziellen [Godot-Anleitung](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) dokumentiert, geprüft am 2026-09-05. `--suite` ist dagegen **unser erst in P0 zu implementierendes Benutzerargument** nach `--`, kein mitgelieferter Godot-Testbefehl.
+Die CLI-Basis ist in der offiziellen [Godot-Anleitung](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) dokumentiert, geprüft am 2026-09-05. `--suite` ist dagegen **unser in P0 implementiertes Benutzerargument** nach `--`, kein mitgelieferter Godot-Testbefehl.
 
 | Paket | Neue gezielte Suite | Wesentliche automatische Prüfungen |
 | --- | --- | --- |
@@ -95,7 +96,7 @@ Strukturelle Gültigkeit ist kein Spielspaßtest. Ob Wege interessant und Buchst
 | Kernregeln/Konformität | Geordnete Ereignisse und kontrollierte Zeitfälle | Gleiche Protokolle und Seeds ergeben gleiche Kernresultate |
 | Leistung | Auflösung, Hardware, Framezeiten und Eingabegefühl protokolliert | Browser, Hardware und entsprechende Messbedingungen protokolliert |
 
-P0 mindestens ein tatsächliches Windows-System und ein Desktop-Browser; die abschließende P4-Matrix umfasst Windows sowie Chromium und Firefox mit dokumentierten Versionen. Keine Unterstützung weiterer Browser aus einem einzelnen Export ableiten. Ein headless gestarteter Windows-Build allein ist kein Nachweis der Forward+-Darstellung.
+P0 ist auf einem tatsächlichen Windows-System und in einem Desktop-Chrome-Browser einschließlich Hardwaretastatur abgenommen. Die abschließende P4-Matrix umfasst Windows sowie Chromium und Firefox mit dokumentierten Versionen. Keine Unterstützung weiterer Browser aus einem einzelnen Export ableiten. Ein headless gestarteter Windows-Build allein ist kein Nachweis der Forward+-Darstellung.
 
 P3b ergänzt die genaue Bedienung seines Export-Konformitätslaufs hier, sobald implementiert. Er soll denselben GDScript-Kern/Generator ausführen und konkrete Hash-/Zustandsberichte liefern. Eine frühere native Headless-Ausführung ist kein Browserlauf.
 
@@ -111,4 +112,4 @@ Routen mit unterschiedlichen Tippmethoden testen. Neben Gesamtzeit auch Fehler, 
 
 Eine Abnahme nennt Commit, genaue Godot-Version, Exportprofil, Betriebssystem/Browser, ausgeführte Befehle oder manuelle Schritte und Ergebnis. Nicht ausgeführte Prüfungen bleiben offen. Build-Erfolg, Regeltest, visueller Test und subjektiver Spieltest sind getrennte Nachweise. Bericht/Screenshots nur tatsächlich durchgeführter Tests eintragen.
 
-Fehlt ein verpflichtender Nachweis, bleibt der Implementierungs-PR Draft und die Abnahme offen; der Nutzer kann reale Tests ergänzen. Eine README-Änderung oder ein gebautes ZIP ersetzt keine Freigabe. P4 prüft die tatsächlich verpackten Artefakte, nicht nur den Editorzustand.
+Fehlt ein verpflichtender Nachweis, bleibt der jeweilige Implementierungs-PR Draft und die Abnahme offen; der Nutzer kann reale Tests ergänzen. Eine README-Änderung oder ein gebautes ZIP ersetzt keine Freigabe. P4 prüft die tatsächlich verpackten Artefakte, nicht nur den Editorzustand.
