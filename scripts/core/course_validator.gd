@@ -55,7 +55,8 @@ static func validate_graph(course: CourseData) -> Array[String]:
 		var field: Dictionary = ids[field_id]
 		var seen_neighbors := {}
 		var seen_letters := {}
-		for raw_neighbor_id in field.get("neighbors", []):
+		var neighbors := _field_neighbors(field)
+		for raw_neighbor_id in neighbors:
 			var neighbor_id := str(raw_neighbor_id)
 			if neighbor_id == field_id:
 				errors.append("Field '%s' has a self edge." % field_id)
@@ -67,7 +68,7 @@ static func validate_graph(course: CourseData) -> Array[String]:
 				errors.append("Field '%s' references missing neighbor '%s'." % [field_id, neighbor_id])
 				continue
 			var neighbor: Dictionary = ids[neighbor_id]
-			if not neighbor.get("neighbors", []).has(field_id):
+			if not _field_neighbors(neighbor).has(field_id):
 				errors.append("Edge '%s' -> '%s' is not symmetric." % [field_id, neighbor_id])
 			var letter := str(neighbor.get("letter", ""))
 			if seen_letters.has(letter):
@@ -135,6 +136,11 @@ static func validate_layout(course: CourseData) -> Array[String]:
 		if not transition_keys.has(edge_key):
 			errors.append("Graph edge '%s' has no readable layout transition." % edge_key)
 	return errors
+
+
+static func _field_neighbors(field: Dictionary) -> Array:
+	var neighbors = field.get("neighbors", [])
+	return neighbors if neighbors is Array else []
 
 
 static func _is_stable_id(field_id: String) -> bool:

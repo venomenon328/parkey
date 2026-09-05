@@ -29,6 +29,9 @@ static func _test_course_validation(harness) -> void:
 	var duplicate_neighbors := _basic_course()
 	duplicate_neighbors.fields[0]["neighbors"] = ["middle", "middle"]
 	harness._assert_true(_errors_contain(CourseValidatorScript.validate_graph(duplicate_neighbors), "repeats neighbor"), "Duplicate edges are rejected.")
+	var malformed_neighbors := _basic_course()
+	malformed_neighbors.fields[0]["neighbors"] = 42
+	harness._assert_true(_errors_contain(CourseValidatorScript.validate_graph(malformed_neighbors), "must have a neighbors array"), "Malformed neighbor data returns a validation error instead of raising a runtime error.")
 
 	var asymmetric := _basic_course()
 	asymmetric.fields[1]["neighbors"] = ["target"]
@@ -50,6 +53,8 @@ static func _test_layout_validation_and_identity(harness) -> void:
 	var valid := _basic_course()
 	var corner_contact := _corner_contact_course()
 	harness._assert_true(CourseValidatorScript.validate(corner_contact).is_empty(), "Corner contact without an explicit edge is not an automatic connection.")
+	var angled_split := _angled_split_connection_course()
+	harness._assert_true(CourseValidatorScript.validate(angled_split).is_empty(), "A larger rotated field can have readable slanted transitions to multiple smaller neighbors.")
 
 	var missing_transition := _basic_course()
 	missing_transition.transitions.clear()
@@ -297,8 +302,28 @@ static func _corner_contact_course() -> CourseData:
 	)
 
 
-static func _rectangle(position: Array, size: Array) -> Dictionary:
-	return {"shape": "rectangle", "position": position, "size": size, "rotation_deg": 0.0, "anchor": position.duplicate()}
+static func _angled_split_connection_course() -> CourseData:
+	return CourseDataScript.new(
+		[
+			{"id": "hub", "letter": "H", "neighbors": ["lower", "upper"]},
+			{"id": "lower", "letter": "A", "neighbors": ["hub"]},
+			{"id": "upper", "letter": "B", "neighbors": ["hub"]},
+		],
+		{
+			"hub": _rectangle([0.0, 0.0], [4.0, 4.0], 30.0),
+			"lower": _rectangle([2.708, 0.409], [1.0, 1.5], 30.0),
+			"upper": _rectangle([1.708, 2.141], [1.0, 1.5], 30.0),
+		},
+		[
+			_transition("hub", "lower", [[2.607, -0.516], [1.857, 0.783]], [[2.650, -0.491], [1.900, 0.808]]),
+			_transition("hub", "upper", [[1.607, 1.217], [0.857, 2.516]], [[1.650, 1.242], [0.900, 2.541]]),
+		],
+		"lower", "upper",
+	)
+
+
+static func _rectangle(position: Array, size: Array, rotation_deg: float = 0.0) -> Dictionary:
+	return {"shape": "rectangle", "position": position, "size": size, "rotation_deg": rotation_deg, "anchor": position.duplicate()}
 
 
 static func _transition(first_id: String, second_id: String, first_edge: Array, second_edge: Array) -> Dictionary:
