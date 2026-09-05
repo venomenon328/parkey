@@ -1,6 +1,6 @@
 # Entscheidungsregister
 
-Stand: 2026-09-05. Quelle ist die Projektabstimmung einschließlich freier Streckengeometrie und der anschließenden P1-Regelfreigabe. Implementierungsstand: [Roadmap](roadmap.md). Paketplan: [Umsetzungsplan](implementation-plan.md). Verbindliche P1-Details: [P1-Regelprofil](p1-rule-profile.md).
+Stand: 2026-09-05. Quelle ist die Projektabstimmung einschließlich freier Streckengeometrie, P1-Regelfreigabe und der manuellen P1b-Rückmeldung zu Erreichbarkeit, Feldstatus und Kamera. Implementierungsstand: [Roadmap](roadmap.md). Paketplan: [Umsetzungsplan](implementation-plan.md). Verbindliche P1-Details: [P1-Regelprofil](p1-rule-profile.md) und [P1b-Integration](p1b-implementation.md).
 
 ## Statusdefinitionen
 
@@ -26,7 +26,7 @@ Stand: 2026-09-05. Quelle ist die Projektabstimmung einschließlich freier Strec
 
 ## Für P1 freigegebene Entscheidungen
 
-Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle. Der testbare P1a-Kern ist über PR #12 abgenommen und gemergt; der sichtbare P1b-Spielablauf ist im Draft-PR #13 implementiert, seine vollständige Abnahme bleibt offen.
+Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrücklich freigegeben. Das Profil `p1-input-start-v1` konkretisiert die Randfälle. Der testbare P1a-Kern ist über PR #12 abgenommen und gemergt; der sichtbare P1b-Spielablauf ist im Draft-PR #13 implementiert, aber nach manueller Rückmeldung und Review noch nachzuarbeiten.
 
 | ID | Entscheidung |
 | --- | --- |
@@ -38,12 +38,23 @@ Die folgenden Entscheidungen wurden am 2026-09-05 nach der Paketklärung ausdrü
 
 Die getrennte Menü-/Wertungsbehandlung, Start-/Zielgrenzen und Paketabgrenzung stehen verbindlich in [p1-rule-profile.md](p1-rule-profile.md). Technische Auslegungen sind dort als Konkretisierung kenntlich gemacht; Menüoberfläche und Übungsfortsetzung sind kein neuer Pflichtumfang.
 
+## Bestätigte Darstellungsentscheidungen aus dem P1b-Review
+
+| ID | Entscheidung |
+| --- | --- |
+| D-019 | Bereits betretene Felder und aktuell über die gespeicherten Verbindungen erreichbare Nachbarfelder haben einen klar erkennbaren visuellen Status gegenüber dem Standard. Auch das aktuelle Feld bleibt eindeutig. Besuchsstatus und Erreichbarkeit sind kombinierbare Informationen: Ein besuchter Nachbar darf weiterhin als erreichbar erkennbar sein. Die endgültige Gestaltung ist offen; eine gut lesbare provisorische Darstellung ist bereits für P1b erforderlich. |
+| D-020 | Die Kamera bewegt sich innerhalb eines Versuchs kontinuierlich und flüssig, ohne Jump-Cuts, schlagartiges Neuausrichten oder Reset bei Tastendrücken. Position und Blickrichtung/Blickziel müssen gemeinsam berücksichtigt werden. Auch Fehler, Rückwege, Gabelungen und schnelles Aufholen dürfen keinen Kameraschnitt auslösen. Eine notwendige Figurenkorrektur darf nicht die Kamera hart versetzen. Initiale Aufstellung und ausdrücklich ausgelöster Quick Restart sind getrennte Lebenszyklusvorgänge, keine Ausnahme für normale Eingaben. |
+
+Konkretisierung für P1b: Besuchsstatus wird aus akzeptierten logischen Feldwechseln je Versuch geführt, nicht aus einer nachlaufenden Figur oder gedrückten, aber verworfenen Tasten. Das besetzte Startfeld ist bereits besucht; Quick Restart setzt die Besuchshistorie auf diesen Ausgangszustand zurück. Rückwege verlieren die Information nicht. Der Status verändert weder Streckendaten/-identität noch Kanten, Buchstaben oder Wertungsregeln. Eine sichtbare Fläche/Umrandung mit zusätzlichem Formsignal ist eine mögliche Darstellung, keine festgelegte finale Farbpalette.
+
+D-011 wird durch den manuellen Befund am W-Feld bekräftigt: Eine als normal begehbar erscheinende Seitenverbindung zu F ist nicht durch eine fehlende Datenkante gerechtfertigt. Die Lösung ist ein konsistenter Graph mit passenden Übergängen oder eine räumlich eindeutig getrennte Streckenführung. Bloß etwas anders große, perspektivisch kaum unterscheidbare Fugen oder ein HUD-Hinweis ersetzen diese Konsistenz nicht. Kein automatisches Hinzufügen aller nahen Felder zur Laufzeit.
+
 ## Parameter und Rückmeldungen
 
 | ID | Wert/Idee | Einordnung |
 | --- | --- | --- |
 | T-001 | Fehlerpause zunächst **200 ms** | Durch D-016 für das erste Profil freigegeben; weiterhin kein endgültiges Balancing. Zentral konfigurieren und wertungsrelevante Änderungen versionieren. |
-| T-002 | Kleine Kopfschüttelanimation bei einem Fehler | Für P1b als vorläufige Darstellung umgesetzt und noch manuell zu erproben. Sie verlängert die definierte Sperrdauer nicht und darf spielrelevante Zeichen nicht verdecken. |
+| T-002 | Kleine Kopfschüttelanimation bei einem Fehler | Für P1b vorläufig umgesetzt, Erkennbarkeit aber noch nachzuarbeiten bzw. manuell zu prüfen. Die Rückmeldung verlängert die definierte Sperrdauer nicht und darf spielrelevante Zeichen nicht verdecken. |
 
 ## Umsetzungsvorschläge und abgelöste Einträge
 
@@ -55,9 +66,9 @@ Die getrennte Menü-/Wertungsbehandlung, Start-/Zielgrenzen und Paketabgrenzung 
 | P-004 | **Für P1 freigegeben durch D-017** | A–Z, beidseitige explizite Verbindungen. Frühere Viererraster-Einschränkung bleibt durch D-010 ersetzt. |
 | P-005 | **Abgelöst durch D-014/D-015/D-018** | Früherer Enter-/Countdown-Start gilt nicht mehr. Zieleingang bleibt logisch bestimmt; Fokus-/Menübehandlung gemäß P1-Profil. |
 | P-006 | Zunächst lokale Ranglisten je Strecken-/Regelidentität, noch kein Online-Dienst | Geplanter Lieferumfang von P1c; Speicher-/Onlinefragen blockieren den P1a-Kern nicht. Keine automatische Windows-/Web-Synchronisierung. |
-| P-007 | Automatische, erhöhte Third-Person-Kamera; lesbare Nachbarn und rechtzeitig sichtbare Verzweigungen | Als P1b-Testgestaltung mit begrenztem Aufholen umgesetzt; keine Mausbedienung nötig. Finale Kameraparameter bleiben offen. |
+| P-007 | Automatische, erhöhte Third-Person-Kamera; lesbare Nachbarn und rechtzeitig sichtbare Verzweigungen | P1b-Testgestaltung ist implementiert, hat aber den manuellen Smoothness-Nachweis nicht bestanden. D-020 ist verbindlich; finale Kameraparameter bleiben offen. |
 | P-008 | Zuerst handgebaute Teststrecken, danach modulbasierte Seed-Generierung | Erst gute Abschnittstypen finden, dann reproduzierbar kombinieren. |
-| P-009 | Unabhängige logische Position und aufholende visuelle Bewegung; keine unbeschränkte Animationswarteschlange | In P1b mit endlicher Wegpunktgrenze und Aufholbudget umgesetzt; D-003/D-012 bleiben verbindlich, die Darstellung ist noch manuell zu erproben. |
+| P-009 | Unabhängige logische Position und aufholende visuelle Bewegung; keine unbeschränkte Animationswarteschlange | Endliche Wegpunktgrenze und Aufholbudget sind implementiert, aber noch nicht visuell abgenommen. D-003/D-012/D-020 bleiben verbindlich; ein endliches Budget rechtfertigt keine Kameraschnitte. |
 
 Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Entscheidungen. Statusänderungen erfolgen nachvollziehbar.
 
@@ -65,7 +76,7 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 
 **P1a / Issue #2:** Abgeschlossen. Regelprofil, Datenformat, kleines ebenes Layoutprofil, Zahlenpräzision und Toleranzen sind dokumentiert und technisch abgenommen. Merge über PR #12: `5ddf921fdf3736f9e521b8e37b833139beee636f`. Keine neue Freigabe des Kernprofils erforderlich.
 
-**P1b / Issue #3:** Im Draft-PR #13 implementiert. [p1b-implementation.md](p1b-implementation.md) dokumentiert Handkurs, zentrale Darstellungsparameter, Bedienung und reale Abnahme. Sichtbarer Bewegungsrückstand, Kamera-/Buchstabenlesbarkeit und physische Eingabe bleiben praktisch abzunehmen. Escape ist von Quick Restart getrennt; vollständige Menü-/Fortsetzungsoberfläche und Persistenz sind nicht enthalten.
+**P1b / Issue #3:** Im Draft-PR #13 implementiert, jedoch nicht abgenommen. Die manuelle Rückmeldung zu `c4142a1` beanstandet irreführende Seitenanschlüsse, unzureichende Feldzustände und Kamerasprünge. [p1b-implementation.md](p1b-implementation.md) und der aktuelle PR-Review konkretisieren die Nacharbeit einschließlich Integrationsregressionen und echter Windows-/Chrome-Spielprüfung. D-019/D-020 benötigen keine erneute Freigabe. Escape ist von Quick Restart getrennt; vollständige Menü-/Fortsetzungsoberfläche und Persistenz bleiben außerhalb des Pakets.
 
 **Vor P2/P3:** Zielhardware, Auflösung und Leistungsbudget für #6; Kamera-/Routenlesbarkeit sowie Tippbarkeit in #5 erproben. Nur geeignete Bausteine für #7 freigeben. Weitere Tastaturlayouts und endgültige Streckenlängen bleiben offen. Größenbereiche, Mindestbreiten lesbarer Randübergänge und Fugentoleranzen sind an Testabschnitten zu erproben. Höhenwechsel, Sprung-/Brückenmechaniken und ein beliebiger Polygon-Generator sind nicht mitbeauftragt.
 
@@ -82,3 +93,4 @@ Nicht freigegebene Vorschläge werden nicht stillschweigend zu endgültigen Ents
 - 2026-09-05: P1a-Kern auf `codex/p1a-run-core` implementiert: getrennte Graph-/Layoutvalidierung, versionierte Strecken-/Regelidentität, monotone Zeit, Eingabeadapter und RunSession.
 - 2026-09-05: Nacharbeit `617015d` geprüft; P1a über PR #12 abgenommen und gemergt, CI auf Merge-Commit erfolgreich. P1b auf dieser Grundlage vorbereitet; bestehende Regeln unverändert. Integration und echte Spiel-/Grafikabnahme noch ausstehend.
 - 2026-09-05: P1b-Handkurs, Spielszene, HUD, begrenztes visuelles Aufholen und `integration`-Suite im Draft-PR #13 umgesetzt. Das Regelprofil bleibt unverändert; Review und vollständige manuelle Plattformabnahme stehen getrennt aus.
+- 2026-09-05: Manuelle P1b-Rückmeldung erfasst. D-019 ergänzt den sichtbaren Besuchsstatus und bekräftigt die Nachbarmarkierung; D-020 präzisiert durchgehend flüssige Kameraführung. D-011 gilt auch für optisch irreführende Seitenfugen. Dokumentation und Review sind noch keine Fehlerbehebung oder Abnahme.

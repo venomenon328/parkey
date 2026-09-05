@@ -1,8 +1,8 @@
 # P1b: Integration des ersten spielbaren Parcours
 
-Stand: 2026-09-05. **Im Draft-PR #13 implementiert; vollständige technische und manuelle Abnahme offen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
+Stand: 2026-09-05. **Im Draft-PR #13 implementiert, nach manueller Rückmeldung zu `c4142a1` aber nicht abnahmefähig; Nacharbeiten offen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
 
-Diese Datei konkretisiert die Integration des freigegebenen [P1-Regelprofils](p1-rule-profile.md), ohne neue Spielregeln einzuführen. Umfang und Abnahmekriterien stehen in Issue #3, allgemeine Prüfungen in [testing.md](testing.md). Es fehlt keine weitere Start-, Eingabe-, Fehler- oder Geometriefreigabe.
+Diese Datei konkretisiert die Integration des freigegebenen [P1-Regelprofils](p1-rule-profile.md). D-019/D-020 aus dem [Entscheidungsregister](decisions.md) ergänzen Feldstatus und durchgehend flüssige Kameraführung. Umfang und Abnahmekriterien stehen in Issue #3, allgemeine Prüfungen in [testing.md](testing.md). Es fehlt keine weitere Start-, Eingabe-, Fehler-, Geometrie- oder Darstellungsfreigabe; konkrete finale Gestaltung bleibt offen.
 
 ## 1. Ergebnis und Paketgrenze
 
@@ -16,29 +16,47 @@ Beschriftete Keycaps, eine einfache Figur mit unterscheidbarem Kopf, klare Beleu
 
 Die Handstrecke hat genau eine versionierte Datenquelle. `CourseData` und der vorhandene vollständige Graph-/Layoutvalidator werden vor Freigabe des Spiels verwendet. Ungültige Daten führen zu einer verständlichen Fehlermeldung, nicht zu einem teilweise spielbaren Lauf oder stillen Ersatzlayout.
 
-Feldgrundflächen, Buchstaben, Standpunkte und Übergänge werden aus diesen Daten aufgebaut, nicht unabhängig in Szenen nochmals definiert. Den Übergang von relativen `[x, z]`-Werten und `rotation_deg` zu 3D-Koordinaten ausdrücklich testen, insbesondere Drehsinn und gedrehte Randpunkte. Keine Spiegelung, die im symmetrischen Grundfall unbemerkt bleibt. Kanonische Streckendaten werden durch Meshaufbau, Kamerabewegung oder Grafikprofil nicht verändert.
+Feldgrundflächen, Buchstaben, Standpunkte und Übergänge werden aus diesen Daten aufgebaut, nicht unabhängig in Szenen nochmals definiert. Den Übergang von relativen `[x, z]`-Werten und `rotation_deg` zu 3D-Koordinaten ausdrücklich testen, insbesondere Drehsinn und gedrehte Randpunkte. Keine Spiegelung, die im symmetrischen Grundfall unbemerkt bleibt. Kanonische Streckendaten werden durch Meshaufbau, Kamerabewegung, Besuchsmarkierungen oder Grafikprofil nicht verändert.
 
 Nachbarschaft entsteht niemals aus Laufzeitkollisionen oder bloßer räumlicher Nähe. Sichtbar begehbare Randanschlüsse dürfen keine unsichtbar verbotenen Wege suggerieren. Ein kleiner eben gestalteter Parcours innerhalb des abgenommenen Layoutprofils reicht; kein Polygonframework, Höhenparcours oder Generator. Notwendige kleine Integrationskorrekturen am Kern sind mit Regressionstests erlaubt, nicht jedoch das Abschwächen seiner Regeln, nur damit eine Szene lädt.
+
+**Review-Konkretisierung zu D-011:** Der Kurs aus `c4142a1` hat zwischen den parallelen Ästen nur 0,2 Einheiten Abstand bei 2,0 Einheiten Feldtiefe; normale Längsübergänge haben 0,1 Einheiten Fuge. Der Nutzer erkennt W–F deshalb als normalen möglichen Schritt, obwohl die Kante fehlt. Diese Anordnung ist nicht als lesbar abgenommen. Entweder passende explizite Querübergänge samt erneuter Graph-/Layout-/Buchstabenprüfung vorsehen oder die Äste eindeutig anders führen/trennen. Nicht nur den Schwellenwert minimal verschieben, die fehlende Kante im HUD erklären oder F isoliert hinzupatchen, während der Rest der Seitenanschlüsse unklar bleibt.
+
+Die Layoutprüfung benötigt neben der Kontrolle vorhandener `transitions` auch negative Fälle für einen geometrisch begehbar erscheinenden Randanschluss ohne passende Graphkante bzw. sichtbare Trennung. Das kleine Profil muss dafür seine Erkennungs-/Trennungsbedingungen dokumentieren; es erzeugt keine zusätzlichen Bewegungsnachbarn zur Laufzeit. Die tatsächliche Lesbarkeit nahezu gleicher Fugen bleibt zusätzlich eine manuelle Abnahme. Relevante Kursänderungen verändern die Identität und gegebenenfalls Teststrecken/Bedienfolgen.
 
 ## 3. Ein Eingang für Spieleingaben
 
 Die Spielszene verbindet den vorhandenen `RunInputAdapter` mit genau einer `RunSession`. Jedes reale Key-down wird höchstens einmal weitergegeben. Empfangszeit am Eingang des zuständigen Event-Callbacks erfassen und für Start, Schritt und Fehler unverändert verwenden. Für Tests wird dieselbe Uhr kontrolliert injiziert. Kein Polling je Frame, kein Warten auf Tween, Physiktick oder vollständiges Loslassen aller Tasten.
 
-GUI-Verbrauch, Textfokus, Spielfokus und Menüstatus werden tatsächlich an der Szenengrenze berücksichtigt. `_unhandled_input` ist dafür ein geeigneter Ausgangspunkt, kein zusätzlicher zweiter Pfad neben unkontrolliertem `_input`. Ein im Test ergänztes `LineEdit` muss Buchstaben und Backspace konsumieren können, ohne Start, Bewegung oder Restart auszulösen; dafür wird kein Seed-Eingabemenü als Produktfeature vorgezogen.
+GUI-Verbrauch, Textfokus, Spielfokus und Menüstatus werden tatsächlich an der Szenengrenze berücksichtigt. `_unhandled_input` ist dafür ein geeigneter Ausgangspunkt, kein zusätzlicher zweiter Tastaturpfad neben unkontrolliertem `_input`. Ein im Test ergänztes `LineEdit` muss Buchstaben und Backspace konsumieren können, ohne Start, Bewegung oder Restart auszulösen; dafür wird kein Seed-Eingabemenü als Produktfeature vorgezogen.
+
+Nach Texteingabe muss ein tatsächlicher Klick in die freie Spielfläche den Textfokus zuverlässig verlassen und wieder Spieleingaben ermöglichen. Der Klick selbst startet oder bewegt nicht. Keine Tests, die den fehlenden Nutzerpfad mit einem direkten `release_focus()`-Aufruf ersetzen. Spiel-/UI-Rückfokussierung und OS-/Browserfokus sind getrennt: Die Rückkehr nach echtem Fokusabbruch macht einen alten Versuch nicht wieder wertbar.
 
 Fenster-/Browserfokusverlust muss den Kernvertrag erreichen, nicht nur die sichtbare Animation pausieren. Den realen Web-Fokuspfad interaktiv prüfen. Bei Rückkehr keine alten Tastendrücke nachspielen oder selbsttätig starten. OS-/Browserlatenzen nicht als identisch behaupten.
 
 ## 4. Darstellung folgt dem logischen Zustand
 
-Aktuelles Feld und erreichbare Nachbarn werden aus der Session markiert, nicht aus der noch nachlaufenden Figurposition. Eine Umrandung oder ein Positionsmarker ergänzt Farben. Figur, Schatten und HUD dürfen die benötigten Buchstaben nicht verdecken; auch Rückwege und beide Äste sind ohne Mausbedienung erkennbar.
+### Feldzustände und sichtbares Feedback
 
-Die Bewegung folgt Standpunkten und Übergängen entlang der tatsächlich gewählten Route. Bei schneller Eingabe Animationen verkürzen oder zusammenführen, ohne über nicht begehbare Lücken oder den falschen Ast abzukürzen. Zeitlicher Rückstand und gespeicherter Darstellungsverlauf erhalten explizite endliche Grenzen. Werte und Aufhol-/Notkorrekturstrategie bei der Implementierung zentral dokumentieren und testen; es sind Darstellungsparameter, keine Schritt-Cooldowns. Nach Ende eines Eingabebursts müssen Figur und Kamera innerhalb der dokumentierten Grenze aufholen, statt alte Einzelschritte unbegrenzt abzuarbeiten.
+Aktuelles Feld und erreichbare Nachbarn werden aus der Session markiert, nicht aus der noch nachlaufenden Figurposition. Nach D-019 wird zusätzlich die Besuchshistorie je Versuch angezeigt. Ein besuchter Nachbar bleibt zugleich als erreichbar erkennbar; aktueller Standort ist ein zusätzlich eindeutiger Zustand. Das besetzte Startfeld ist besucht, jeder akzeptierte logische Zieleingang ergänzt den Status. Fehler, verworfene Eingaben, UI-Eingaben und ausstehende Animationen verändern ihn nicht. Quick Restart setzt auf den Startzustand zurück, Rückwege löschen vorherige Besuche nicht.
 
-Beim Fehler wird die Darstellung eindeutig auf das unveränderte logische Feld abgeglichen; anschließend keine alten Vorwärtsbewegungen während der Sperre. Eine kurze Kopfbewegung signalisiert den Fehler, bestimmt aber weder Sperrfrist noch Eingabefreigabe. Auch bei starker vorheriger Eingaberate und einem neuen gültigen Tastendruck exakt am Fristende prüfen.
+Die endgültige Palette ist offen. P1b benötigt deutliche provisorische Zustandsunterschiede auf bzw. oberhalb der Feldoberfläche und zusätzliche Formsignale. Eine unter der Keycap versteckte Auswahlplatte und kleine alleinstehende Glyphen genügen nicht. Die Markierung darf den Buchstaben nicht verdecken. Figur, Schatten und HUD dürfen nötige Zeichen ebenfalls nicht verbergen; auch Rückwege und beide Äste sind ohne Mausbedienung erkennbar.
+
+### Adaptive Figurenbewegung
+
+Die Bewegung folgt Standpunkten und Übergängen entlang der tatsächlich gewählten Route. Bei schneller Eingabe Animationen verkürzen oder zusammenführen, ohne über nicht begehbare Lücken oder den falschen Ast abzukürzen. Zeitlicher Rückstand und gespeicherter Darstellungsverlauf erhalten explizite endliche Grenzen. Werte und Aufhol-/Notkorrekturstrategie zentral dokumentieren und testen; es sind Darstellungsparameter, keine Schritt-Cooldowns. Nach Ende eines Eingabebursts muss die Darstellung aufholen, statt alte Einzelschritte unbegrenzt abzuarbeiten. Zahlenwerte aus einer noch nicht abgenommenen Implementierung sind kein Grund, Jump-Cuts einzubauen.
+
+Beim Fehler wird die Figur eindeutig auf das unveränderte logische Feld abgeglichen; anschließend keine alten Vorwärtsbewegungen während der Sperre. Eine erkennbare Kopfbewegung signalisiert den Fehler, bestimmt aber weder Sperrfrist noch Eingabefreigabe. Eine gleichmäßig gefärbte Kugel nur um ihren eigenen Mittelpunkt zu drehen ist keine verlässlich erkennbare Kopfschüttelrückmeldung; eine einfache Orientierungsform oder geeignete Pivotbewegung genügt, keine finalen Assets nötig. Auch starke vorherige Eingaberate und einen neuen gültigen Tastendruck exakt am Fristende prüfen.
+
+### Kontinuierliche Kamera
+
+D-020 verlangt flüssige Position **und** Blickrichtung. Nicht nur die Position interpolieren und anschließend per `look_at` auf den bereits gesprungenen logischen Anker ausrichten. Ein neues logisches Ziel verändert das Führungsziel, nicht schlagartig den sichtbaren Kameratransform. Schritte, Fehler, Richtungswechsel und große Eingabebursts erhalten die laufende Kameraführung; Figurenabgleich und Kamerainitialisierung sind getrennte Operationen.
+
+Initiale Aufstellung und ausdrücklicher Quick Restart dürfen einen neuen Ausgangspunkt setzen. Innerhalb desselben Versuchs darf weder ein Fehlerpfad noch ein Pufferüberlauf diese Initialisierung wiederverwenden. Auch ein Testaufruf mit `delta = 0` setzt eine bereits initialisierte Kamera nicht plötzlich auf das neue Ziel. Kontinuität mit kleinen Renderzeitschritten, Transform-/Rotationsverlauf und visuellen Clips prüfen, nicht nur die Endposition nach einem großen Zeitschritt. Die Eingabeverarbeitung und Zielzeit bleiben unabhängig davon.
 
 **Vorhandener Kernvertrag:** `RunSession.State.LOCKED` wird erst bei einem späteren Bewegungsereignis in `RUNNING` überführt. Eine sichtbare Sperranzeige darf deshalb nicht unbegrenzt allein an diesem Enum hängen: Frist und aktuelle monotone Zeit auswerten. Den nächsten Buchstaben nicht vorab wegen eines alten Darstellungszustands verwerfen; die Session entscheidet über seine Gültigkeit.
 
-Quick Restart beendet alte Tweens, Kameraübergänge, Fehlerfeedback und verzögerte Rückmeldungen. Kein Callback des vorherigen Versuchs darf Position, Markierungen oder Ergebnis des neuen Versuchs überschreiben. Gleicher Kurs und gleiche Identität bleiben erhalten.
+Quick Restart beendet alte Tweens, Kameraübergänge, Fehlerfeedback und verzögerte Rückmeldungen. Kein Callback des vorherigen Versuchs darf Position, Markierungen, Besuchshistorie oder Ergebnis des neuen Versuchs überschreiben. Gleicher Kurs und gleiche Identität bleiben erhalten.
 
 ## 5. HUD und minimale Menüreaktion
 
@@ -48,13 +66,21 @@ Timer dauerhaft sichtbar: `MM:SS.mmm`, in Bereitschaft null, bei Fehlern weiterl
 
 Escape erhält für den Testlauf nur eine schlichte sichtbare Menü-/Unterbrechungsrückmeldung. Das ist kein fertiges Pausemenü. Vor Laufbeginn kann sie geschlossen werden und lässt Bereitschaft bestehen; nach Unterbrechung eines gestarteten Laufs bleiben Position und abgebrochener Versuch erhalten, aber es gibt keine gewertete Fortsetzung. Ein Hinweis auf Backspace als neuen Versuch genügt. Nach gültigem Ziel bleibt das Ergebnis erhalten. Erneutes Escape oder eine eindeutig bezeichnete Schließen-Aktion kann die Rückmeldung schließen; nie als impliziten Restart behandeln.
 
-Backspace bleibt als getrennte Quick-Restart-Aktion verfügbar, auch aus der Unterbrechungsansicht; Textfokus hat weiterhin Vorrang. Es gibt keine globale Pause des gesamten SceneTree, die den Eingabe-/Zeitvertrag oder die Bedienbarkeit verhindert. Einstellungsseiten, Konten, Ranglisten und Übungsfortsetzung gehören nicht hierher.
+Backspace bleibt als getrennte Quick-Restart-Aktion verfügbar, auch aus der Unterbrechungsansicht; Textfokus hat weiterhin Vorrang. Es gibt keine globale Pause des gesamten SceneTree, die den Eingabe-/Zeitvertrag oder die Bedienbarkeit verhindert. Einstellungsseiten, Konten, Ranglisten und Übungsfortsetzung gehören nicht hierher. Größenanpassung darf Pflichttexte nicht abschneiden oder wichtige Buchstaben mit HUD-Flächen verdecken; optionale Diagnoseangaben sind nachrangig.
 
 ## 6. Automatisierte Integration
 
-Die neue Suite `integration` instanziiert die tatsächliche Spielszene im SceneTree einschließlich `_ready`, UI, Adapter und Darstellung. Mindestens einen vollständigen Lauf über den realen Szenen-/Viewport-Eingabepfad prüfen, nicht alle Tests durch direkte Kernaufrufe ersetzen. Kontrollierte Uhren und expliziter Renderfortschritt machen die Fälle reproduzierbar; Testhilfen dürfen keine unkontrollierten Eingaben im normalen Export erzeugen.
+Die Suite `integration` instanziiert die tatsächliche Spielszene im SceneTree einschließlich `_ready`, UI, Adapter und Darstellung. Mindestens einen vollständigen Lauf über den realen Szenen-/Viewport-Eingabepfad prüfen, nicht alle Tests durch direkte Kernaufrufe ersetzen. Kontrollierte Uhren und expliziter Renderfortschritt machen die Fälle reproduzierbar; Testhilfen dürfen keine unkontrollierten Eingaben im normalen Export erzeugen.
 
-Pflichtfälle sind in Issue #3 aufgeführt. Besonders: beide Routen und Rückweg, falscher Erstbuchstabe, Sperrgrenzen, mindestens 50 schnelle Ereignisse mit verschiedenen Renderfortschritten, UI-Textfokus, Menü/Fokus, Reset während Nachlauf/Fehler, einmaliger Zieleingang, Timerübertrag sowie unveränderte Identität beim Szenenaufbau. Die sichtbare Sperre endet auch ohne weiteren Tastendruck; die Darstellung holt innerhalb ihres dokumentierten Budgets auf.
+Pflichtfälle aus Issue #3 bleiben bestehen: beide Routen und Rückweg, falscher Erstbuchstabe, Sperrgrenzen, mindestens 50 schnelle Ereignisse mit verschiedenen Renderfortschritten, UI-Textfokus, Menü/Fokus, Reset während Nachlauf/Fehler, einmaliger Zieleingang, Timerübertrag sowie unveränderte Identität beim Szenenaufbau. Die sichtbare Sperre endet auch ohne weiteren Tastendruck; die Darstellung holt innerhalb ihres dokumentierten Budgets auf.
+
+Zusätzliche bzw. geschärfte Regressionen nach Review von `c4142a1`:
+
+- Fehlende explizite Kante an einem im Layoutprofil begehbar erscheinenden Randanschluss sowie repräsentative Nachbar-/Nichtnachbarpaare beider Handkursäste; keine Prüfung nur der schon eingetragenen `transitions`.
+- Standard-, Besuchs-, Nachbar- und aktueller Status; Kombination besucht/erreichbar; Rückweg, Fehler, UI und Quick Restart; Marker aus logischem statt visuellem Fortschritt. Keine Mutation der Kursidentität.
+- Kameraposition und Orientierung vor/nach Einzelinput, bei kleinen Zeitschritten, Rückweg/Gabelung, Fehler, Burst und Ende des Aufholbudgets. Initialisierung/Quick Restart als ausdrücklich getrennte Fälle. Kein positiver Test, der den störenden Kamerasnap zur Sollvorgabe macht.
+- Tatsächlicher Klick ins Textfeld, Text/Backspace, Klick in freie Spielfläche und anschließend ein wirksamer Spielbuchstabe. Den Fokusübergang nicht mit Test-Hilfsaufrufen vortäuschen.
+- Sichtbarer, nicht nur mathematisch rotierter Fehlerhinweis und Lesbarkeitsprüfung des HUD bei Fenstergrößenwechsel; die abschließende Wahrnehmbarkeit bleibt manuell zu prüfen.
 
 Der Runner muss auf asynchrone Szeneninitialisierung bzw. ausstehende Tests warten, bevor er Erfolg meldet und beendet. Keine übersprungenen Tests durch vorzeitiges `quit(0)`; neue Suites in `all` aufnehmen. Unbekannte/fehlende/leere Suite sowie Testfehler müssen einen Fehlerstatus liefern. Tests zu gültiger vorhandener Funktion nicht entfernen, um grün zu werden.
 
@@ -62,40 +88,44 @@ Der Runner muss auf asynchrone Szeneninitialisierung bzw. ausstehende Tests wart
 
 Pflicht sind ein tatsächlich durchgespielter nativer Windows-Export mit Forward+ sowie ein über HTTP gestarteter Web-Export in Desktop-Chrome mit Compatibility. Jeweils Commit, Engine, OS/Browser, Hardware/Auflösung und Ergebnis dokumentieren. Firefox-Gesamtabnahme bleibt P4; mehr Tests sind willkommen, werden aber nicht stillschweigend Voraussetzung dieses Pakets.
 
-Manuell beide Routen, Rückweg, erster korrekter/falscher Buchstabe, Fehlerpause, schneller Eingabeburst, Y/Z, Shift, Echo/Überlappung, Backspace, Escape und Fokusverlust prüfen. Figur, Markierungen, Kopfbewegung und Kamera dürfen weder dauerhaft zurückbleiben noch benötigte Zeichen verdecken. Fenstergrößenwechsel als Lesbarkeits-Sanity-Check ergänzen. Screenshots oder Clips helfen bei der Beurteilung, ersetzen den realen Tastatur-/Spieltest aber nicht.
+Manuell beide Routen, Rückweg, erster korrekter/falscher Buchstabe, Fehlerpause, schneller Eingabeburst, Y/Z, Shift, Echo/Überlappung, Backspace, Escape und Fokusverlust prüfen. Figur, Markierungen, Kopfbewegung und Kamera dürfen weder dauerhaft zurückbleiben noch benötigte Zeichen verdecken. Feldzustände auf der Oberfläche, Seitentrennung und kontinuierliche Kamera sind bereits für diesen PoC Abnahmekriterien, keine auf P2b verschobene Grafikpolitur. Fenstergrößenwechsel ergänzen. Screenshots oder Clips helfen bei der Beurteilung, ersetzen den realen Tastatur-/Spieltest aber nicht.
 
-Die Übergabe enthält eine kurze konkrete Bedien- und Abnahmeanleitung mit tatsächlichem Streckenverlauf, Startbuchstaben und erreichbaren Teststellen sowie den Buildpfaden. Fehlende reale Nutzerprüfung bleibt offen und der PR Draft, auch wenn alle Headless-Tests grün sind. Dieses Paket ist erst nach technischem Review und echter Spielabnahme abgeschlossen.
+Die Übergabe enthält eine kurze konkrete Bedien- und Abnahmeanleitung mit tatsächlichem Streckenverlauf, Startbuchstaben und erreichbaren Teststellen sowie den Buildpfaden. Nach Kursänderungen die Folgen unten und in PR/Tests gemeinsam aktualisieren. Fehlende reale Nutzerprüfung bleibt offen und der PR Draft, auch wenn alle Headless-Tests grün sind. Dieses Paket ist erst nach technischem Review und echter Spielabnahme abgeschlossen.
 
-## 8. Implementierte Strecke und Darstellungsgrenzen
+## 8. Iststand des geprüften Commits und offene Nacharbeit
 
-`scripts/course/handcrafted_course.gd` ist die einzige Quelle der 26 Felder, Buchstaben, expliziten Kanten, Grundflächen, Anker und Übergänge. Der gesamte ebene Kurs ist um 18° gedreht. Gabelungs-/Zusammenführungsfelder sind 2,0 × 4,2 Einheiten groß; die unregelmäßige obere Passage wechselt von 2,0 auf 2,6 und 1,4 Einheiten Breite. Alle Maße bleiben im freigegebenen Layoutprofil und werden vor Szenenfreigabe vollständig validiert.
+`scripts/course/handcrafted_course.gd` ist in `c4142a1` die einzige Quelle der 26 Felder, Buchstaben, Kanten, Grundflächen, Anker und Übergänge. Der gesamte ebene Kurs ist um 18° gedreht. Gabelungs-/Zusammenführungsfelder sind 2,0 × 4,2 Einheiten groß; die obere Passage wechselt von 2,0 auf 2,6 und 1,4 Einheiten Breite. Er besteht die bisherigen Validatorprüfungen. Das beweist nach dem manuellen W–F-Befund gerade nicht die vollständige Anschlusslesbarkeit.
 
-Konkrete Eingabefolgen ab Start:
+Eingabefolgen dieses Prüfstands, nach einer Kursänderung neu abzugleichen:
 
 - obere Route: `AZKQWERTYUIMOPLXN`
 - untere Route: `AZKDFGHJCVBMOPLXN`
 - Rückwegprobe vom oberen Ast bis Start: `AZKQKZAS`
 
-Die Darstellung speichert höchstens 18 Wegpunkte aus den tatsächlich gewählten Übergängen. Nach dem letzten normalen Schritt holt die Figur innerhalb von höchstens 350 ms auf. Würde ein Eingabeburst die Grenze überschreiten, wird ohne Tween unmittelbar auf den aktuellen logischen Anker korrigiert; anschließend wird nur der neue begrenzte Restpfad dargestellt. Die Kamera erreicht ihre logische Zielposition innerhalb von höchstens 450 ms. Fehler und Quick Restart verwerfen den alten Darstellungsrest sofort. Diese Werte begrenzen nur Grafikrückstand und niemals korrekte Eingaben.
+Der Prüfstand speichert höchstens 18 Wegpunkte; für die Figur sind 350 ms, für die Kamera 450 ms Aufholbudget implementiert. Bei Überlauf wird die Figur unmittelbar auf den logischen Anker gesetzt. Die Kameraposition wird interpoliert, die Blickrichtung jedoch unmittelbar auf das logische Feld ausgerichtet; Fehlerabgleich verwendet zusätzlich einen harten Kamerasnap. Diese Implementierungsbeschreibung ist **keine Freigabe der beobachteten Sprünge**. Die Nacharbeit darf Darstellungsparameter und Aufholstrategie ändern, muss aber D-012/D-020 erfüllen und endlichen Rückstand nachweisen.
 
-## 9. Konkrete manuelle Abnahme
+Die bisherigen 107 Integrations- bzw. 266 Gesamtassertions und erfolgreichen Exporte/CI gehören zum Prüfstand `c4142a1`. Die Benutzerprüfung hat Erreichbarkeitsdarstellung und Kameraführung beanstandet; Besuchsstatus wurde ausdrücklich ergänzt. Neue Tests, Fehlerbehebung und erneute manuelle Abnahme sind noch ausstehend. P0/P1a werden dadurch nicht rückwirkend als ungeprüft bezeichnet.
 
-Windows-Artefakt: `build/windows/parkey.exe`. Web-Einstieg: `build/web/index.html`, ausschließlich über den dokumentierten lokalen HTTP-Server öffnen.
+## 9. Konkrete manuelle Abnahme nach der Nacharbeit
 
-1. Ohne Eingabe warten: `00:00.000`, Feld S und A als erreichbarer Nachbar bleiben sichtbar.
-2. `A`, `Z`, `K` tippen; am K-Feld beide Äste lesen. Oberen Ast mit `QWERTYUI`, unteren nach Backspace mit `DFGHJCVB` spielen. Ab M jeweils `OPLXN` bis zum Ziel.
-3. Für den Rückweg `AZKQKZAS` tippen. Markierung, Figur und Kamera müssen am jeweils logischen Feld bleiben.
-4. Nach Backspace einen falschen Buchstaben außer A tippen, während der roten Fehleranzeige weitere Buchstaben drücken und nach etwa 200 ms A verwenden. Timer läuft, weitere Sperreingaben werden nicht nachgespielt.
-5. Schnelle Bursts, Shift-Buchstaben, Y/Z und überlappende neue Tastendrücke prüfen; gehaltene Taste/Echo darf keine Schrittfolge erzeugen. Backspace während Bewegung/Fehler startet bereit bei null.
-6. Escape vor Start öffnen/schließen. Escape während eines Laufs erhält die Position, beendet aber die Wertbarkeit; erst Backspace startet neu. Im UI-Fokustest Buchstaben und Backspace eingeben, ohne Spielaktion.
-7. Während Lauf und Fehler den Fensterfokus verlieren. Rückkehr darf nicht fortsetzen; ein bereits angezeigtes Zielergebnis bleibt erhalten. Bei 1280 × 720 sowie nach Fenstergrößenwechsel Buchstaben, Rückwege, Markierungen und HUD prüfen.
+Windows-Artefakt: `build/windows/parkey.exe`. Web-Einstieg: `build/web/index.html`, ausschließlich über den dokumentierten lokalen HTTP-Server öffnen. Die korrigierten Builds verwenden, nicht den alten Prüfstand.
 
-Für beide Exporte getrennt Engine, OS/Browser, Hardware/Auflösung, physische Eingaben und Befunde protokollieren. Automatisierte oder synthetische Tastaturereignisse ersetzen diesen letzten Punkt nicht.
+1. Ohne Eingabe warten: Timer null, Startfeld aktuell/besucht, tatsächlich erreichbare Nachbarn sichtbar anders als Standard.
+2. Beide aktuellen Routen bis zum Ziel spielen. An den parallelen Abschnitten prüfen: Jeder wie ein normaler Randübergang aussehende Schritt ist möglich, andernfalls ist die Trennung räumlich eindeutig. Die Markierung allein erklärt keine unsichtbare Wand.
+3. Rückweg nehmen: Vorherige Besuche bleiben erkennbar, besuchte Nachbarn zusätzlich erreichbar. Quick Restart löscht die alte Besuchsspur und stellt Bereitschaft her.
+4. Einzelne korrekte Buchstaben mit Pausen, dann schnelle Folgen tippen. Kamera bleibt ohne Schnitt in Position und Blickrichtung; ebenso bei Rückweg, Fehler nach schnellem Tippen und langem Burst. Ein Clip über mehrere Schritte und einen Fehler ist als visueller Nachweis geeignet.
+5. Nach Quick Restart einen falschen Erstbuchstaben, innerhalb der Sperre weitere Eingaben und ab Fristende einen korrekten Buchstaben verwenden. Keine nachgespielten Eingaben; gut erkennbares Fehlerfeedback ohne zusätzliche Sperre oder Kamerasnap.
+6. Y/Z, Shift, gehaltene und überlappende Tasten sowie Backspace während Bewegung/Fehler prüfen. Escape vor Start öffnen/schließen, während Lauf unterbrechen; keine gewertete Fortsetzung.
+7. Mit der Maus ins Testtextfeld klicken, Text und Backspace verwenden, dann in freie Spielfläche klicken und einen regulären Spielschritt ausführen. Keine Konsole/Testhilfe zum Freigeben des Fokus nötig.
+8. Tatsächlichen Fenster-/Browserfokus während Lauf/Fehler verlieren. Rückkehr setzt nichts fort; gültige Zielergebnisse bleiben erhalten. Bei 1280 × 720 und einer kleineren sinnvollen Fenstergröße aktuelle/nächste/rückwärtige Buchstaben, Status, Timer und Menütexte auf Verdeckung/Abschneiden prüfen.
+
+Für beide Exporte getrennt Engine, OS/Browser, Hardware/Auflösung, physische Eingaben und Befunde protokollieren. Automatisierte oder synthetische Tastaturereignisse ersetzen den letzten Punkt nicht.
 
 ## Technische Primärquellen
 
-Geprüft am 2026-09-05; bei Umsetzung gegen den gepinnten Editor abgleichen. Keine Engine-Aktualisierung mitbeauftragt.
+Geprüft am 2026-09-05; gegen den gepinnten Editor abgleichen. Keine Engine-Aktualisierung mitbeauftragt.
 
 - Eingabereihenfolge und GUI-Vorrang: https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
 - Control-Fokus und Ereignisverbrauch: https://docs.godotengine.org/en/stable/classes/class_control.html
 - Viewport-Eingabepfad für Integrationstests: https://docs.godotengine.org/en/stable/classes/class_viewport.html
+- Node3D-Ausrichtung mit `look_at`: https://docs.godotengine.org/en/stable/classes/class_node3d.html
