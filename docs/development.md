@@ -85,17 +85,20 @@ Im Repository-Root ausführen. `build/` ist absichtlich nicht versioniert.
 New-Item -ItemType Directory -Force -Path build/windows, build/web
 godot --headless --path . --import
 godot --headless --path . --script res://tests/run_tests.gd -- --suite core
+godot --headless --path . --script res://tests/run_tests.gd -- --suite storage
 godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
 godot --headless --path . --script res://tests/run_tests.gd -- --suite all
 godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
 godot --headless --path . --export-release "Web" build/web/index.html
 ~~~
 
-Der Runner kennt ab P1b `smoke`, `core`, `integration` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
+Der Runner kennt ab P1c `smoke`, `core`, `storage`, `integration` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
 
 ~~~powershell
 godot --headless --path . --script res://tests/run_tests.gd -- --suite does-not-exist
 ~~~
+
+P1c / #4 implementiert `storage` und die lokale Ablage unter `user://parkey-results/results-v1.json`. `duration_usec` und `error_count` liegen dort als kanonische Dezimalstrings vor, damit die numerischen Originalwerte verlustfrei rundreisen. `.tmp` und `.bak` sind kurzfristige Schreib-/Wiederanlaufdateien; sie nicht manuell als Rangliste bearbeiten oder löschen. Bestehende Benutzerbestzeiten niemals als Testablage verwenden: `storage` und `integration` verwenden vor `_ready` ausschließlich `user://parkey-test-results/...` und räumen nur diese eigenen Pfade auf. Reale Persistenzprüfungen stehen in [testing.md](testing.md) und der vollständige Vertrag einschließlich Browsergrenzen in [p1c-local-results.md](p1c-local-results.md).
 
 Der Web-Export läuft derzeit ohne Threads. Für einen lokalen Testserver:
 

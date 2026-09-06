@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a ist über PR #12 abgenommen und nach `main` gemergt: testbarer Spielkern, Streckendaten und Validierung. P1b integriert im Draft-PR #13 den sichtbaren Parcours; die Nacharbeit einschließlich N1–N3 aus Re-Review 5122577064 ist implementiert, Re-Review und physische Abnahme bleiben offen. Speicherung und Generator bleiben unimplementiert. [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 sind zusätzlich zu D-001 bis D-013 verbindlich; die Integration ist in [p1b-implementation.md](p1b-implementation.md) konkretisiert. Siehe [Entscheidungsregister](decisions.md).
+Stand: 2026-09-06. P0, P1a und P1b sind abgenommen und gemergt. PR #13 liefert den sichtbaren Parcours; Windows ist physisch/manuell abgenommen, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P1c implementiert lokale Ergebnisse und bleibt bis Review/Abnahme im Draft-PR; Generator und Onlinewertung sind nicht implementiert. [P1-Regeln](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1c-Vertrag](p1c-local-results.md) und [Entscheidungsregister](decisions.md) sind maßgeblich.
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -24,7 +24,7 @@ Das gemeinsame Backend ist zunächst die geteilte lokale Spiellogik. Ein lokaler
 | `RunSession` | Bereitschaft, Start durch Eingabe, logisches Feld, Fehlerfrist, Quick Restart, getrennte Menüanforderung, Fokusinvalidierung, Ziel/Ergebnis | Kameraführung oder Schrittanimationsdauer |
 | Eingabeadapter | Ereignisse normalisieren und geordnet mit Zeitwerten übergeben; Spiel-/UI-Kontext und separate Steueraktionen | Zukünftige passende Buchstaben vorab herausfiltern |
 | Darstellung | Strecke, Figur, Kamera, HUD, Fehlerfeedback und visuelles Aufholen | Gültigkeit eines Schritts und Zeit des Zieleingangs |
-| Ergebnisablage | Gewertete Resultate speichern/laden | Nachträgliche Änderung der bestimmten Zielzeit |
+| Ergebnisablage | Unveränderlichen Abschluss-Schnappschuss übernehmen, lokale Resultate speichern/laden und Speicherstatus melden | Nachträgliche Änderung der bestimmten Zielzeit oder neue Wertungsregeln |
 | Generator, später | Reproduzierbare geprüfte `CourseData` | Rendererabhängige Regeln oder dekorative Zufälle als Gameplay-Zufall |
 
 P1a liefert `CourseData`, `CourseValidator`, `CourseIdentity`, `RuleProfile`, `MonotonicClock`, `RunSession` und `RunInputAdapter` als kleine GDScript-`RefCounted`-Klassen. Sie sind ohne gerenderte 3D-Szene testbar; ein separates Service-Framework ist nicht erforderlich. Bewegung ist ein Wechsel zwischen verbundenen Feldern, keine physikalische Kollisionssimulation. Details des absichtlich kleinen Layoutformats, der Toleranzen und der Identitätsserialisierung stehen im [P1-Regelprofil](p1-rule-profile.md).
@@ -69,7 +69,7 @@ Projektdatei im Root, Szenen in `scenes/`, Code nach Bedarf in `scripts/core/`, 
 
 P0 liefert Smoke-Runner, zwei Export-Presets, Buildanleitung und CI. P1a hat `core`, P1b `integration` ergänzt und wartet im Runner auf die echten Szenentests. Tatsächliche grafische Windows-/HTTP(S)-Web-Starts bleiben eigene Abnahmen; erfolgreiche Headless-Exporte ersetzen sie nicht.
 
-P1c erhält versionierte lokale Ergebnisdaten und klare Fehlerbehandlung beim Laden/Schreiben; Browserpersistenz/Reload getrennt prüfen. Spielbarkeit bleibt unabhängig von späterer Onlinewertung. Die Kernsession übernimmt keine Dateisystem-/Serverzuständigkeit.
+P1c verwendet `RunIdGenerator` und `LocalResultStore`: Der Szenencontroller ergänzt das einzige `finished`-Ereignis einmalig um eine kollisionsarme Lauf-ID und übergibt denselben unveränderlichen Schnappschuss an UI, Retry und Store. Der Store schreibt pro vollständiger `course_identity` höchstens 100 Resultate idempotent in `user://parkey-results/results-v1.json`; Datei-I/O läuft erst außerhalb des Bewegungsereignispfads und nicht mitten im nächsten aktiven Rennen. Ein vollständiger temporärer Stand wird validiert und erst dann über die vorherige Datei gelegt; bei Ersetzungsfehler bleibt der alte lesbare Stand erhalten. Browserpersistenz/Reload im echten Export prüfen, temporäre und gespeicherte Resultate unterscheiden. Spielbarkeit bleibt unabhängig von späterer Onlinewertung; die Kernsession übernimmt keine Dateisystem-/Serverzuständigkeit.
 
 Online kann ein Eingabeverlauf gegen Strecke/Regeln plausibilisiert werden; dies beweist keinen menschlichen Ursprung. Anti-Cheat und Plattformvergleich sind spätere Aufgaben.
 

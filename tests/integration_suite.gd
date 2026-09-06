@@ -6,6 +6,9 @@ const CourseValidatorScript = preload("res://scripts/core/course_validator.gd")
 const MonotonicClockScript = preload("res://scripts/core/monotonic_clock.gd")
 const RunSessionScript = preload("res://scripts/core/run_session.gd")
 const PlayableCourseSceneScript = preload("res://scripts/playable_course_scene.gd")
+const LocalResultStoreScript = preload("res://scripts/storage/local_result_store.gd")
+
+static var _fixture_serial := 0
 
 
 static func run(harness) -> void:
@@ -16,6 +19,8 @@ static func run(harness) -> void:
 	await _test_lock_restart_menu_and_focus(harness)
 	await _test_fast_input_and_presentation_budget(harness)
 	await _test_responsiveness_status_and_callouts(harness)
+	await _test_local_result_scene_flow(harness)
+	await _test_temporary_result_scene_status(harness)
 
 
 static func _test_handcrafted_course(harness) -> void:
@@ -468,17 +473,86 @@ static func _test_responsiveness_status_and_callouts(harness) -> void:
 	await harness.process_frame
 
 
-static func _scene_fixture(harness) -> Dictionary:
+static func _test_local_result_scene_flow(harness) -> void:
+	var fixture := await _scene_fixture(harness, ["scene-run-0001", "scene-run-0002"])
+	var scene: PlayableCourseScene = fixture["scene"]
+	var clock: MonotonicClock = fixture["clock"]
+	var storage_path: String = fixture["storage_path"]
+	var route := HandcraftedCourseScript.UPPER_ROUTE
+	await _drive_route_with_duration(scene, clock, route, 1000000, 1234000, false)
+	harness._assert_equal(scene.session.state, RunSessionScript.State.FINISHED, "The real scene creates the completion snapshot at logical target entry.")
+	harness._assert_equal(scene._pending_result_snapshots.size(), 1, "A finished result is queued before file work, not written in the input callback.")
+	var first_snapshot: Dictionary = scene._pending_result_snapshots[0].duplicate(true)
+	clock.current_usec += 1
+	scene.get_viewport().push_input(_key(KEY_BACKSPACE))
+	clock.current_usec += 1
+	scene.get_viewport().push_input(_key(KEY_A, 97))
+	await harness.process_frame
+	harness._assert_equal(scene.session.state, RunSessionScript.State.RUNNING, "Immediate result-to-restart-to-letter begins a fresh run without a render prerequisite.")
+	harness._assert_equal(scene._pending_result_snapshots.size(), 1, "The old immutable save job survives the immediate restart.")
+	harness._assert_true(scene.result_store.entries_for_identity(str(first_snapshot["course_identity"])).is_empty(), "No blocking file write is started in the next active run.")
+
+	clock.current_usec += 1
+	scene.get_viewport().push_input(_key(KEY_BACKSPACE))
+	await _drive_route_with_duration(scene, clock, route, 3000000, 1234999)
+	await harness.process_frame
+	harness._assert_equal(scene.session.result_count, 2, "Two real scene completions produce two completion events.")
+	harness._assert_equal(scene.completion_view_count, 2, "A delayed first save never reopens an old result screen over the newer run.")
+	var entries: Array = scene.result_store.entries_for_identity(str(first_snapshot["course_identity"]))
+	harness._assert_equal(entries.size(), 2, "Both queued real scene results are persisted after racing has ended.")
+	harness._assert_true(entries[0]["run_id"] != entries[1]["run_id"], "Content-identical real scene runs retain distinct immutable IDs.")
+	harness._assert_equal(entries[0]["duration_usec"], 1234000, "The faster real-scene run preserves its exact raw microseconds.")
+	harness._assert_equal(entries[1]["duration_usec"], 1234999, "The slower real-scene run preserves its different exact raw microseconds.")
+	harness._assert_equal(PlayableCourseSceneScript.format_duration_usec(int(entries[0]["duration_usec"])), PlayableCourseSceneScript.format_duration_usec(int(entries[1]["duration_usec"])), "The differently ranked scene results intentionally share the displayed milliseconds.")
+	harness._assert_true(scene.result_label.text.contains("1234999 us"), "The real result-detail UI reveals the current run's exact microseconds when milliseconds collide.")
+	harness._assert_true(scene.result_label.text.contains("Rang: 2"), "The real result-detail UI shows the slower raw time's distinct rank.")
+	harness._assert_true(scene.leaderboard_label.text.contains("1234000 us"), "The rendered leaderboard makes the faster colliding raw time auditable too.")
+	harness._assert_true(scene.leaderboard_label.text.contains("Persoenliche Bestzeit: 00:01.234 (1234000 us)"), "The result panel explains the faster personal best next to a slower display-identical run.")
+	harness._assert_true(scene.leaderboard_label.text.contains("Top 10"), "The result panel contains a compact local Top 10.")
+	var reloaded := LocalResultStoreScript.new(storage_path, 1)
+	var reloaded_report: Dictionary = reloaded.load()
+	harness._assert_true(reloaded_report["ok"], "A new store instance reloads the scene's isolated durable results.")
+	harness._assert_equal(reloaded.entries_for_identity(str(first_snapshot["course_identity"])).size(), 2, "Reloading does not duplicate scene results.")
+
+	clock.current_usec += 1000
+	await _push_key(scene, _key(KEY_ESCAPE))
+	scene.simulate_focus_lost(clock.current_usec + 1)
+	clock.current_usec += 2
+	await _push_key(scene, _key(KEY_BACKSPACE))
+	await harness.process_frame
+	harness._assert_equal(scene.result_store.entries_for_identity(str(first_snapshot["course_identity"])).size(), 2, "Escape, focus loss and restart after a valid target retain but never duplicate saved results.")
+	_scene_cleanup(scene)
+	await harness.process_frame
+
+
+static func _test_temporary_result_scene_status(harness) -> void:
+	var fixture := await _scene_fixture(harness, ["scene-run-temporary"], 0)
+	var scene: PlayableCourseScene = fixture["scene"]
+	var clock: MonotonicClock = fixture["clock"]
+	var storage_path: String = fixture["storage_path"]
+	await _drive_letters_viewport(scene, clock, HandcraftedCourseScript.UPPER_ROUTE, 2000000, 1000)
+	await harness.process_frame
+	harness._assert_equal(scene.result_store.status, LocalResultStoreScript.Status.TEMPORARY, "The real result panel receives the restricted-storage state.")
+	harness._assert_true(scene.storage_label.text.contains("temporaer"), "Restricted storage has an explicit temporary result-panel message.")
+	harness._assert_false(FileAccess.file_exists(storage_path.path_join("results-v1.json")), "Temporary scene mode creates no deceptive durable result file.")
+	_scene_cleanup(scene)
+	await harness.process_frame
+
+
+static func _scene_fixture(harness, scripted_run_ids: Array = [], persistent_override: int = 1) -> Dictionary:
 	var packed := load("res://scenes/playable_course.tscn") as PackedScene
 	harness._assert_not_null(packed, "The actual playable scene loads as a PackedScene.")
 	var scene := packed.instantiate() as PlayableCourseScene
 	var clock := MonotonicClockScript.Manual.new()
-	scene.configure_for_test(clock)
+	_fixture_serial += 1
+	var storage_path := "user://parkey-test-results/integration-%d" % _fixture_serial
+	_remove_test_storage(storage_path)
+	scene.configure_for_test(clock, storage_path, scripted_run_ids, persistent_override)
 	harness.root.add_child(scene)
 	await harness.process_frame
 	harness._assert_true(scene.is_node_ready(), "The integration fixture waits for the real scene _ready lifecycle.")
 	harness._assert_true(scene.session != null and scene.session.is_valid(), "The real scene releases only its fully validated course.")
-	return {"scene": scene, "clock": clock}
+	return {"scene": scene, "clock": clock, "storage_path": storage_path}
 
 
 static func _push_key(scene: PlayableCourseScene, event: InputEventKey) -> void:
@@ -507,6 +581,17 @@ static func _drive_letters_viewport(scene: PlayableCourseScene, clock: Monotonic
 		await _push_key(scene, _key(letter.unicode_at(0), letter.unicode_at(0)))
 
 
+static func _drive_route_with_duration(scene: PlayableCourseScene, clock: MonotonicClock, letters: String, start_usec: int, duration_usec: int, process_final_input: bool = true) -> void:
+	for index in letters.length():
+		clock.current_usec = start_usec + (duration_usec if index == letters.length() - 1 else index * 1000)
+		var letter := letters.substr(index, 1)
+		var event := _key(letter.unicode_at(0), letter.unicode_at(0))
+		if index == letters.length() - 1 and not process_final_input:
+			scene.get_viewport().push_input(event)
+		else:
+			await _push_key(scene, event)
+
+
 static func _drive_letters_direct(session: RunSession, letters: String, received_usec: int) -> void:
 	for index in letters.length():
 		session.handle_letter(letters.substr(index, 1), received_usec + index)
@@ -531,7 +616,21 @@ static func _advance_until_visual_caught_up(scene: PlayableCourseScene) -> float
 
 
 static func _scene_cleanup(scene: Node) -> void:
+	var storage_path := ""
+	if scene is PlayableCourseScene:
+		storage_path = scene._storage_base_path
 	scene.queue_free()
+	if not storage_path.is_empty():
+		_remove_test_storage(storage_path)
+
+
+static func _remove_test_storage(storage_path: String) -> void:
+	if not storage_path.begins_with("user://parkey-test-results/"):
+		return
+	var absolute := ProjectSettings.globalize_path(storage_path)
+	for file_name in ["results-v1.json", "results-v1.json.tmp", "results-v1.json.bak"]:
+		DirAccess.remove_absolute(absolute.path_join(file_name))
+	DirAccess.remove_absolute(absolute)
 
 
 static func _key(keycode: Key, unicode: int = 0) -> InputEventKey:
