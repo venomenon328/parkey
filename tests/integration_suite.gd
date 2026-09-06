@@ -479,12 +479,7 @@ static func _test_local_result_scene_flow(harness) -> void:
 	var clock: MonotonicClock = fixture["clock"]
 	var storage_path: String = fixture["storage_path"]
 	var route := HandcraftedCourseScript.UPPER_ROUTE
-	clock.current_usec = 1000000
-	for index in route.length() - 1:
-		clock.current_usec = 1000000 + index * 1000
-		await _push_key(scene, _key(route.unicode_at(index), route.unicode_at(index)))
-	clock.current_usec = 1000000 + (route.length() - 1) * 1000
-	scene.get_viewport().push_input(_key(route.unicode_at(route.length() - 1), route.unicode_at(route.length() - 1)))
+	await _drive_route_with_duration(scene, clock, route, 1000000, 1234000, false)
 	harness._assert_equal(scene.session.state, RunSessionScript.State.FINISHED, "The real scene creates the completion snapshot at logical target entry.")
 	harness._assert_equal(scene._pending_result_snapshots.size(), 1, "A finished result is queued before file work, not written in the input callback.")
 	var first_snapshot: Dictionary = scene._pending_result_snapshots[0].duplicate(true)
@@ -499,14 +494,20 @@ static func _test_local_result_scene_flow(harness) -> void:
 
 	clock.current_usec += 1
 	scene.get_viewport().push_input(_key(KEY_BACKSPACE))
-	await _drive_letters_viewport(scene, clock, route, clock.current_usec + 1000, 1000)
+	await _drive_route_with_duration(scene, clock, route, 3000000, 1234999)
 	await harness.process_frame
 	harness._assert_equal(scene.session.result_count, 2, "Two real scene completions produce two completion events.")
 	harness._assert_equal(scene.completion_view_count, 2, "A delayed first save never reopens an old result screen over the newer run.")
 	var entries: Array = scene.result_store.entries_for_identity(str(first_snapshot["course_identity"]))
 	harness._assert_equal(entries.size(), 2, "Both queued real scene results are persisted after racing has ended.")
 	harness._assert_true(entries[0]["run_id"] != entries[1]["run_id"], "Content-identical real scene runs retain distinct immutable IDs.")
-	harness._assert_true(scene.result_label.text.contains("Bestzeit"), "The result panel explains the best-time outcome.")
+	harness._assert_equal(entries[0]["duration_usec"], 1234000, "The faster real-scene run preserves its exact raw microseconds.")
+	harness._assert_equal(entries[1]["duration_usec"], 1234999, "The slower real-scene run preserves its different exact raw microseconds.")
+	harness._assert_equal(PlayableCourseSceneScript.format_duration_usec(int(entries[0]["duration_usec"])), PlayableCourseSceneScript.format_duration_usec(int(entries[1]["duration_usec"])), "The differently ranked scene results intentionally share the displayed milliseconds.")
+	harness._assert_true(scene.result_label.text.contains("1234999 us"), "The real result-detail UI reveals the current run's exact microseconds when milliseconds collide.")
+	harness._assert_true(scene.result_label.text.contains("Rang: 2"), "The real result-detail UI shows the slower raw time's distinct rank.")
+	harness._assert_true(scene.leaderboard_label.text.contains("1234000 us"), "The rendered leaderboard makes the faster colliding raw time auditable too.")
+	harness._assert_true(scene.leaderboard_label.text.contains("Persoenliche Bestzeit: 00:01.234 (1234000 us)"), "The result panel explains the faster personal best next to a slower display-identical run.")
 	harness._assert_true(scene.leaderboard_label.text.contains("Top 10"), "The result panel contains a compact local Top 10.")
 	var reloaded := LocalResultStoreScript.new(storage_path, 1)
 	var reloaded_report: Dictionary = reloaded.load()
@@ -578,6 +579,17 @@ static func _drive_letters_viewport(scene: PlayableCourseScene, clock: Monotonic
 		clock.current_usec = start_usec + index * step_usec
 		var letter := letters.substr(index, 1)
 		await _push_key(scene, _key(letter.unicode_at(0), letter.unicode_at(0)))
+
+
+static func _drive_route_with_duration(scene: PlayableCourseScene, clock: MonotonicClock, letters: String, start_usec: int, duration_usec: int, process_final_input: bool = true) -> void:
+	for index in letters.length():
+		clock.current_usec = start_usec + (duration_usec if index == letters.length() - 1 else index * 1000)
+		var letter := letters.substr(index, 1)
+		var event := _key(letter.unicode_at(0), letter.unicode_at(0))
+		if index == letters.length() - 1 and not process_final_input:
+			scene.get_viewport().push_input(event)
+		else:
+			await _push_key(scene, event)
 
 
 static func _drive_letters_direct(session: RunSession, letters: String, received_usec: int) -> void:

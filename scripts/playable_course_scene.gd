@@ -630,8 +630,10 @@ func _render_result(snapshot: Dictionary, outcome: Dictionary) -> void:
 	var rank := int(outcome.get("rank", 0))
 	if rank <= 0 and result_store != null:
 		rank = result_store.rank_for_run(course_identity, str(snapshot.get("run_id", "")))
-	var result_line := "ZIEL  %s  |  Fehler: %d" % [
-		format_duration_usec(int(snapshot.get("duration_usec", 0))),
+	var duration_usec := int(snapshot.get("duration_usec", 0))
+	var result_line := "ZIEL  %s  (%d us)  |  Fehler: %d" % [
+		format_duration_usec(duration_usec),
+		duration_usec,
 		int(snapshot.get("error_count", 0)),
 	]
 	if rank > 0:
@@ -656,9 +658,10 @@ func _render_result(snapshot: Dictionary, outcome: Dictionary) -> void:
 		leaderboard_lines.append("Top 10:")
 		for entry in top:
 			var entry_rank: int = result_store.rank_for_run(course_identity, str(entry["run_id"]))
-			leaderboard_lines.append("#%d  %s  |  %d Fehler" % [
+			leaderboard_lines.append("#%d  %s  (%d us)  |  %d Fehler" % [
 				entry_rank,
 				format_duration_usec(int(entry["duration_usec"])),
+				int(entry["duration_usec"]),
 				int(entry["error_count"]),
 			])
 	if outcome.has("retained") and not bool(outcome["retained"]):

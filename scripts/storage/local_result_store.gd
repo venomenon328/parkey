@@ -224,7 +224,10 @@ func _replace_with_temporary(temporary: String) -> int:
 		return DirAccess.get_open_error()
 	var primary_exists := FileAccess.file_exists(_file_path(FILE_NAME))
 	var backup_exists := FileAccess.file_exists(_file_path(BACKUP_FILE_NAME))
-	if backup_exists:
+	# A recovered backup is the only readable durable state until the new
+	# primary has actually replaced it. Do not remove it before that handover.
+	var preserve_recovery_backup := not primary_exists and backup_exists
+	if backup_exists and not preserve_recovery_backup:
 		var stale_backup_error := directory.remove(BACKUP_FILE_NAME)
 		if stale_backup_error != OK:
 			return stale_backup_error
@@ -238,7 +241,7 @@ func _replace_with_temporary(temporary: String) -> int:
 		if primary_exists and not FileAccess.file_exists(_file_path(FILE_NAME)):
 			directory.rename(BACKUP_FILE_NAME, FILE_NAME)
 		return replace_error
-	if primary_exists:
+	if FileAccess.file_exists(_file_path(BACKUP_FILE_NAME)):
 		var cleanup_error := directory.remove(BACKUP_FILE_NAME)
 		if cleanup_error != OK:
 			# The new primary is already valid. A leftover recovery copy is safe.
