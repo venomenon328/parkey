@@ -87,12 +87,13 @@ godot --headless --path . --import
 godot --headless --path . --script res://tests/run_tests.gd -- --suite core
 godot --headless --path . --script res://tests/run_tests.gd -- --suite storage
 godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
+godot --headless --path . --script res://tests/run_tests.gd -- --suite routes
 godot --headless --path . --script res://tests/run_tests.gd -- --suite all
 godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
 godot --headless --path . --export-release "Web" build/web/index.html
 ~~~
 
-Der Runner kennt ab P1c `smoke`, `core`, `storage`, `integration` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
+Der Runner kennt ab P2a `smoke`, `core`, `storage`, `integration`, `routes` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
 
 ~~~powershell
 godot --headless --path . --script res://tests/run_tests.gd -- --suite does-not-exist

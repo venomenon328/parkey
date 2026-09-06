@@ -1,6 +1,6 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-06. P0, P1a und P1b sind abgenommen und gemergt. P1b umfasst 189 Integrations- und 350 Gesamtassertions; finale PR-CI `34001773894` und Merge-CI `34001879727` sind erfolgreich. Die physische Windows-Abnahme ist bestanden, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P1c implementiert `storage` sowie Szenenpersistenz und bleibt bis Review/Abnahme Draft. Maßgeblich sind [P1-Regeln](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1c-Vertrag](p1c-local-results.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-06. P0/P1 sind abgenommen und gemergt. P1b umfasst 189 historische Integrations- und 350 Gesamtassertions; finale PR-CI `34001773894` und Merge-CI `34001879727` sind erfolgreich. Die physische Windows-Abnahme ist bestanden, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P2a ergänzt im Draft `routes`; technische Tests sind kein Ersatz für die offene menschliche P2a-Spielabnahme. Maßgeblich sind [P1-Regeln](p1-rule-profile.md), [P2a-Routenvertrag](p2a-route-decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
 ## P0-Teststand
 
@@ -33,6 +33,7 @@ Historischer technischer Nachweis vor der abschließenden Nutzerabnahme: Die ver
 
 ```sh
 godot --headless --path . --import
+godot --headless --path . --script res://tests/run_tests.gd -- --suite routes
 godot --headless --path . --script res://tests/run_tests.gd -- --suite all
 godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
 godot --headless --path . --export-release "Web" build/web/index.html
@@ -52,7 +53,7 @@ Windows: den stabilen PATH-Shim oder vollständigen Editorpfad aus [development.
 | P3b / #8 | `seed_flow` | Seed-/Sitzungs-/Speicherintegration und Exportkonformität |
 | P4 / #9 | `acceptance` | Komplette Läufe, Wiederholungen und Zustandstrennung |
 
-Die echte GDScript-Suite `core` prüft Graph/Layout, Identität, Eingabeadapter, Start, Sperrgrenzen, Restart, Menü, Fokus und einmalige Ergebnisse mit einer injizierten Uhr. P1b ergänzt `integration` mit echter Szeneninstanziierung und Viewport-Eingaben. Spätere Suites sind noch nicht implementiert. `all` führt immer alle bis dahin eingeführten Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
+Die echte GDScript-Suite `core` prüft Graph/Layout, Identität, Eingabeadapter, Start, Sperrgrenzen, Restart, Menü, Fokus und einmalige Ergebnisse mit einer injizierten Uhr. P1b ergänzt `integration` mit echter Szeneninstanziierung und Viewport-Eingaben. P2a ergänzt `routes` für Abschnittsports, Layout-/Anschlussdaten, alle vier Referenzrouten, QWERTZ-Beschreibungen, Identität und flüchtige Abschnittszeiten/-fehler. `all` führt immer alle vorhandenen Suites aus. Unbekannte/fehlende Suite, null ausgewählte Tests und Lade-/Assertion-/Laufzeitfehler dürfen nicht grün enden. Testanzahl und Ergebnis ausgeben; einen absichtlich fehlschlagenden Fall zur Runnerprüfung verwenden. Alte Tests nicht entfernen, um grün zu werden.
 
 Beide Exporte bleiben in jedem Paket Pflicht, bei Kernänderungen auch über erfolgreiche CI auf aktuellem Head nachweisbar. Tests führen den wirklichen GDScript-Code aus, keine Python-/JavaScript-Ersatzimplementierung. Reale Plattformtests gemäß jeweiligem Issue zusätzlich durchführen.
 
@@ -133,7 +134,7 @@ godot --headless --path . --export-release "Web" build/web/index.html
 
 Echte temporäre Dateien und gezielt injizierte I/O-Fehler verwenden. Auch bestehende Szenentests müssen ihre Speicherabhängigkeit vor `_ready` isolieren, damit `integration`/`all` keine Benutzerbestzeiten verändern. Der Paketvertrag konkretisiert einmalige IDs, verzögerte Speicherantworten nach Restart, tatsächliche Ranglistentrennung, Gleichstände, Aufbewahrung sowie beschädigte/unbekannte Formate und sichere Ersetzung. Tests des echten Szenen-/Viewport-Pfads ergänzen die Storetests.
 
-Zusätzlich im exportierten Windows-Spiel Abschluss→Schließen→Neustart und im tatsächlichen Desktop-Chrome-Webexport derselben Origin Abschluss→Reload sowie Tab schließen→erneut öffnen prüfen. Temporäre Speicherung bei eingeschränktem Browser-Speicher muss verständlich angezeigt werden. Commit, Engine, Plattform/Browser, Origin/Testpfad und beobachteter Speicherstatus gehören in den Nachweis. Die P1b-Verschiebung der physischen Chrome-Tastaturabnahme hebt diese neuen Persistenzprüfungen nicht auf; ein Dateisystem-Mock und ein Export allein erfüllen sie nicht. Firefox bleibt P4. Implementierungs-PR bis zur vollständigen P1c-Abnahme Draft lassen.
+Zusätzlich im exportierten Windows-Spiel Abschluss→Schließen→Neustart und im tatsächlichen Desktop-Chrome-Webexport derselben Origin Abschluss→Reload sowie Tab schließen→erneut öffnen prüfen. Temporäre Speicherung bei eingeschränktem Browser-Speicher muss verständlich angezeigt werden. Commit, Engine, Plattform/Browser, Origin/Testpfad und beobachteter Speicherstatus gehören in den Nachweis. Die P1b-Verschiebung der physischen Chrome-Tastaturabnahme hebt diese neuen Persistenzprüfungen nicht auf; ein Dateisystem-Mock und ein Export allein erfüllen sie nicht. Firefox bleibt P4. Diese P1c-Gates sind über PR #14 abgeschlossen; der P2a-Draft hat eigene offene Abnahmen.
 
 ### P1c-Nachweis auf dem Implementierungsstand
 
@@ -142,6 +143,14 @@ Godot `4.7.2.stable.official.ed1daf0bf` auf Windows 11 Pro, Build `26200`: Impor
 Der native Windows-Release wurde tatsächlich gestartet. Ein vollständiger Oberroutenlauf über Win32-Nachrichten erzeugte eine Ergebnisdatei unter `%APPDATA%\Godot\app_userdata\Parkey\parkey-results\results-v1.json`; nach Prozessende und Neustart enthielt sie unverändert einen Eintrag. Die Nachrichten sind ein synthetischer Eingabenachweis, keine erneute physische Tastaturabnahme.
 
 Der Web-Release lief in Google Chrome `152.0.7977.76` unter `http://127.0.0.1:8123` mit einem frischen Browserprofil und CDP-Eingaben. Ein Abschluss wurde in Chromes IndexedDB unter `/userfs/godot/app_userdata/Parkey/parkey-results/results-v1.json` geschrieben. Nach Reload ergab ein zweiter gleicher Lauf zwei verschiedene IDs; nach Tab-Schließen und Neuöffnen unter derselben Origin bestanden beide weiter, ohne Duplikat. Ein separates Chrome-Profil mit blockierter Site-Datenspeicherung meldete beim IndexedDB-Öffnen `UnknownError` („user denied permission“); der Export blieb dabei startbar und erzeugte keine beweisbare dauerhafte Datei. Die verständliche temporäre Panelmeldung ist in der Szenenintegration nachgewiesen und wurde am 2026-09-06 zusätzlich im exportierten Chrome-Spiel unter `http://127.0.0.1:8134` visuell geprüft: Nach kontrollierter Oberrouten-Eingabe zeigte das gerenderte Zielpanel `Nur temporaer: dauerhafter Speicher nicht verfuegbar.` Der Browser-IndexedDB-Probe lieferte dabei `UnknownError`; eine dauerhafte Speicherung wurde nicht angezeigt. Die verschobene P1b-Hardwaretastaturabnahme in Chrome bleibt offen.
+
+## P2a: Routen- und Kameranachweis
+
+Auf `codex/p2a-route-decisions` mit Godot `4.7.2.stable.official.ed1daf0bf` unter Windows 11 Pro Build `26200` bestanden Import, `routes` mit **51 Assertions** und `all` mit **511 Assertions**; beide Release-Exporte waren erfolgreich. `routes` prüft die vier Kombinationen der zwei Entscheidungen, Übergangsports und -geometrie, Identitätstrennung, die beschreibenden QWERTZ-Hypothesen sowie Abschnittsdauer und Fehlerzahl mit kontrollierter Uhr. Der gesamte Eingabepfad bleibt im echten Szenentest erhalten.
+
+Der native Windows-Release wurde als sichtbares `Parkey`-Fenster bei 2560 × 1440 tatsächlich gestartet. Screenshots unter `build/evidence/windows-p2a-ready-foreground.png` und `build/evidence/windows-p2a-alpha-decision-synthetic.png` zeigen Bereitschaft und die erste Entscheidung nach synthetischem `A → Z → K`: aktuelles Feld, direkte Rückwege sowie `F` und `A` als erste Alternativen liegen ohne schwebende P1b-Callouts auf den Keycaps vor der Wahl. Die Sequenz und die Bildprüfung sind technische, synthetische Nachweise, keine physische Tastatur- oder menschliche Spielabnahme.
+
+Der Web-Release wurde über `python -m http.server 8125 --bind 127.0.0.1 --directory build/web` bereitgestellt; eine HTTP-Abfrage lieferte `200`. Eine isolierte grafische Chrome-Prüfung konnte in dieser Ausführungsumgebung nicht gestartet werden und ist daher **offen**. Die physische P1b-Chrome-Eingabeabnahme bleibt ebenfalls offen. Für P2a stehen außerdem der menschliche Spieltest mit unterschiedlichen Tippmethoden, möglichst zwei Personen, sowie die getrennte Erfassung von Tippfehlern, Entscheidungszeit und Sichtproblemen noch aus; der Draft-PR bleibt deshalb offen.
 
 ## Datenvalidator und Generator
 

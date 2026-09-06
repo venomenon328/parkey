@@ -1,6 +1,6 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 und P1 sind vollständig abgenommen und nach `main` gemergt. P2a / #5 ist das nächste startbereite Paket.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [P1c-Ergebnisspeicher](p1c-local-results.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
+Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 und P1 sind vollständig abgenommen und nach `main` gemergt. P2a / #5 ist im Draft implementiert; Review und Abnahmen stehen aus.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [P1c-Ergebnisspeicher](p1c-local-results.md), [P2a-Routenentscheidungen](p2a-route-decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
@@ -10,7 +10,7 @@ Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0 
 | P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Abgenommen, PR #12 gemergt | `codex/p1a-run-core` |
 | P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | Abgenommen, PR #13 gemergt | `codex/p1b-playable-course` |
 | P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | Abgenommen, PR #14 gemergt | `codex/p1c-local-leaderboards` |
-| P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | **Startbereit: #4 gemergt; echter P1-Windows-Spieltest bestanden** | `codex/p2a-route-decisions` |
+| P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | **Implementiert im Draft: Review, reale Kamera- und menschliche Spielabnahme offen** | `codex/p2a-route-decisions` |
 | P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | #5; Zielhardware/Budget klären | `codex/p2b-visual-slice` |
 | P3a / [#7](https://github.com/venomenon328/parkey/issues/7) | Deterministischer validierter Generator | #5; Bausteinfreigabe | `codex/p3a-seeded-generator` |
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` |
@@ -32,11 +32,11 @@ Die vollständige Menüoberfläche und eine spätere Übungsfortsetzung sind nic
 
 ## P1-Abschluss und visuelle Folgearbeit
 
-P1b liefert den validierten 26-Feld-Handparcours mit Gabelung/Zusammenführung, unregelmäßiger Stelle, Figur, kontinuierlicher Kamera, Timer, Fehlerfeedback, Besuchs-/Nachbarstatus und Quick Restart. Die physische/manuelle Windows-Spielabnahme ist bestanden. P1c ergänzt darauf den lokalen versionierten Ergebnisspeicher mit vollständiger Strecken-/Regelidentität, Original-Mikrosekunden, deterministischen Gleichständen, Top-100-Aufbewahrung und Top-10-Ergebnisansicht. Backup-Recovery und tatsächliche Persistenz/Fallbackfälle wurden geprüft.
+P1b lieferte den validierten 26-Feld-Handparcours mit Gabelung/Zusammenführung, unregelmäßiger Stelle, Figur, kontinuierlicher Kamera, Timer, Fehlerfeedback, Besuchs-/Nachbarstatus und Quick Restart. Die physische/manuelle Windows-Spielabnahme ist bestanden. P1c ergänzt darauf den lokalen versionierten Ergebnisspeicher mit vollständiger Strecken-/Regelidentität, Original-Mikrosekunden, deterministischen Gleichständen, Top-100-Aufbewahrung und Top-10-Ergebnisansicht. P2a ersetzt den aktiven Referenzkurs durch 30 Felder mit zwei Abschnittsentscheidungen; Review sowie reale P2a-Abnahme bleiben offen.
 
 Windows ist nach D-008 die führende Zielplattform. Die noch offene physische Chrome-Eingabeabnahme aus P1b war nach ausdrücklicher Nutzerentscheidung kein Mergeblocker und wird später nachgeholt. Automatisierte/synthetische Web-Nachweise und die reale P1c-Browserpersistenz bleiben davon getrennt; die Browser-Hardwareabnahme darf nicht als bereits bestanden ausgegeben werden.
 
-Die spielbare P1b-Kamera-/Beschriftung ist nicht die endgültige Präsentation. P2a / #5 übernimmt konkret: primäre Tile-Buchstaben aus der üblichen Spielkamera sinnvoll ausrichten, im aktuellen Handkurs die gewünschte **90°-Drehung im Uhrzeigersinn** gegenüber dem P1b-Stand prüfen und die großen weißen schwebenden Zusatzbuchstaben möglichst entfernen. Falls Zusatzhilfen nötig bleiben, müssen sie zurückhaltender und visuell integriert sein. Die kontinuierliche Kameraführung und freie Streckengeometrie bleiben erhalten.
+Die spielbare P1b-Kamera-/Beschriftung ist nicht die endgültige Präsentation. P2a / #5 setzt primäre Tile-Buchstaben auf die Keycaps, dreht sie im Referenzkurs um **90° im Uhrzeigersinn** gegenüber P1b und entfernt die großen weißen schwebenden Zusatzbuchstaben. Zwei asymmetrische Abschnittspaare mit Ports, Geometrie und rein lokaler Messung sind implementiert. Die kontinuierliche Kameraführung und freie Streckengeometrie bleiben erhalten; Review, reale Kameraprüfungen und menschliche Spielversuche bleiben offene Gates.
 
 ## Nicht rastergebundene Strecken
 
@@ -57,7 +57,7 @@ D-010 bis D-013 bleiben verbindlich. Die P1-Regelfreigabe ändert keine Geometri
 
 Jedes Paket liefert Implementierung, passende Tests, gepflegte Dokumentation und konkrete Nachweise. Issues enthalten Abnahmekriterien und Nicht-Ziele; kompakte Arbeitsanweisungen wiederholen den Lieferumfang nicht unnötig.
 
-[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert, P1a `core`, P1b `integration`, P1c `storage` und weitere Integrationsregressionen. Auf dem finalen P1c-PR-Head umfasst `all` 446 Assertions. P2a ergänzt die Suite `routes`; `all` führt alle bis dahin vorhandenen Suites aus. Unbekannte oder leere Suites müssen scheitern.
+[testing.md](testing.md) definiert die CLI-Einstiege. P0 hat `smoke`/`all`, Export-Presets und CI geliefert, P1a `core`, P1b `integration`, P1c `storage` und weitere Integrationsregressionen. P2a ergänzt `routes`; sie prüft Verträge/Ports, Geometrie, alle Referenzrouten, Identität, QWERTZ-Beschreibungen und Abschnittsmessung. `all` führt alle vorhandenen Suites aus. Unbekannte oder leere Suites müssen scheitern.
 
 Reale Grafik, Hardwaretastatur, Browserpersistenz und Spielgefühl bleiben gesonderte Nachweise. Keine erfundene Abnahme bei fehlender Umgebung. P0/P1a/P1c und die Windows-P1b-Abnahme sind bestanden. Paketbezogene Nutzerentscheidungen können ein Plattformgate ausdrücklich verschieben; verschobene Nachweise bleiben transparent offen und werden spätestens in der Gesamtabnahme erneut berücksichtigt. Für P2a ist außerdem ein echter kurzer Spieltest mit unterschiedlichen Tippmethoden erforderlich; ein automatisierter Lauf ersetzt dieses Gate nicht.
 

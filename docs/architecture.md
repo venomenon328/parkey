@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-06. P0, P1a und P1b sind abgenommen und gemergt. PR #13 liefert den sichtbaren Parcours; Windows ist physisch/manuell abgenommen, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P1c implementiert lokale Ergebnisse und bleibt bis Review/Abnahme im Draft-PR; Generator und Onlinewertung sind nicht implementiert. [P1-Regeln](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1c-Vertrag](p1c-local-results.md) und [Entscheidungsregister](decisions.md) sind maßgeblich.
+Stand: 2026-09-06. P0/P1 sind abgenommen und gemergt. PR #13 liefert den sichtbaren Parcours; Windows ist physisch/manuell abgenommen, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P2a implementiert im Draft Referenzabschnitte, Kamera-Vorschau und flüchtige Routenmessung; Generator und Onlinewertung sind nicht implementiert. [P1-Regeln](p1-rule-profile.md), [P2a-Routenvertrag](p2a-route-decisions.md) und [Entscheidungsregister](decisions.md) sind maßgeblich.
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -21,10 +21,12 @@ Das gemeinsame Backend ist zunächst die geteilte lokale Spiellogik. Ein lokaler
 | Bereich | Verantwortung | Darf nicht entscheiden |
 | --- | --- | --- |
 | `CourseData` / Validator | IDs, Buchstaben, explizite Kanten, Layout, Start/Ziel, Identität; getrennte Graph-/Layoutprüfungen | Animationsdauer und Grafikqualität |
+| `RouteSectionContract` | Datenports, Feldreihenfolge, Übergangsgeometrie und Kamera-Vorschaufelder handgestalteter P2a-Abschnitte | Neue Laufzeitnachbarn, Generatorauswahl oder Wertungszeit |
 | `RunSession` | Bereitschaft, Start durch Eingabe, logisches Feld, Fehlerfrist, Quick Restart, getrennte Menüanforderung, Fokusinvalidierung, Ziel/Ergebnis | Kameraführung oder Schrittanimationsdauer |
 | Eingabeadapter | Ereignisse normalisieren und geordnet mit Zeitwerten übergeben; Spiel-/UI-Kontext und separate Steueraktionen | Zukünftige passende Buchstaben vorab herausfiltern |
 | Darstellung | Strecke, Figur, Kamera, HUD, Fehlerfeedback und visuelles Aufholen | Gültigkeit eines Schritts und Zeit des Zieleingangs |
 | Ergebnisablage | Unveränderlichen Abschluss-Schnappschuss übernehmen, lokale Resultate speichern/laden und Speicherstatus melden | Nachträgliche Änderung der bestimmten Zielzeit oder neue Wertungsregeln |
+| `RouteMeasurement` | Flüchtige Abschnitts-ID, Abschnittsdauer und Fehlerzahl je Versuch | Dateischreiben, Uploads oder Verzögerung des Eingabepfads |
 | Generator, später | Reproduzierbare geprüfte `CourseData` | Rendererabhängige Regeln oder dekorative Zufälle als Gameplay-Zufall |
 
 P1a liefert `CourseData`, `CourseValidator`, `CourseIdentity`, `RuleProfile`, `MonotonicClock`, `RunSession` und `RunInputAdapter` als kleine GDScript-`RefCounted`-Klassen. Sie sind ohne gerenderte 3D-Szene testbar; ein separates Service-Framework ist nicht erforderlich. Bewegung ist ein Wechsel zwischen verbundenen Feldern, keine physikalische Kollisionssimulation. Details des absichtlich kleinen Layoutformats, der Toleranzen und der Identitätsserialisierung stehen im [P1-Regelprofil](p1-rule-profile.md).

@@ -9,7 +9,7 @@ Stand: 2026-09-06. **P0 und P1 sind vollständig abgenommen und gemergt.** P1b w
 | D0 | Dokumentation/Planung | Anforderungen, Architektur, neun Issues, Abhängigkeiten und Testvertrag | Dokumentiert; P1-Profil freigegeben |
 | P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Projekt, Windows/Web, minimale Tests/CI | Abgenommen und gemergt |
 | P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Kern, Handparcours, Timer, Fehlerpause, dauerhafte Bestzeiten | Vollständig abgenommen und gemergt |
-| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | #5 startbereit; #6 wartet auf #5 und Zielhardware/Budget |
+| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | #5 im Draft implementiert; #6 wartet auf #5-Abnahme und Zielhardware/Budget |
 | P3 | [#7](https://github.com/venomenon328/parkey/issues/7), [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Generator, Integration und Export-Regelparität | Nicht begonnen |
 | P4 | [#9](https://github.com/venomenon328/parkey/issues/9) | Geprüfte Testpakete aus einem Commit samt Abnahmematrix | Nicht begonnen |
 
@@ -17,7 +17,7 @@ Stand: 2026-09-06. **P0 und P1 sind vollständig abgenommen und gemergt.** P1b w
 
 `#1 → #2 → #3 → #4 → #5 → (#6 und #7) → #8 → #9`
 
-Nächster Schritt: **P2a / Issue #5 umsetzen und praktisch erproben.** P1c / #4 ist über PR #14 mit Squash-Commit `63f1851dc9e3cf2ee72412b1a352ce5a191cbac2` abgeschlossen. Der zusätzlich für #5 geforderte echte P1-Spieltest ist durch die physische/manuelle Windows-Abnahme von P1b erfüllt. Die verschobene physische P1b-Chrome-Eingabeabnahme bleibt offen, blockiert nach der bestätigten Windows-Priorität aber nicht den Start von P2a. Keine P2b-/P3a-Inhalte vorziehen.
+Nächster Schritt: **P2a / Issue #5 reviewen sowie real prüfen.** Der Draft enthält Referenzabschnitte, neue `routes`-Suite, Kamera-Vorschau, Keycap-Beschriftungen und flüchtige Messung. P1c / #4 ist über PR #14 mit Squash-Commit `63f1851dc9e3cf2ee72412b1a352ce5a191cbac2` abgeschlossen. Die verschobene physische P1b-Chrome-Eingabeabnahme bleibt offen. Keine P2b-/P3a-Inhalte vorziehen.
 
 Nach #5 sind Abschnittsverträge und Eignung geprüft. #6/#7 können dann bei stabilen Verträgen parallel laufen; #8 wartet auf beide Merges. Sonst beginnt ein Paket nach seiner Abhängigkeit vom aktuellen `main`.
 
@@ -31,7 +31,7 @@ Nach #5 sind Abschnittsverträge und Eignung geprüft. #6/#7 können dann bei st
 
 **P1c:** Abgeschlossen und über PR #14 gemergt (`63f1851dc9e3cf2ee72412b1a352ce5a191cbac2`). Der versionierte lokale Store trennt Ergebnisse nach vollständiger Identität, sortiert Original-Mikrosekunden numerisch, verwendet gemeinsame Ränge bei exakter Zeitgleichheit, bewahrt maximal 100 Einträge und zeigt Top 10 samt exakter Rohzeit. Die Review-Nacharbeit erhält eine alleinige Recovery-`.bak` auch bei Ersetzungsfehler und macht kollidierende Millisekundenanzeigen im echten Ergebnis-UI nachvollziehbar. Auf `c1eb976` bestanden Import, `storage` 67, `integration` 218, `all` 446 sowie beide Release-Exporte. Windows-/Chrome-Persistenz und der eingeschränkte Chrome-Speicherfall mit sichtbarer temporärer Meldung wurden tatsächlich geprüft. Keine Onlinewertung vorgezogen.
 
-**P2:** Einsehbare Routenwahl, asymmetrische Anschlüsse und moderate Größen/Formen in beiden Profilen erproben. In #5 außerdem die P1b-Kamera-/Beschriftungsfolgearbeit bearbeiten: primäre Tile-Buchstaben aus der Spielkamera sinnvoll ausrichten, im aktuellen Handkurs die gewünschte 90°-Drehung gegenüber P1b prüfen und große weiße Callouts möglichst entfernen. Unterschiedliche Tippmethoden statt ungeprüfter Ergonomiebehauptung. Zielhardware, Auflösung, Leistungsbudget und visuelle Nutzerabnahme gehören zu #6.
+**P2:** #5 implementiert einsehbare Routenwahl, asymmetrische Anschlüsse, moderate Größen/Formen, Keycap-Beschriftungen und Kamera-Vorschau im Draft. Die `FJK`/`ASDFGH`- und `PLM`/`QWERT`-Beschreibungen bleiben Hypothesen; menschliche Tests müssen ihre Aussage erst prüfen. Reale Kamera-/Web-Prüfungen, Review und die menschliche P2a-Abnahme bleiben offen. Zielhardware, Auflösung, Leistungsbudget und finale visuelle Nutzerabnahme gehören zu #6.
 
 **P3:** Graph und Layout gemeinsam validieren und in Identität/Golden-Fällen binden; keine feste Raster-/Nachbarzahlregel. Begrenzte Generierungsversuche, Versionierung und echte Windows-/Web-Konformität in #8.
 

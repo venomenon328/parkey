@@ -83,10 +83,10 @@ static func _test_ranking_identity_and_retention(harness) -> void:
 	harness._assert_true(visual_one["rank"] != visual_two["rank"], "Visually equal milliseconds still retain numeric order and distinct ranks.")
 
 	var cosmetic_course = HandcraftedCourseScript.build()
-	cosmetic_course.layouts["upper_4"]["material"] = "other-material"
+	cosmetic_course.layouts["alpha_short_2"]["material"] = "other-material"
 	harness._assert_equal(CourseIdentityScript.build(cosmetic_course, profile), identity, "Pure layout cosmetics stay in the same leaderboard identity.")
 	var layout_course = HandcraftedCourseScript.build()
-	layout_course.layouts["upper_4"]["size"][0] = 2.7
+	layout_course.layouts["alpha_short_2"]["size"][0] = 2.7
 	var layout_identity := CourseIdentityScript.build(layout_course, profile)
 	harness._assert_true(layout_identity != identity, "Relevant spatial layout changes create a separate stored leaderboard.")
 	var changed_lock_profile = RuleProfileScript.new(RuleProfileScript.DEFAULT_PROFILE_ID, RuleProfileScript.FORMAT_VERSION, 250000)

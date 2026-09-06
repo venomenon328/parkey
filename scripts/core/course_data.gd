@@ -129,7 +129,7 @@ static func _without_cosmetics(source: Dictionary) -> Dictionary:
 	var result := {}
 	for raw_key in source.keys():
 		var key := str(raw_key)
-		if key in ["material", "surface", "decoration", "display_name"]:
+		if key in ["material", "surface", "decoration", "display_name", "presentation", "camera"]:
 			continue
 		var value = source[raw_key]
 		if value is Dictionary:

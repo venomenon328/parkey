@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1a und P1b sind abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P1c implementiert den [Speicher-/Ergebnisvertrag](p1c-local-results.md) im Draft-PR. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); P1b-Details in [p1b-implementation.md](p1b-implementation.md).
+Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1 ist abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P2a / #5 ist technisch implementiert und bleibt bis Review sowie menschlicher Spielabnahme Draft. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); Referenzkurs und Abnahmegrenzen in [p2a-route-decisions.md](p2a-route-decisions.md).
 
 ## Spielkern
 
@@ -54,7 +54,7 @@ Für P1b wird der Status aus logischen Schritten geführt. Das besetzte Startfel
 
 Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie.
 
-Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; die P1b-Handstrecke verwendet zusätzlich für aktuelles und direkt erreichbare Tiles eine kontrastreiche, kameragerichtete und dem jeweiligen Tile zugeordnete Beschriftung oberhalb der Kopfmitte. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben. Diese großen weißen P1b-Callouts sind nach D-023/D-024 keine akzeptierte Enddarstellung; ihre Ablösung und die Orientierung der primären Tile-Buchstaben gehören zu P2a / #5, nicht zum P1c-Speicherausbau.
+Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken. P2a bindet den kontrastreichen Hauptbuchstaben direkt an die Keycap und dreht ihn im übernommenen Handkurs gegenüber P1b um 90° im Uhrzeigersinn; die großen weißen schwebenden P1b-Callouts sind entfernt. Für spätere frei gedrehte Tiles gilt daraus keine starre Rotation: Tile-Ausrichtung und Kamera sind gemeinsam zu prüfen. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben.
 
 Während des P1b-Laufs genügen Timer und Fehlerfeedback, nach Abschluss Zeit und Fehlerzahl. Eine persönliche Bestzeit und ausführliche Rangliste kommen mit dem separaten Speicherausbau. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Effekte vermittelt werden. Fenstergrößenwechsel darf keine wichtigen Inhalte außerhalb der sichtbaren Fläche ablegen.
 
@@ -76,7 +76,7 @@ Geeignete Stand-/Landepunkte liegen innerhalb der Felder; Übergangsverläufe bl
 
 Frühe Handstrecken dürfen einfach sein, ohne den Kern auf ihr Layout zu beschränken. P1a prüft unter anderem fünf eindeutig beschriftete Nachbarn und einen gedrehten größeren Knoten mit zwei kleineren Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem nicht rechtwinkligen lesbaren Übergang. Wenige einfache Formen genügen, kein beliebiger Polygon-Generator.
 
-Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze schwierige gegen längere flüssige Route, gemeinsames Finale. Alternativen führen zunächst überwiegend wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
+Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze vermutete gegen längere vermutete Tippfolge und gemeinsames Finale. P2a implementiert dazu zwei Entscheidungen mit `FJK`/`ASDFGH` und `PLM`/`QWERT`; die Beschreibungen sind Testhypothesen, keine allgemeine Ergonomiebehauptung. Alternativen führen zunächst wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
 
 Eine Routenwahl benötigt vorher genügend Information über Verlauf und erste Buchstabenfolgen. Tippbarkeit hängt von Tastaturlayout, Eingabemethode und Spielerfahrung ab; ein anfängliches QWERTZ-Modell ist eine zu prüfende Hypothese, keine universelle Ergonomiebewertung.
 

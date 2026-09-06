@@ -18,35 +18,37 @@ static func run(harness) -> void:
 	await _test_scene_input_ui_and_routes(harness)
 	await _test_lock_restart_menu_and_focus(harness)
 	await _test_fast_input_and_presentation_budget(harness)
-	await _test_responsiveness_status_and_callouts(harness)
+	await _test_responsiveness_status_and_surface_labels(harness)
 	await _test_local_result_scene_flow(harness)
 	await _test_temporary_result_scene_status(harness)
 
 
 static func _test_handcrafted_course(harness) -> void:
 	var course := HandcraftedCourseScript.build()
-	harness._assert_equal(course.fields.size(), 26, "The hand-authored P1b course contains 26 fields.")
+	harness._assert_equal(course.fields.size(), 30, "The hand-authored P2a course contains two decisions and a shared finale.")
 	harness._assert_true(CourseValidatorScript.validate_graph(course).is_empty(), "The actual hand course passes graph validation.")
 	harness._assert_true(CourseValidatorScript.validate_layout(course).is_empty(), "The actual hand course passes layout validation.")
 	harness._assert_true(CourseValidatorScript.validate(course).is_empty(), "The actual hand course is never partially released.")
-	harness._assert_equal(course.neighbor_ids("fork").size(), 3, "The visible fork has a returning edge and two route choices.")
-	harness._assert_equal(course.neighbor_ids("merge").size(), 3, "Both route branches visibly merge before the finale.")
+	harness._assert_equal(course.neighbor_ids("decision_one").size(), 3, "The first visible decision has a returning edge and two route choices.")
+	harness._assert_equal(course.neighbor_ids("decision_two").size(), 3, "The second visible decision has a returning edge and two route choices.")
+	harness._assert_equal(course.neighbor_ids("merge_one").size(), 3, "The first route pair visibly merges before the next decision.")
+	harness._assert_equal(course.neighbor_ids("merge_two").size(), 3, "The second route pair visibly merges before the finale.")
 	harness._assert_equal(course.field_by_id("approach_z").get("letter"), "Z", "The approach contains a reachable Z passage.")
-	harness._assert_equal(course.field_by_id("upper_6").get("letter"), "Y", "The upper route contains a reachable Y passage.")
-	harness._assert_true(is_equal_approx(float(course.layouts["upper_4"]["size"][0]), 2.6), "The irregular passage includes a moderately wider field.")
-	harness._assert_true(is_equal_approx(float(course.layouts["upper_5"]["size"][0]), 1.4), "The irregular passage includes a moderately narrower field.")
-	harness._assert_equal(course.layouts["fork"].get("rotation_deg"), 18.0, "The course includes a data-authored slanted orientation.")
+	harness._assert_equal(course.field_by_id("beta_long_1").get("letter"), "Q", "The second decision contains a QWERTZ test passage.")
+	harness._assert_true(is_equal_approx(float(course.layouts["alpha_short_1"]["size"][0]), 3.0), "The short candidate includes a moderately wider field.")
+	harness._assert_true(is_equal_approx(float(course.layouts["alpha_long_1"]["size"][0]), 1.45), "The longer candidate includes a moderately narrower field.")
+	harness._assert_equal(course.layouts["decision_one"].get("rotation_deg"), 18.0, "The course includes a data-authored slanted orientation.")
 	harness._assert_true(
-		_branch_clearance(course, "upper_2", "lower_2") >= HandcraftedCourseScript.BRANCH_SEPARATOR_WIDTH - 0.001,
-		"The W/F representative pair has a clearly wider separator than a playable transition gap.",
+		_branch_clearance(course, "alpha_short_2", "alpha_long_2") >= HandcraftedCourseScript.MIN_BRANCH_CLEARANCE - 0.001,
+		"The first decision's representative alternatives have a clearly wider separator than a playable transition gap.",
 	)
-	for pair in [["upper_1", "lower_1"], ["upper_4", "lower_4"], ["upper_8", "lower_8"]]:
+	for pair in [["alpha_short_1", "alpha_long_1"], ["alpha_short_2", "alpha_long_2"], ["beta_short_2", "beta_long_2"]]:
 		harness._assert_false(course.has_edge(pair[0], pair[1]), "Separated branch fields %s/%s are explicitly non-neighbors." % pair)
 		harness._assert_true(
-			_branch_clearance(course, pair[0], pair[1]) >= HandcraftedCourseScript.BRANCH_SEPARATOR_WIDTH - 0.001,
+			_branch_clearance(course, pair[0], pair[1]) >= HandcraftedCourseScript.MIN_BRANCH_CLEARANCE - 0.001,
 			"Separated branch fields %s/%s retain the documented visible clearance." % pair,
 		)
-	for pair in [["fork", "upper_1"], ["fork", "lower_1"], ["upper_8", "merge"], ["lower_8", "merge"]]:
+	for pair in [["decision_one", "alpha_short_1"], ["decision_one", "alpha_long_1"], ["alpha_short_3", "merge_one"], ["alpha_long_6", "merge_one"], ["decision_two", "beta_short_1"], ["decision_two", "beta_long_1"]]:
 		harness._assert_true(course.has_edge(pair[0], pair[1]), "Representative visible transition %s/%s has an explicit graph edge." % pair)
 
 	var upper := RunSession.new(course)
@@ -76,7 +78,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Head"), "The real scene contains a distinguishable player head.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/HeadIndicator"), "The head has an asymmetric orientation signal that makes shaking visible.")
 	harness._assert_not_null(scene.get_node_or_null("CourseCamera"), "The real scene initializes the automatic camera.")
-	harness._assert_equal(scene.field_nodes.size(), 26, "The renderer builds every field from CourseData.")
+	harness._assert_equal(scene.field_nodes.size(), 30, "The renderer builds every field from CourseData.")
 	harness._assert_equal(scene.course_identity_after_render, scene.course_identity_before_render, "Scene construction does not mutate course identity.")
 	harness._assert_equal(ProjectSettings.get_setting("application/run/main_scene"), "res://scenes/playable_course.tscn", "The playable scene is the regular export entry.")
 	harness._assert_true(ResourceLoader.exists("res://scenes/foundation.tscn"), "The P0 diagnostic scene remains separately startable.")
@@ -89,11 +91,11 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_true(scene.field_visual_state("approach_a")["reachable"], "The first reachable field has its own visible state.")
 	harness._assert_false(scene.field_visual_state("approach_z")["visited"], "An untouched non-neighbor remains in the standard state.")
 	for field_id in ["start", "approach_a"]:
-		var callout: Label3D = scene.field_nodes[field_id].get_node("LetterCallout")
-		harness._assert_true(callout.visible, "The immediate %s callout is visibly enabled." % field_id)
-		harness._assert_true(not scene.camera.is_position_behind(callout.global_position), "The raised %s callout is in front of the actual rear camera." % field_id)
-		harness._assert_true(callout.global_position.y > scene.figure_head.global_position.y, "The raised %s callout clears the figure head in world space." % field_id)
-	harness._assert_false((scene.field_nodes["approach_z"] as Node3D).get_node("LetterCallout").visible, "Distant non-neighbor callouts do not clutter the near-field composition.")
+		var surface_label: Label3D = scene.field_nodes[field_id].get_node("Letter")
+		harness._assert_true(surface_label.visible, "The primary %s label remains on its own tile." % field_id)
+		harness._assert_true(surface_label.position.y < scene.figure_head.position.y, "The primary %s label stays on the keycap instead of floating above the figure." % field_id)
+		harness._assert_equal(surface_label.rotation_degrees.y, PlayableCourseSceneScript.SURFACE_LABEL_CLOCKWISE_ROTATION_DEG, "The primary %s label applies the requested clockwise 90-degree surface turn." % field_id)
+		harness._assert_equal((scene.field_nodes[field_id] as Node3D).get_node_or_null("LetterCallout"), null, "The old large %s callout is removed." % field_id)
 	var course_identity_before_states := scene.session.course_identity()
 	var camera_to_start := scene.camera_target_for_field("start") - scene._anchor_world("start")
 	harness._assert_true(camera_to_start.dot(scene.course_forward()) < -PlayableCourseSceneScript.CAMERA_DISTANCE + 0.01, "The camera starts behind the figure along the course direction.")
@@ -104,11 +106,11 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_true(scene.input_test.get_global_rect().end.y <= viewport_rect.end.y, "The bottom-anchored focus control stays inside the viewport.")
 	harness._assert_true(scene.profile_label.clip_contents and scene.profile_label.autowrap_mode != TextServer.AUTOWRAP_OFF, "Long diagnostic profile text wraps and clips inside its assigned HUD region.")
 
-	var fork_layout: Dictionary = scene.course.layouts["fork"]
-	var fork_node: Node3D = scene.field_nodes["fork"]
-	harness._assert_vector_close(fork_node.position, PlayableCourseSceneScript.layout_point_to_world(fork_layout["position"]), 0.0001, "Data [x,z] maps to Godot [x,y,z] without mirroring.")
+	var decision_layout: Dictionary = scene.course.layouts["decision_one"]
+	var decision_node: Node3D = scene.field_nodes["decision_one"]
+	harness._assert_vector_close(decision_node.position, PlayableCourseSceneScript.layout_point_to_world(decision_layout["position"]), 0.0001, "Data [x,z] maps to Godot [x,y,z] without mirroring.")
 	var expected_axis := Vector3(cos(deg_to_rad(18.0)), 0.0, sin(deg_to_rad(18.0)))
-	harness._assert_vector_close(fork_node.basis.x.normalized(), expected_axis, 0.001, "Negative Godot yaw preserves the data profile's positive 2D rotation.")
+	harness._assert_vector_close(decision_node.basis.x.normalized(), expected_axis, 0.001, "Negative Godot yaw preserves the data profile's positive 2D rotation.")
 
 	clock.current_usec = 10000000
 	var echo := _key(KEY_A, 97)
@@ -157,6 +159,18 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_equal(scene.session.current_field_id, "approach_z", "The scene uses visible Unicode Z even on physical Y.")
 	harness._assert_true(scene.visual_backlog_distance() <= 2.4, "A regular post-focus movement stays within the bounded presentation backlog.")
 	harness._assert_equal(scene.session.course_identity(), course_identity_before_states, "Visited and reachable presentation state never mutates course identity.")
+	clock.current_usec = 10000350
+	await _push_key(scene, _key(KEY_K, 107))
+	scene._update_camera(PlayableCourseSceneScript.CAMERA_CATCH_UP_SECONDS)
+	var alpha_short_preview := scene._anchor_world("alpha_short_2")
+	var alpha_long_preview := scene._anchor_world("alpha_long_3")
+	var expected_alpha_preview := (alpha_short_preview + alpha_long_preview) * 0.5
+	harness._assert_vector_close(scene._camera_focus, expected_alpha_preview, 0.0001, "The first decision camera focuses the authored midpoint of both options before the next choice.")
+	for preview in [alpha_short_preview, alpha_long_preview]:
+		harness._assert_false(scene.camera.is_position_behind(preview), "Both first-decision preview anchors remain in front of the automatic rear camera.")
+	var beta_short_preview := scene._anchor_world("beta_short_2")
+	var beta_long_preview := scene._anchor_world("beta_long_3")
+	harness._assert_vector_close(scene.camera_focus_for_field("decision_two"), (beta_short_preview + beta_long_preview) * 0.5, 0.0001, "The second decision uses the same authored two-route preview instead of a hidden camera rule.")
 
 	clock.current_usec = 10000400
 	await _push_key(scene, _key(KEY_BACKSPACE))
@@ -366,10 +380,10 @@ static func _test_fast_input_and_presentation_budget(harness) -> void:
 	harness._assert_equal(scene.session.state, RunSessionScript.State.FINISHED, "A complete route burst reaches the logical target before any render frame.")
 	harness._assert_transform_close(scene.camera.global_transform, camera_before_route_burst, 0.0001, "A full route burst cannot cut the camera to its final field.")
 	scene._update_camera(0.03)
-	harness._assert_true(scene.camera.position.distance_to(scene.camera_target_for_field("target")) > 0.001, "The burst camera begins with a continuous partial catch-up step.")
+	harness._assert_true(scene.camera.position.distance_to(scene.camera_target_for_field(scene.course.target_id)) > 0.001, "The burst camera begins with a continuous partial catch-up step.")
 	scene._update_camera(PlayableCourseSceneScript.CAMERA_CATCH_UP_SECONDS - 0.03)
-	harness._assert_vector_close(scene.camera.position, scene.camera_target_for_field("target"), 0.0001, "The burst camera reaches its final position at the finite budget boundary.")
-	harness._assert_vector_close(scene._camera_focus, scene.camera_focus_for_field("target"), 0.0001, "The burst look target reaches the same finite budget boundary.")
+	harness._assert_vector_close(scene.camera.position, scene.camera_target_for_field(scene.course.target_id), 0.0001, "The burst camera reaches its final position at the finite budget boundary.")
+	harness._assert_vector_close(scene._camera_focus, scene.camera_focus_for_field(scene.course.target_id), 0.0001, "The burst look target reaches the same finite budget boundary.")
 
 	clock.current_usec = 820000
 	await _push_key(scene, _key(KEY_BACKSPACE))
@@ -392,7 +406,7 @@ static func _test_fast_input_and_presentation_budget(harness) -> void:
 	await harness.process_frame
 
 
-static func _test_responsiveness_status_and_callouts(harness) -> void:
+static func _test_responsiveness_status_and_surface_labels(harness) -> void:
 	var fixture := await _scene_fixture(harness)
 	var scene: PlayableCourseScene = fixture["scene"]
 	var clock: MonotonicClock = fixture["clock"]
@@ -423,12 +437,14 @@ static func _test_responsiveness_status_and_callouts(harness) -> void:
 		"Visited plus reachable uses the lighter reachable base variant, not a third mixed palette.",
 	)
 	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node("StateMarker").text, "◇ ✓", "Visited plus reachable preserves the non-color visit signal.")
-	harness._assert_true((scene.field_nodes["approach_z"] as Node3D).get_node("LetterCallout").visible, "A newly directly reachable field receives its tile-owned callout immediately.")
+	var reachable_surface_label: Label3D = scene.field_nodes["approach_z"].get_node("Letter")
+	harness._assert_true(reachable_surface_label.visible, "A newly directly reachable field keeps its primary tile-surface label visible.")
+	harness._assert_equal((scene.field_nodes["approach_z"] as Node3D).get_node_or_null("LetterCallout"), null, "No large white near-field callout is recreated for a reachable field.")
 	# A second authored base color proves that the actual material derivation is
 	# relative, not a hidden fixed status palette.
-	scene.visited_field_ids["target"] = true
+	scene.visited_field_ids[scene.course.target_id] = true
 	scene._update_markers()
-	var target_colors := scene.field_material_colors("target")
+	var target_colors := scene.field_material_colors(scene.course.target_id)
 	harness._assert_true(
 		(target_colors["surface"] as Color).is_equal_approx((target_colors["keycap"] as Color).darkened(PlayableCourseSceneScript.VISITED_DARKEN_AMOUNT)),
 		"The target's distinct base color also produces its own darker visited material.",
@@ -442,7 +458,8 @@ static func _test_responsiveness_status_and_callouts(harness) -> void:
 	var total_backlog := 0.0
 	var measured_frames := 0
 	for index in letters.length():
-		clock.current_usec += int(float(intervals[index]) * 1000000.0)
+		var interval: float = intervals[index % intervals.size()]
+		clock.current_usec += int(interval * 1000000.0)
 		var camera_before_input := scene.camera.global_transform
 		scene.get_viewport().push_input(_key(letters.unicode_at(index), letters.unicode_at(index)))
 		harness._assert_transform_close(scene.camera.global_transform, camera_before_input, 0.0001, "Timed input %d changes no camera transform inside its callback." % index)
@@ -451,16 +468,16 @@ static func _test_responsiveness_status_and_callouts(harness) -> void:
 		maximum_backlog = maxf(maximum_backlog, backlog)
 		total_backlog += backlog
 		measured_frames += 1
-		_advance_presentation(scene, maxf(0.0, float(intervals[index]) - 1.0 / 60.0))
+		_advance_presentation(scene, maxf(0.0, interval - 1.0 / 60.0))
 		backlog = scene.visual_backlog_distance()
 		maximum_backlog = maxf(maximum_backlog, backlog)
 		total_backlog += backlog
 		measured_frames += 1
 	var rest_seconds := _advance_until_visual_caught_up(scene)
 	var typical_backlog := total_backlog / float(measured_frames)
-	print("P1b regular presentation metrics: max_backlog=%.3f, mean_backlog=%.3f, rest=%.3f, figure_snaps=%d" % [maximum_backlog, typical_backlog, rest_seconds, scene.visual_snap_count])
+	print("P2a regular presentation metrics: max_backlog=%.3f, mean_backlog=%.3f, rest=%.3f, figure_snaps=%d" % [maximum_backlog, typical_backlog, rest_seconds, scene.visual_snap_count])
 	harness._assert_true(scene.visual_snap_count == 0, "Timed 500/200/125/80 ms input does not use the burst-only figure correction.")
-	harness._assert_true(maximum_backlog <= 2.4, "The controlled regular sequence stays within the documented visual backlog limit.")
+	harness._assert_true(maximum_backlog <= 3.0, "The controlled P2a sequence stays within its documented visual backlog limit despite moderate tile variation.")
 	harness._assert_true(typical_backlog <= 0.7, "The controlled regular sequence keeps typical visual backlog small.")
 	harness._assert_true(rest_seconds <= PlayableCourseSceneScript.MAX_CATCH_UP_SECONDS + 0.0001, "Stopping after regular input catches up within the short visual budget.")
 	harness._assert_true(scene.visual_waypoints.is_empty(), "The regular timed sequence leaves no deferred movement queue after its bounded rest.")
