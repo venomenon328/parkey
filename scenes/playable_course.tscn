@@ -1,0 +1,228 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/playable_course_scene.gd" id="1_playable"]
+
+[sub_resource type="CapsuleMesh" id="Capsule_body"]
+radius = 0.34
+height = 1.15
+
+[sub_resource type="SphereMesh" id="Sphere_head"]
+radius = 0.4
+height = 0.8
+
+[sub_resource type="BoxMesh" id="Box_head_indicator"]
+size = Vector3(0.24, 0.2, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Material_figure"]
+albedo_color = Color(0.18, 0.74, 0.93, 1)
+roughness = 0.38
+
+[sub_resource type="StandardMaterial3D" id="Material_head_indicator"]
+albedo_color = Color(1, 0.36, 0.24, 1)
+roughness = 0.32
+
+[sub_resource type="BoxMesh" id="Box_floor"]
+size = Vector3(1, 0.1, 1)
+
+[node name="PlayableCourse" type="Node3D"]
+script = ExtResource("1_playable")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+unique_name_in_owner = true
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -28, 0)
+light_color = Color(1, 0.84, 0.65, 1)
+light_energy = 2.2
+shadow_enabled = true
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-35, 145, 0)
+light_color = Color(0.35, 0.58, 1, 1)
+light_energy = 0.85
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+position = Vector3(16, -0.02, 5)
+mesh = SubResource("Box_floor")
+
+[node name="TransitionRoot" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="CourseRoot" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="PlayerFigure" type="Node3D" parent="."]
+unique_name_in_owner = true
+rotation_degrees = Vector3(0, -18, 0)
+
+[node name="Body" type="MeshInstance3D" parent="PlayerFigure"]
+position = Vector3(0, 0.55, 0)
+mesh = SubResource("Capsule_body")
+material_override = SubResource("Material_figure")
+
+[node name="HeadPivot" type="Node3D" parent="PlayerFigure"]
+unique_name_in_owner = true
+position = Vector3(0, 1.36, 0)
+
+[node name="Head" type="MeshInstance3D" parent="PlayerFigure/HeadPivot"]
+unique_name_in_owner = true
+mesh = SubResource("Sphere_head")
+material_override = SubResource("Material_figure")
+
+[node name="HeadIndicator" type="MeshInstance3D" parent="PlayerFigure/HeadPivot"]
+unique_name_in_owner = true
+position = Vector3(-0.34, 0.08, -0.1)
+mesh = SubResource("Box_head_indicator")
+material_override = SubResource("Material_head_indicator")
+
+[node name="CourseCamera" type="Camera3D" parent="."]
+unique_name_in_owner = true
+current = true
+fov = 56.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="ColorRect" parent="HUD"]
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 130.0
+color = Color(0.025, 0.035, 0.06, 0.92)
+
+[node name="TimerLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+offset_left = 32.0
+offset_top = 24.0
+offset_right = 274.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
+theme_override_font_sizes/font_size = 38
+text = "00:00.000"
+
+[node name="StatusLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+offset_left = 292.0
+offset_top = 25.0
+offset_right = 442.0
+offset_bottom = 57.0
+theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "READY"
+
+[node name="ContextLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+anchor_right = 0.72
+offset_left = 292.0
+offset_top = 65.0
+offset_right = -12.0
+offset_bottom = 96.0
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="LockLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+visible = false
+offset_left = 32.0
+offset_top = 91.0
+offset_right = 274.0
+offset_bottom = 121.0
+theme_override_colors/font_color = Color(1, 0.38, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="ProfileLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+anchor_left = 0.72
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 24.0
+offset_right = -30.0
+offset_bottom = 58.0
+horizontal_alignment = 2
+theme_override_colors/font_color = Color(0.64, 0.74, 0.88, 1)
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 2
+clip_contents = true
+
+[node name="Help" type="Label" parent="HUD"]
+anchor_left = 0.72
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 66.0
+offset_right = -30.0
+offset_bottom = 120.0
+horizontal_alignment = 2
+theme_override_colors/font_color = Color(0.83, 0.86, 0.92, 1)
+theme_override_font_sizes/font_size = 14
+text = "Buchstabe: bewegen\nBackspace: Neustart · Esc: Menü"
+
+[node name="ResultLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 154.0
+offset_right = 250.0
+offset_bottom = 210.0
+theme_override_colors/font_color = Color(1, 0.9, 0.48, 1)
+theme_override_font_sizes/font_size = 28
+text = "ZIEL"
+
+[node name="InputTestLabel" type="Label" parent="HUD"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -102.0
+offset_right = 300.0
+offset_bottom = -78.0
+theme_override_colors/font_color = Color(0.72, 0.78, 0.88, 1)
+theme_override_font_sizes/font_size = 13
+text = "UI-Fokustest (optional):"
+
+[node name="InputTest" type="LineEdit" parent="HUD"]
+unique_name_in_owner = true
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -70.0
+offset_right = 330.0
+offset_bottom = -28.0
+placeholder_text = "Text bleibt außerhalb des Laufs"
+clear_button_enabled = true
+
+[node name="MenuPanel" type="PanelContainer" parent="HUD"]
+unique_name_in_owner = true
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -85.0
+offset_right = 250.0
+offset_bottom = 85.0
+
+[node name="MenuText" type="Label" parent="HUD/MenuPanel"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Unterbrochen"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ValidationLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -440.0
+offset_top = -145.0
+offset_right = 440.0
+offset_bottom = 145.0
+theme_override_colors/font_color = Color(1, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2

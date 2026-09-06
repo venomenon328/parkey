@@ -2,19 +2,24 @@ extends SceneTree
 
 const KeyInputNormalizer = preload("res://scripts/input/key_input_normalizer.gd")
 const CoreSuite = preload("res://tests/core_suite.gd")
+const IntegrationSuite = preload("res://tests/integration_suite.gd")
 
 var assertions := 0
 var failures: Array[String] = []
 
 
 func _initialize() -> void:
+	call_deferred("_run_requested_suite")
+
+
+func _run_requested_suite() -> void:
 	var suite := _requested_suite(OS.get_cmdline_user_args())
 	if suite.is_empty():
-		_fail("Missing value for --suite. Available suites: smoke, core, all.")
+		_fail("Missing value for --suite. Available suites: smoke, core, integration, all.")
 		_finish()
 		return
-	if suite != "smoke" and suite != "core" and suite != "all":
-		_fail("Unknown suite '%s'. Available suites: smoke, core, all." % suite)
+	if suite != "smoke" and suite != "core" and suite != "integration" and suite != "all":
+		_fail("Unknown suite '%s'. Available suites: smoke, core, integration, all." % suite)
 		_finish()
 		return
 
@@ -22,6 +27,8 @@ func _initialize() -> void:
 		_run_smoke_suite()
 	if suite == "core" or suite == "all":
 		CoreSuite.run(self)
+	if suite == "integration" or suite == "all":
+		await IntegrationSuite.run(self)
 	_finish()
 
 
@@ -37,6 +44,7 @@ func _run_smoke_suite() -> void:
 	_assert_true(ResourceLoader.exists("res://scenes/foundation.tscn"), "Foundation scene is importable.")
 	_assert_true(ResourceLoader.exists("res://scripts/input/key_input_normalizer.gd"), "Input normalizer is importable.")
 	_assert_true(ResourceLoader.exists("res://scripts/presentation/render_profile.gd"), "Render profile helper is importable.")
+	_assert_true(ResourceLoader.exists("res://scenes/playable_course.tscn"), "Playable course scene is importable.")
 
 	var scene := load("res://scenes/foundation.tscn") as PackedScene
 	_assert_not_null(scene, "Foundation scene loads as PackedScene.")
@@ -48,7 +56,7 @@ func _run_smoke_suite() -> void:
 		_assert_not_null(instance.get_node_or_null("Camera3D"), "Foundation scene contains a camera.")
 		instance.free()
 
-	_assert_equal(ProjectSettings.get_setting("application/run/main_scene"), "res://scenes/foundation.tscn", "Main scene is registered.")
+	_assert_equal(ProjectSettings.get_setting("application/run/main_scene"), "res://scenes/playable_course.tscn", "Playable course is registered as the main scene.")
 	_assert_equal(ProjectSettings.get_setting("rendering/renderer/rendering_method.web"), "gl_compatibility", "Web renderer override is Compatibility.")
 	_assert_equal(_preset_value("preset.0", "name"), "Windows Desktop", "Windows export preset has the required name.")
 	_assert_equal(_preset_value("preset.0", "platform"), "Windows Desktop", "Windows export targets Windows Desktop.")
@@ -120,6 +128,18 @@ func _assert_not_null(value: Variant, message: String) -> void:
 func _assert_equal(actual: Variant, expected: Variant, message: String) -> void:
 	assertions += 1
 	if actual != expected:
+		_fail("%s Expected '%s', received '%s'." % [message, str(expected), str(actual)])
+
+
+func _assert_vector_close(actual: Vector3, expected: Vector3, tolerance: float, message: String) -> void:
+	assertions += 1
+	if actual.distance_to(expected) > tolerance:
+		_fail("%s Expected '%s', received '%s'." % [message, str(expected), str(actual)])
+
+
+func _assert_transform_close(actual: Transform3D, expected: Transform3D, tolerance: float, message: String) -> void:
+	assertions += 1
+	if actual.origin.distance_to(expected.origin) > tolerance or not actual.basis.is_equal_approx(expected.basis):
 		_fail("%s Expected '%s', received '%s'." % [message, str(expected), str(actual)])
 
 

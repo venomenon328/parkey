@@ -12,9 +12,11 @@ Das Streckenmodell ist nicht auf ein regelmäßiges Raster oder eine feste Nachb
 
 Stand: 2026-09-05. P0 / Issue #1 ist implementiert und vollständig abgenommen: gemeinsames Godot-Projekt, zwei Export-Presets, kleine 3D-Diagnoseszene, Smoke-Runner und CI. Windows-/Web-Starts und manuelle Hardwaretastaturtests für Y/Z, Shift, Echo, Überlappung, Modifier/Browser-Shortcuts und Fokus sind bestanden.
 
-**P1a / Issue #2 ist auf `codex/p1a-run-core` implementiert und bleibt bis zur Abnahme Draft.** Der testbare Kern enthält `CourseData`, getrennte Graph-/Layoutvalidierung, versionierte Identität, `RunSession`, monotone Uhr und den Eingabeadapter; die neue GDScript-Suite heißt `core`. Auf `main` wird dadurch noch keine P1-Implementierung behauptet. Ein sichtbarer Parcours, Kamera/Animation, HUD, dauerhafte Ranglisten und Generator sind weiterhin nicht implementiert.
+**P1a / Issue #2 ist abgenommen und über PR #12 nach `main` gemergt** (`5ddf921fdf3736f9e521b8e37b833139beee636f`). Der testbare Kern enthält `CourseData`, getrennte Graph-/Layoutvalidierung, versionierte Identität, `RunSession`, monotone Uhr und den Eingabeadapter. Nach Review-Nacharbeit: `core` mit 127 und `all` mit 158 Assertions, beide Exporte und CI erfolgreich. Diese Nachweise betreffen den Kern, nicht einen schon sichtbaren Spielablauf.
 
-Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Eine fertige Menüoberfläche gehört nicht zu P1a. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
+**P1b / Issue #3 ist im Draft-PR #13 einschließlich N1–N3 aus Re-Review 5122577064 implementiert, aber noch nicht vollständig abgenommen.** Der reguläre Einstieg ist ein validierter 26-Feld-Handparcours mit zwei klar getrennten Routen, Rückwegen, grundfarbrelativem Besuchs-/Nachbarstatus, Figur, kontinuierlicher Rückkamera, lesbaren tile-eigenen Zusatzbuchstaben, Timer, Fehlerfeedback, Quick Restart und minimaler Escape-Rückmeldung. Die echte Suite `integration` prüft Szenen-, Maus-/UI-, Kern- und Darstellungsverdrahtung einschließlich kontrollierter Eingabe-/Renderfolgen; der gemessene maximale reguläre Darstellungsrückstand beträgt 2,314 Welteinheiten, der mittlere 0,407. Der aktuelle Webexport ist in isoliertem Chrome über HTTP mit CDP-synthetischem Lauf und Sichtprüfung protokolliert; der aktuelle Windows-Export startet nativ, benötigt aber noch die nicht automatisierbare Vordergrund-/Hardwareprüfung. CI `33987533119` auf dem Implementierungscommit ist erfolgreich; physische Tastatur-/Nutzerabnahme und Re-Review bleiben eigenständige Gates. Dauerhafte Ranglisten und Generator fehlen weiterhin planmäßig.
+
+Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
 
 ## Dokumentation
 
@@ -22,19 +24,20 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 | --- | --- |
 | [Entscheidungen](docs/decisions.md) | Bestätigte Anforderungen, PoC-Freigaben, Vorschläge und offene Entscheidungen |
 | [P1-Regelprofil](docs/p1-rule-profile.md) | Verbindlicher Start-/Eingabe-/Fehler-/Restart-/Menü-/Fokusvertrag |
+| [P1b-Integration](docs/p1b-implementation.md) | Szenen-/Eingabe-/Darstellungsvertrag und Abnahme des ersten Spielparcours |
 | [Spieldesign](docs/game-design.md) | Spielschleife, Bewegung, Kamera und Parcours |
 | [Architektur](docs/architecture.md) | Gemeinsamer Spielkern und Windows-/Web-Profile |
 | [Roadmap](docs/roadmap.md) | Meilensteine und tatsächlicher Fortschritt |
-| [Umsetzungspakete](docs/implementation-plan.md) | Issues, Abhängigkeiten, Branches und Codex-Empfehlungen |
+| [Umsetzungspakete](docs/implementation-plan.md) | Issues, Abhängigkeiten, Branches und Liefervertrag |
 | [Teststrategie](docs/testing.md) | Testvertrag, automatisierte Regeln und reale Plattformabnahme |
 | [Entwicklung](docs/development.md) | Gepinnter Editor/Templates, lokale Befehle und P0-Diagnose |
 | [Arbeitsregeln](AGENTS.md) | Änderungs-, Dokumentations- und Übergaberegeln |
 
 ## Nächster Arbeitsschritt
 
-[**Draft-PR #12 zu Issue #2**](https://github.com/venomenon328/parkey/pull/12) prüfen: Der P1a-Kern ist auf dem vorbereiteten Branch umgesetzt; automatisierte Regel-/Exportnachweise und Review entscheiden über die Abnahme. Keine erneute Freigabe des bereits bestätigten Profils verlangen. Vor dem nächsten Paket müssen #2 abgenommen und nach `main` gemergt sein; keine spätere Implementierung vorziehen.
+[**Draft-PR #13 zu P1b / Issue #3**](https://github.com/venomenon328/parkey/pull/13) technisch und manuell abnehmen. Arbeitsbranch ist `codex/p1b-playable-course`; die [Integrationsvorgaben](docs/p1b-implementation.md) enthalten Bedienfolge, Darstellungsgrenzen und offene Nachweise. Kein separater Vorbereitungsmerge und kein zweiter PR.
 
-Danach folgen der handgebaute spielbare Parcours und lokale Bestzeiten. Erst erprobte Routenbausteine werden zufallsgeneriert. Spätere Branches entstehen nach ihren Abhängigkeiten vom dann aktuellen `main`.
+Nach Abnahme und Merge liefert P1b erstmals einen vollständigen Handlauf. Lokale Bestzeiten folgen in P1c. Erst erprobte Routenbausteine werden zufallsgeneriert. Spätere Branches entstehen nach ihren Abhängigkeiten vom dann aktuellen `main`.
 
 ## Zusammenarbeit
 

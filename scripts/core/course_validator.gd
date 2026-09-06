@@ -5,13 +5,19 @@ extends RefCounted
 ## circles on one plane. It is not a general polygon or collision framework.
 
 const QUANTUM := 0.001
-const NUMERIC_EPSILON := 0.000001
+# GDScript layout values are 32-bit floats. At larger valid coordinates a
+# decimal snapped to 0.001 can differ by a few millionths when snapped again.
+const NUMERIC_EPSILON := 0.00001
 const ANCHOR_TOLERANCE := 0.001
 const EDGE_TOLERANCE := 0.01
 const MIN_FIELD_EXTENT := 0.5
 const MAX_FIELD_EXTENT := 12.0
 const MIN_TRANSITION_SPAN := 0.2
 const MAX_TRANSITION_GAP := 0.15
+# Co-oriented rectangle sides with a readable overlap must either be linked or
+# leave this much empty space. This is a deliberately small P1 profile rule,
+# not runtime neighbor discovery and not a general polygon clearance test.
+const MIN_UNCONNECTED_RECTANGLE_GAP := 0.4
 
 
 static func validate(course: CourseData) -> Array[String]:
@@ -105,8 +111,21 @@ static func validate_layout(course: CourseData) -> Array[String]:
 		var ids := course.field_ids()
 		for first_index in range(ids.size()):
 			for second_index in range(first_index + 1, ids.size()):
-				if _shapes_overlap(course.layouts[ids[first_index]], course.layouts[ids[second_index]]):
-					errors.append("Layouts '%s' and '%s' overlap." % [ids[first_index], ids[second_index]])
+				var first_id: String = ids[first_index]
+				var second_id: String = ids[second_index]
+				var first_layout: Dictionary = course.layouts[first_id]
+				var second_layout: Dictionary = course.layouts[second_id]
+				if _shapes_overlap(first_layout, second_layout):
+					errors.append("Layouts '%s' and '%s' overlap." % [first_id, second_id])
+				elif (
+						not course.has_edge(first_id, second_id)
+						and not course.has_edge(second_id, first_id)
+						and _has_ambiguous_unconnected_rectangle_gap(first_layout, second_layout)
+				):
+					errors.append(
+						"Layouts '%s' and '%s' form a readable side gap without an explicit graph edge."
+						% [first_id, second_id]
+					)
 
 	var transition_keys := {}
 	for transition in course.transitions:
@@ -305,6 +324,34 @@ static func _shapes_overlap(first_layout: Dictionary, second_layout: Dictionary)
 	var local: Vector2 = (center - rect_position).rotated(deg_to_rad(-float(rectangle.get("rotation_deg", 0.0))))
 	var closest: Vector2 = Vector2(clampf(local.x, -rect_size.x * 0.5, rect_size.x * 0.5), clampf(local.y, -rect_size.y * 0.5, rect_size.y * 0.5))
 	return local.distance_to(closest) < float(circle["radius"]) - NUMERIC_EPSILON
+
+
+static func _has_ambiguous_unconnected_rectangle_gap(first_layout: Dictionary, second_layout: Dictionary) -> bool:
+	if str(first_layout.get("shape", "")) != "rectangle" or str(second_layout.get("shape", "")) != "rectangle":
+		return false
+	var first_rotation := float(first_layout.get("rotation_deg", 0.0))
+	var second_rotation := float(second_layout.get("rotation_deg", 0.0))
+	var rotation_delta := fposmod(absf(first_rotation - second_rotation), 180.0)
+	if minf(rotation_delta, 180.0 - rotation_delta) > QUANTUM:
+		return false
+	var first_position: Vector2 = _point(first_layout["position"])
+	var second_position: Vector2 = _point(second_layout["position"])
+	var first_size: Vector2 = _point(first_layout["size"])
+	var second_size: Vector2 = _point(second_layout["size"])
+	var local_delta := (second_position - first_position).rotated(deg_to_rad(-first_rotation))
+	return (
+			_axis_gap_is_ambiguous(local_delta.x, (first_size.x + second_size.x) * 0.5, (first_size.y + second_size.y) * 0.5 - absf(local_delta.y))
+			or _axis_gap_is_ambiguous(local_delta.y, (first_size.y + second_size.y) * 0.5, (first_size.x + second_size.x) * 0.5 - absf(local_delta.x))
+	)
+
+
+static func _axis_gap_is_ambiguous(separation: float, combined_half_extent: float, overlap_span: float) -> bool:
+	var gap := absf(separation) - combined_half_extent
+	return (
+			gap >= -NUMERIC_EPSILON
+			and gap < MIN_UNCONNECTED_RECTANGLE_GAP - NUMERIC_EPSILON
+			and overlap_span >= MIN_TRANSITION_SPAN - NUMERIC_EPSILON
+	)
 
 
 static func _rectangles_overlap(first_layout: Dictionary, second_layout: Dictionary) -> bool:
