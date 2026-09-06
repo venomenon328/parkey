@@ -16,6 +16,8 @@ Stand: 2026-09-06. P0 / Issue #1 ist implementiert und vollständig abgenommen: 
 
 **P1b / Issue #3 ist abgenommen und über PR #13 nach `main` gemergt** (`e8e947e4100c8f3e534ae425752ac2c30c7fee7a`). Der reguläre Einstieg ist ein validierter 26-Feld-Handparcours mit zwei Routen, Rückwegen, grundfarbrelativem Besuchs-/Nachbarstatus, Figur, kontinuierlicher Rückkamera, Timer, Fehlerfeedback, Quick Restart und minimaler Escape-Rückmeldung. `integration` umfasst 189 Assertions, `all` 350; beide Exporte, PR-CI und `main`-CI sind erfolgreich. Die physische/manuelle Windows-Spielabnahme ist bestanden. Die physische Chrome-Abnahme wird aufgrund der bestätigten Windows-Priorität später nachgeholt und war ausdrücklich kein Mergeblocker für P1b.
 
+**P1c / Issue #4 ist abgenommen und über PR #14 nach `main` gemergt** (`63f1851dc9e3cf2ee72412b1a352ce5a191cbac2`). Der lokale versionierte Ergebnisspeicher hält Bestzeiten und Top 10 je vollständiger Strecken-/Regelidentität, bewahrt bis zu 100 Läufe, behandelt exakte Gleichstände deterministisch und zeigt die Originalzeit zusätzlich in Mikrosekunden. Backup-only-Recovery bleibt auch bei einem Ersetzungsfehler lesbar. Auf dem finalen PR-Stand bestanden Import, `storage` mit 67, `integration` mit 218 und `all` mit 446 Assertions sowie Windows- und Web-Releaseexport; Windows-/Chrome-Persistenz und der eingeschränkte Chrome-Speicherfall wurden tatsächlich geprüft. Die separat verschobene physische P1b-Chrome-Eingabeabnahme bleibt offen.
+
 Die P1b-Kamera-/Beschriftung ist noch nicht als endgültige Darstellung festgelegt. Die großen weißen Nahbereichs-Callouts sollen in P2a möglichst entfallen; die Tile-Beschriftungen selbst sollen aus der üblichen Third-Person-Perspektive gut lesbar orientiert werden. Für den aktuellen Handkurs ist gegenüber dem P1b-Stand eine 90°-Drehung der Beschriftung im Uhrzeigersinn als konkrete Folgearbeit dokumentiert.
 
 Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
@@ -39,9 +41,9 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-**P1c / Issue #4: dauerhafte lokale Bestzeiten und Ergebnisschirm ist implementiert und bleibt bis Review/Abnahme im Draft-PR.** Der gemeinsame Szenencontroller übergibt unveränderliche Abschluss-Schnappschüsse mit einmaliger Lauf-ID an den versionierten lokalen Store. Die [P1c-Spezifikation](docs/p1c-local-results.md) beschreibt Speicherort, Schema, Fehlerstatus, Grenzen und Abnahmen. Es gibt weder Onlinewertung noch Windows-/Web-Synchronisierung.
+**P2a / Issue #5: lesbare Routenentscheidungen und erprobte Parcours-Bausteine.** Die Abhängigkeiten sind erfüllt: P1c ist abgenommen/gemergt und der echte P1-Spieltest auf Windows ist bestanden. P2a soll handgestaltete Entscheidungsabschnitte, ihre Anschluss-/Geometrieverträge, vorausschauende Kamera und die Tile-Beschriftung praktisch erproben. Die großen weißen P1b-Callouts sollen möglichst entfallen; die bekannten 90°-Beschriftungsfolgearbeit und D-023/D-024 sind verbindlich.
 
-Die offene Kamera-/Beschriftungsverfeinerung ist bereits für **P2a / Issue #5** vorgemerkt: Tile-Buchstaben primär über die Feldoberflächen lesbar machen, die großen weißen P1b-Callouts zurückbauen und die Kamerakomposition weiter erproben. Erst erprobte Routenbausteine werden später zufallsgeneriert.
+Erst auf Grundlage dieser real erprobten Bausteine werden P2b-Grafikgestaltung und P3a-Generator fortgesetzt. P2a zieht weder Generator noch finale Assetproduktion vor.
 
 ## Zusammenarbeit
 
