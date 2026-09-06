@@ -20,4 +20,4 @@ static func quality_enabled() -> bool:
 
 static func settings_for_method(method: String) -> Dictionary:
 	var quality := method == "forward_plus"
-	return {"ssao": quality, "shadows": quality, "glow": false, "msaa_samples": 2 if quality else 0}
+	return {"ssao": quality, "shadows": quality, "glow": false, "msaa_samples": 4 if quality else 0}

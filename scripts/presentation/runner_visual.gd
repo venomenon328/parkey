@@ -49,6 +49,13 @@ func build(figure: Node3D, head_pivot: Node3D) -> void:
 		var shoe := _capsule(leg, "Shoe", Vector3(0, -0.55, -0.035), 0.085, 0.24, cream)
 		shoe.rotation_degrees.x = 90
 		_capsule(head, suffix + "Ear", Vector3(side * 0.197, -0.015, 0), 0.04, 0.095, skin)
+	# Fitted collar, cuffs and heel trims make the silhouette read as clothing.
+	var collar := _capsule(root, "Collar", Vector3(0, 1.14, 0.015), 0.12, 0.12, cream)
+	collar.scale = Vector3(1.15, 0.42, 1.0)
+	for index in 2:
+		_capsule(arms[index], "Cuff", Vector3((-1.0 if index == 0 else 1.0) * 0.025, -0.27, -0.01), 0.087, 0.07, cream).scale.y = 0.45
+		var heel := _capsule(legs[index], "HeelTrim", Vector3(0, -0.585, 0.02), 0.085, 0.12, suit)
+		heel.scale.y = 0.3
 	# Small fitted seam on the back helps orientation from the play camera.
 	_capsule(root, "BackSeam", Vector3(0, 0.92, 0.169), 0.018, 0.29, cream)
 
@@ -87,8 +94,8 @@ static func _capsule(parent: Node3D, node_name: String, at: Vector3, radius: flo
 	var mesh := CapsuleMesh.new()
 	mesh.radius = radius
 	mesh.height = maxf(height, radius * 2.0)
-	mesh.radial_segments = 12
-	mesh.rings = 4
+	mesh.radial_segments = 24
+	mesh.rings = 8
 	node.mesh = mesh
 	node.material_override = material
 	node.position = at

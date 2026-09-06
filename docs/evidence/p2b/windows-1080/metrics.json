@@ -1,20 +1,21 @@
 {
   "adapter": "NVIDIA GeForce RTX 3070",
-  "draw_calls": 645.0,
+  "draw_calls": 477.0,
   "engine": "4.7.2-stable (official)",
-  "frames_over_20_ms": 0,
+  "frames_over_20_ms": 574,
   "frames_over_33_ms": 0,
+  "frames_without_focus": 0,
   "kind": "complete",
-  "max_ms": 18.218,
-  "mean_fps": 143.967827031452,
-  "p50_ms": 6.914,
-  "p95_ms": 8.188,
-  "p99_ms": 8.437,
-  "primitives": 79840.0,
+  "max_ms": 30.725,
+  "mean_fps": 59.9658960966591,
+  "p50_ms": 15.038,
+  "p95_ms": 20.941,
+  "p99_ms": 21.31,
+  "primitives": 395094.0,
   "renderer": "forward_plus",
   "runs": [
     {
-      "duration_usec": 2819418,
+      "duration_usec": 2839506,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -22,7 +23,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3166073,
+      "duration_usec": 3167073,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -30,7 +31,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3333761,
+      "duration_usec": 3334416,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -38,7 +39,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3666965,
+      "duration_usec": 3666505,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -46,16 +47,18 @@
       "state": 6
     }
   ],
-  "sample_frames": 4648,
-  "sample_seconds": 32.284991,
+  "sample_frames": 1940,
+  "sample_seconds": 32.351722,
   "viewport": "1920x1080",
   "first_frame": {
     "adapter": "NVIDIA GeForce RTX 3070",
-    "engine_ticks_ms": 1938,
+    "engine_ticks_ms": 2258,
     "kind": "first_frame",
     "renderer": "forward_plus",
+    "screen_index": 0,
     "screen_refresh_hz": 143.973007202148,
-    "viewport": "1920x1080"
-  },
-  "screenshots": 8
+    "viewport": "1920x1080",
+    "vsync_mode": 1,
+    "window_position": "(0, 0)"
+  }
 }

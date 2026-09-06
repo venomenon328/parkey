@@ -1,79 +1,82 @@
-# P2b: Tastatur-Werkstatt – visuelle Nacharbeit
+# P2b: große visuelle Näherungsrunde
 
-Stand: 2026-09-06. [Issue #6](https://github.com/venomenon328/parkey/issues/6), Branch `codex/p2b-visual-slice`, bestehender [Draft-PR #18](https://github.com/venomenon328/parkey/pull/18). Die erste visuelle Nutzerprüfung hat **keine Abnahme erteilt**. Die verbindliche Nacharbeit ist umgesetzt und technisch/renderseitig geprüft; die erneute subjektive Nutzerabnahme bleibt offen.
+Stand: 2026-09-06. Umsetzung der [neuesten verbindlichen Nacharbeit in Issue #6](https://github.com/venomenon328/parkey/issues/6#issuecomment-5560268276), ausgehend von `26551462312a8518d43268d6bf66b5bd5e20a310`, auf `codex/p2b-visual-slice` im bestehenden [Draft-PR #18](https://github.com/venomenon328/parkey/pull/18). **Die subjektive Nutzerabnahme ist weiterhin offen.**
 
-## Referenzvergleich und Renderiteration
+## Referenzvergleich und echte Iteration
 
-Vor Änderungen wurden die bisherigen Windows-/Web-Bilder, die [Einordnung der Referenz](reference/p2b/README.md) und der erneut im Auftrag angehängte lesbare Original-Mock visuell miteinander verglichen. Die versionierte JPEG-Kopie ist beschädigt; zwei Decoder scheitern am identischen lokalen/GitHub-Blob. Sie wird nicht als repariert ausgegeben. Der nachgereichte Originalanhang ist die tatsächlich geprüfte Bildreferenz. `.gdignore` schließt Referenzen vom Spielimport aus.
+Die [Referenzeinordnung](reference/p2b/README.md), der im Auftrag erneut lesbar angehängte Original-Mock und die bisherigen P2b-Bilder wurden visuell geprüft. Die versionierte JPEG-Kopie ist weiterhin beschädigt; sie wurde weder als repariert noch als tatsächlich decodierte Referenz ausgegeben. Der Anhang ist der geprüfte Mock. Er bestimmt die Qualitätsrichtung: zusammenhängende gerundete Kappen, oberflächengebundene Schrift, heller Wolkenraum, räumliche Tiefe und dominanter Timer. Bestätigter warmer matter Kunststoff, Werkstattwelt und kanonischer Kurs bleiben erhalten; Holz und Mock-Streckenanordnung sind keine Pflicht.
 
-Der Mock zeigt weich gerundete massive Kappen, zurückhaltende oberflächengebundene Legenden, einen hellen bewölkten Himmel und einen dominierenden mittigen Timer mit Stoppuhr. Er ist qualitative Orientierung; Holzmaterial, Streckenanordnung, Figur und Bestenlistenlayout werden nicht kopiert. Die Werkstatt mit Petrol, Messing und warmen matten Kunststoffkappen bleibt die einzige Beispielwelt.
+Die Nacharbeit umfasst acht Windows-Entwicklungsiterationen, zusätzliche Compatibility-/Chrome-Farbprüfung und anschließende Releaseprüfungen. Sie wurde nach grünen Geometrietests mehrfach erneut geändert:
 
-| Kritik / Referenzmerkmal | Nacharbeit und eigene Sichtprüfung |
+| Bildprüfung | Befund und folgende Korrektur |
 | --- | --- |
-| Zusammengesetzte Blöcke statt Keycaps | Nach außen gewickelte Seitenflächen, verjüngte Kappenschale, weiche Schulter und flache Mulde. Schale und Top teilen die Naht; keine aufgestapelte Deckplatte. Auch Werkstattkörper besitzen jetzt von außen sichtbare Seiten. Die Kappen lesen sich im Render als geformte Tasten einschließlich langer Formate. |
-| Überlaufende weiße Overlay-Legenden | Kleinere dunkle Druckfarbe ohne Outline, mit Oberflächenbeleuchtung. Schriftmetriken bestimmen Größe je Format; Platzierung mit Randabstand links vor der Figur. Alle 30 tatsächlichen gedrehten Glyphen-AABBs liegen innerhalb der flachen Topfläche. Nahbilder beider Entscheidungen und des W ergänzen die Startansicht. Kein sichtbarer Überlauf über die Kappenschulter in den geprüften Bildern. |
-| Flacher Platzhalterhorizont | Eigenes deterministisches Wolkenpanorama mit Farbverlauf und unterer Dunstzone; die große neutrale Bodenfläche ist ausgeblendet. Die Werkbank steht im hellen Himmelsraum. Distanznebel übermalt das Panorama nicht mehr. |
-| Technische Timerwirkung | Timer oben mittig, kräftigere Schrift, eigenes skalierendes Stoppuhr-Symbol, kleinere Status-/Fehlerzeile auf halbtransparenter Fläche. Werkstattname und Bedienhilfe sind nachgeordnet; Diagnosen bleiben F3. |
+| Erster neuer Pass: [Bereitschaft](evidence/p2b/iterations/iteration-1/ready.png), [erste Entscheidung](evidence/p2b/iterations/iteration-1/alpha.png), [Ergebnis](evidence/p2b/iterations/iteration-1/result.png) | Neue Schale, Schriften und HUD waren sichtbar; der erste Himmel war überbelichtet und die Umgebung zu teuer. Auf Tages-HDR umgestellt, Belichtung/Abtastrichtung abgestimmt und statische Möbel nach Material gebündelt. |
+| Zweiter/dritter Pass | Die Bildprüfung entdeckte fehlende Möbel beim Zusammenführen gemischt indizierter Meshes. Einheitliches Deindizieren vor dem Zusammenführen korrigiert die Geometrie. Der sichtbare Wolkenraum ersetzt die unpassende dunkle Panorama-Unterseite. |
+| Vierter Pass: [W/E-Abschnitt](evidence/p2b/iterations/iteration-4/beta_long.png) | Verbessertes Licht und weichere Kappen, aber die Figur berührte eine folgende Legende. Reine Legendverschiebung im fünften Pass verschlechterte die Verdeckung und wurde verworfen. |
+| Sechster Pass: [höhere Kamera](evidence/p2b/iterations/iteration-6/beta_long.png) | Höhere Sicht allein beseitigte die Berührung nicht ausreichend. Der siebte Pass kombiniert moderate Höhe mit kleinem Schulterversatz und korrigiertem Druckbereich. |
+| Finaler Windows-1440p-Release | [Bereitschaft](evidence/p2b/windows-1440/ready.png), [erste Entscheidung](evidence/p2b/windows-1440/alpha.png), [W/E](evidence/p2b/windows-1440/beta_long.png) und [Ergebnis](evidence/p2b/windows-1440/result.png) erneut geprüft. A sowie E/W sind unterscheidbar, beide Entscheidungen vollständig lesbar, Ergebnis rechts neben der Figur. Abschließend HUD-Flächen für ruhigeren Kontrast verdichtet. Die achte Iteration setzt die ergänzende Nutzerentscheidung um: durchgehender texturierter Werkstattboden unter den Stationen, Pflanzen auf den Schrankplatten statt frei daneben sowie keine zusätzlichen Start-/Ziel-/Bodenschriftzüge. |
 
-Direkter Vorher-/Nachher-Vergleich derselben ersten Entscheidung: [bisheriger Stand 792fc39](https://github.com/venomenon328/parkey/blob/792fc39/docs/evidence/p2b/windows-1080/alpha.png) → [neuer Windows-Render](evidence/p2b/windows-1080/alpha.png). Die großen weißen Zeichen, flachen/offenen Seiten und der einfarbige Hintergrund des alten Bildes sind damit konkret vergleichbar.
+Direkter Vergleich zum **unmittelbaren Vorstand `2655146`**: [Bereitschaft vorher](https://github.com/venomenon328/parkey/blob/2655146/docs/evidence/p2b/windows-1440/ready.png), [Entscheidung vorher](https://github.com/venomenon328/parkey/blob/2655146/docs/evidence/p2b/windows-1440/alpha.png), [Ergebnis vorher](https://github.com/venomenon328/parkey/blob/2655146/docs/evidence/p2b/windows-1440/result.png). Die aktuellen Gegenstücke stehen in der letzten Tabellenzeile. Die Kappen besitzen jetzt einen glatten gemeinsamen Schulterverlauf statt sichtbarer Materialringe, die explizite Schrift wirkt ruhiger, die niedrigere Kamera gibt den Kappen mehr Vordergrundpräsenz und der größere Timer bestimmt die UI-Hierarchie. Der Abstand zum aufwendig illustrierten Mock bleibt bei Figurdetail und Umgebungsdichte sichtbar; Gleichwertigkeit oder Nutzerfreigabe wird nicht behauptet.
 
-Die Arbeit erfolgte in echten Renderiterationen: zuerst Schale/Typografie/Timer, anschließend Himmelkorrektur nach noch zu blassem Render und zuletzt ein weiterer Placement-/Größenpass nach den Nahbildern schmaler Tasten. Die eigene technische Sichtprüfung ersetzt ausdrücklich keine ästhetische Freigabe durch den Nutzer.
+## Umsetzung und erhaltene Verträge
 
-## Erhaltene Verträge
+- **Kappen:** durchgehend gesampelte Form mit verjüngten Wänden, runder Schulter und flacher Mulde. Gemeinsame Normalen entstehen vor der Materialtrennung am unteren Rand. Standard-, schmale, lange und Spacebar-artige Formate behalten exakt ihre kanonischen Grundflächen. Kontrollierte Rauheit und dezente 128×128-Normalstruktur ergänzen die matte Materialantwort.
+- **Legenden:** versioniertes Barlow Medium, dunkle beleuchtete Druckfarbe ohne Outline. Tatsächliche Glyphenmaße bestimmen Skalierung und Randabstand innerhalb der flachen Topfläche; keine schwebenden Callouts. Punkte, Haken und Rauten sind vollständig entfernt. Material, Figur und Hub erhalten `besucht > erreichbar`.
+- **Kamera:** Höhe 4,7 statt 6,2, Abstand 7,4, normaler Vorblick 3,4, Schulterversatz 1,0. An Entscheidungen bleibt der Mittelpunkt der bestehenden Vorschauabschnitte maßgeblich. Keine Mauspflicht; unveränderte 50-/80-ms-Aufholbudgets.
+- **Welt/Licht:** versioniertes 2K-CC0-HDR, abgestimmter Himmels-Shader, Werkstattschränke, Regale, Messinggeländer, Drehknöpfe/Kabel, Pflanzen und Zielportal. Ein zusammenhängender Dielenboden trägt die Seitenstationen, die Pflanzen stehen auf den Schrankplatten. Keine freien Start-/Zieltexte oder Boden-Schriftzüge. Dekoration liegt außerhalb beziehungsweise unterhalb der kanonischen Strecke und unterliegt keiner Begehbarkeit. Gegliederte Figur mit feineren Rundungen, Kragen, Ärmel- und Schuhdetails; Posenvertrag unverändert.
+- **HUD:** eigener Barlow-Semi-Condensed-Timer mit Stoppuhr; Ergebnis-/Top-10-Zeilen mit getrenntem Rang, Zeit und Fehlerzahl. Normale Zeiten ausschließlich `MM:SS.mmm`; exakte Mikrosekunden bleiben in Sortierung, Persistenz und F3. Speicherstatus und Hinweis auf nicht aufbewahrte Läufe bleiben sichtbar.
 
-- Unveränderter 30-Feld-P2a-Kurs, explizite Übergänge, Grundflächen, Größen, Positionen, Drehungen, Standpunkte und Kamera. Fasen/Mulde liegen innerhalb der kanonischen Grundflächen; keine neue Höhenmechanik.
-- Kanonische Identität weiterhin `course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a`. Keine Änderungen in `scripts/core`, `scripts/input`, `scripts/course` oder `scripts/storage`.
-- Press-/Hold-/Release unverändert: 0,13 Einheiten Hub innerhalb von 45 ms, Halten bis zum logischen Verlassen, gemeinsamer Hub von Kappe/Druckzeichen/Status; fester Sockel und sofortiger Restart. Keine Eingabesperre durch Grafik.
-- Besuchte Rückwege bleiben dunkel mit Haken, auch wenn sie erreichbar sind. Das aktuelle Feld hat Punkt/Haken und sichtbaren Hub; nur unbesuchte erreichbare Felder werden heller und zeigen eine Raute. Keine Änderung der Statuspriorität.
-- Gegliederte Figur mit Idle/Bewegung/Fehlerreaktion unverändert. 50-ms-Figuren-/80-ms-Kamera-Aufholen und 200-ms-Kernfehlerfrist bleiben erhalten; eine laufende 240-ms-Reaktion blockiert keine danach gültige Eingabe.
-- Timer, Original-Mikrosekunden, lokale Bestzeiten/Top 10 und Speicherstatus bleiben verfügbar. Keine Onlinewertung, P3-Inhalte, zusätzliche Welt oder neue Laufzeitabhängigkeit.
+Unverändert: 30-Feld-P2a-Kurs, explizite Nachbarn/Transitionen, Größen/Positionen/Drehungen/Standpunkte, Kernzeiten und Eingabeannahme. Identität weiterhin `course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a`. Keine Änderung in `scripts/core`, `scripts/input`, `scripts/course` oder `scripts/storage`. Der rein visuelle Hub bleibt 0,13 Einheiten innerhalb 45 ms, Halten bis zum logischen Verlassen und sofortiger Reset. Eine laufende Fehleranimation blockiert keine nach der 200-ms-Kernfrist gültige Eingabe. Keine P3-Inhalte oder zusätzliche Spielimplementierung.
 
-## Profile und Assets
+## Profile, Assets und Budget
 
-Windows Forward+: ein schattenwerfendes Hauptlicht, schattenloses Fülllicht, 2× MSAA und begrenztes SSAO (Radius 0,5, Intensität 0,65). Web Compatibility: dieselbe Geometrie, Legenden, Statuszeichen und Umgebung ohne Schatten/SSAO/MSAA. Kein Bloom, DOF, SSR, volumetrischer Nebel oder Partikelsystem. Pflichtinformationen benötigen keinen Windows-Effekt.
+Forward+: 4× MSAA, ein weich gefilterter Schattenwerfer, schattenloses Fülllicht, ACES und SSAO mit Radius 0,85/Intensität 1,35. Compatibility: dieselbe Geometrie, Schrift, Statusmaterialien und derselbe Himmel, ohne Schatten/SSAO/MSAA und mit linearem Tonemapping. Kein Glow, DOF, SSR, volumetrischer Nebel oder Partikelsystem; Pflichtinformationen hängen nicht von optionalen Effekten ab.
 
-Das 1024×512-Wolkenpanorama wird einmal beim Start aus sphärischem FastNoiseLite-Rauschen erstellt und innerhalb des Prozesses wiederverwendet; kein pro Frame laufender Noise-Shader. Die vorhandene eigene 64×64-Rauheitsstruktur bleibt erhalten. Modelle, Panorama, Materialien und Stoppuhr-Zeichenbefehle sind eigener Repository-Code. Schrift: vorhandenes Open Sans SemiBold mit Laufzeit-Schriftvariation für den Timer; keine neue Fontdatei. Quellen und Lizenzhinweise stehen in [CREDITS.md](../CREDITS.md); die Projektlizenz bleibt offen.
+Barlow Medium und Barlow Semi Condensed SemiBold stehen unter OFL 1.1; das unveränderte Poly-Haven-HDR „Kloofendal 48d Partly Cloudy Pure Sky“ unter CC0. Die kleinen Fontdateien und das 2048×1024-HDR sind versioniert. Der Sky-Shader passt die Abtastrichtung für die schwebende Werkstatt an und konvertiert im Compatibility-Profil die lineare HDR-Ausgabe nach sRGB. Die echte Compatibility-/Chrome-Prüfung entdeckte vorher einen zu dunklen Himmel ([Zwischenbild](evidence/p2b/iterations/compatibility-before/ready.png)); die Farbtexturkennzeichnung allein genügte nicht. Die abschließende Farbkonvertierung behebt diesen Profilunterschied. Keine Laufzeit-Wolkenmalerei, Downloads, Dienste oder Bibliotheken. Eigene Modelle, deterministische Dielentextur und Materialstrukturen; Quellen, Autoren und mitexportierte Lizenztexte: [CREDITS.md](../CREDITS.md). Die Projektlizenz bleibt unbestimmt.
+
+Der in #6 erlaubte Forward+-Headroom wird für feinere Meshes, Kontaktwirkung und Kantenglättung genutzt. Der frühere 100.000-Primitiven-Richtwert wird deshalb bewusst ersetzt: Arbeitsbudget dieses Slices **unter 600 Draw Calls / 450.000 gerenderten Primitiven** im Windows-Entscheidungsbild, bei unverändertem 60-FPS-Ziel. Die Zähler enthalten Render-/Schattenpässe, nicht nur eindeutige Meshdreiecke. Statische Möbel teilen Materialmeshes; bewegliche Kappen bleiben unabhängig. Gemessene Zahlen stehen unten. 144 FPS werden nicht zum Produktziel.
 
 ## Technische Prüfungen
 
-Unter Windows 11 Pro Build 26200 mit Godot `4.7.2.stable.official.ed1daf0bf` tatsächlich ausgeführt:
+Tatsächlich unter Windows 11 Pro Build 26200 mit Godot `4.7.2.stable.official.ed1daf0bf` ausgeführt:
 
-| Prüfung | Ergebnis / Log |
+| Pflichtbefehl | Ergebnis / Log |
 | --- | --- |
-| `godot --headless --path . --import` | [Exit 0](evidence/p2b/import.txt), keine Import-/Scriptfehler |
-| `godot --headless --path . --script res://tests/run_tests.gd -- --suite presentation` | [298 Assertions, 0 Fehler](evidence/p2b/presentation.txt) |
-| `godot --headless --path . --script res://tests/run_tests.gd -- --suite integration` | [233 Assertions, 0 Fehler](evidence/p2b/integration.txt) |
-| `godot --headless --path . --script res://tests/run_tests.gd -- --suite all` | [843 Assertions, 0 Fehler](evidence/p2b/all.txt) |
+| `godot --headless --path . --import` | [Exit 0, keine Import-/Scriptfehler](evidence/p2b/import.txt) |
+| `godot --headless --path . --script res://tests/run_tests.gd -- --suite presentation` | [485 Assertions, 0 Fehler](evidence/p2b/presentation.txt) |
+| `godot --headless --path . --script res://tests/run_tests.gd -- --suite integration` | [238 Assertions, 0 Fehler](evidence/p2b/integration.txt) |
+| `godot --headless --path . --script res://tests/run_tests.gd -- --suite all` | [1035 Assertions, 0 Fehler](evidence/p2b/all.txt) |
 | `godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe` | [Exit 0](evidence/p2b/export-windows.txt) |
 | `godot --headless --path . --export-release "Web" build/web/index.html` | [Exit 0](evidence/p2b/export-web.txt) |
 
-[Exitübersicht](evidence/p2b/check-exits.json). Unbekannte Suite und fehlender Suitename scheitern erwartungsgemäß mit [Exit 1](evidence/p2b/negative-exits.json). `node --check tests/serve_web_evidence.mjs` und `git diff --check` sind erfolgreich.
+[Exitübersicht](evidence/p2b/check-exits.json). Fehlende/unbekannte Suite: erwarteter [Exit 1](evidence/p2b/negative-exits.json). `node --check tests/serve_web_evidence.mjs` erfolgreich. Der vollständige vorgemerkte Diffcheck meldet ausschließlich ein bereits im unverändert übernommenen OFL-Lizenztext enthaltenes Schlussleerzeichen (Zeile 21); ohne diese Fremdtextdatei ist er sauber.
 
-Neue Regressionen prüfen die tatsächlichen gedrehten Glyphenmaße aller Felder, beleuchtete Druckschrift ohne Outline, nach außen gewickelte Seiten mit passenden Normalen und einen vorhandenen, nicht von Nebel übermalten Himmel in beiden Profilen. Die bestehende Szenen-/Hub-/Status-/F3-/Timingprüfung bleibt erhalten. Der Integrationstest folgt der neuen Timer-Hierarchie im tatsächlichen SceneTree. Hochfrequenzregression: maximal 2,738 und im Mittel 0,459 Welteinheiten Restweg, 0,000 s Restaufholen, keine Figurenkorrektur; 60 Eingaben ohne Renderfortschritt bleiben wirksam.
+Neue Regressionen prüfen symbolfreie Felder, explizite Fontressourcen, reale gedrehte Glyphen innerhalb der Topflächen und vollständige Projektion des aktuellen Felds sowie aller direkten Nachbarn an allen 30 Kamerapositionen. Das ist kein Verdeckungstest; die tatsächlichen W/E-Bilder haben deshalb zusätzliche Korrekturen ausgelöst. Die volle Top-10-Tabelle einschließlich Bestzeitmeldung passt in den Viewport. Unterschiedliche Originalzeiten 1.234.000/1.234.999 µs behalten trotz gleicher Anzeige `00:01.234` ihre korrekten Ränge und F3-Werte. Bestehende Identitäts-, Hub-, Status-, Eingabe-/Timing-, Speicher- und Routenprüfungen bleiben erhalten. Hochfrequenzregression: maximal 2,738, durchschnittlich 0,459 Welteinheiten Restweg, 0,000 s Restaufholen, keine Figurenkorrektur; 60 Eingaben ohne Renderfortschritt bleiben wirksam.
 
-## Reale Render-, Lauf- und Leistungsnachweise
+## Reale Render- und Leistungsnachweise
 
-Tatsächlicher Rechner: AMD Ryzen 7 5800X, NVIDIA GeForce RTX 3070, Windows 11 Pro 26200, Treiber `32.0.15.9649`. Native Fenster melden 143,973 Hz. Es wurde keine schwächere Hardware geprüft; der Referenzrechner ist keine Mindestanforderung.
+Gemessen am 2026-09-06 auf Windows 11 Pro Build 26200, Ryzen 7 5800X, RTX 3070, Treiber 32.0.15.9649. Native Releasefenster verwenden Forward+ auf Bildschirm 0 bei gemeldeten 143,973 Hz; zusätzlich ist ein 60-Hz-Bildschirm angeschlossen. Chrome 152.0.7977.76 (UA 152.0.0.0) verwendet WebGL Compatibility. Der Browser wurde durch den Nutzer geöffnet und für den korrigierten Export neu geladen. Sein Canvas misst 2560×1305, der tatsächlich gerenderte Spielviewport und alle acht PNGs 2320×1305.
 
-Die Releaseexporte laufen mit echten Renderern und realer Uhr. Der ausdrücklich aktivierte Helfer erzeugt synthetische Viewport-Tastaturereignisse und speichert ausschließlich unter `user://parkey-test-results/`. Pro Plattform/Auflösung werden alle vier P2a-Kombinationen vollständig abgeschlossen. Die acht Bildzustände liegen außerhalb der Leistungsmessfenster; gemessen werden rund 32 Sekunden aus vier Routen bei 160-ms-Eingabeabstand und 15 Sekunden an der ersten Entscheidung nach Aufwärmen. Das sind Anwendungsframeabstände, keine GPU-only-, Scanout- oder Hardwareeingabelatenzen.
+Vier synthetische Vollrouten mit echten Viewport-Ereignissen und monotoner Laufzeituhr, anschließend 15 Sekunden am Entscheidungsfeld: je rund 32 Sekunden Anwendungsframeabstände nach Aufwärmen, einschließlich Bewegung und Ergebnis-I/O. Screenshot-Readback liegt außerhalb der Messfenster. Alle vier Routen in allen finalen Messreihen erreichen das Ziel mit null Fehlern und derselben kanonischen Identität; **null Messframes ohne Fokus**. Ein vorheriger Fokusverlust invalidierte einen Wiederholungslauf; dieser wurde verworfen und nicht als Leistungsnachweis verwendet. Keine externe Scanout-/Hardwarelatenzmessung und kein persönlich gespielter Lauf.
 
-Verdeckte native Vorproben liefen nur mit etwa 60 FPS und unruhigeren Frameabständen. Sie werden nicht als Vordergrundleistungsnachweis verwendet. Die folgenden finalen nativen Proben stammen aus sichtbar geöffneten Spielfenstern. Der automatische Chrome-Start über die Shell wurde mit „blocked by policy“ abgelehnt; der Nutzer öffnete den lokalen Prüflink in Desktop-Chrome, anschließend erzeugte der Helfer selbst Bilder und Messwerte. Das Öffnen ist keine subjektive Abnahme.
+| Profil | Spielviewport | Frames / Messzeit | Ø FPS | p95 / p99 ms | Maximum ms | Frames >20 / >33,334 ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| Windows 1080p / normal | 1920x1080 | 1940 / 32,35 s | 59,97 | 20,941 / 21,310 | 30,725 | 574 / 0 |
+| Windows 1440p / normal | 2560x1440 | 4623 / 32,32 s | 143,06 | 8,289 / 8,666 | 18,406 | 0 / 0 |
+| Chrome / Compatibility | 2320x1305 | 1940 / 32,36 s | 59,95 | 16,900 / 17,000 | 20,200 | 1 / 0 |
+| Windows 1080p / VSync-Diagnose | 1920x1080 | 4654 / 32,32 s | 144,01 | 7,094 / 7,299 | 19,066 | 0 / 0 |
 
-| Reale Ausführung | Framebuffer | Ø FPS | p95 / p99 / Maximum (ms) | Messdauer | Erster Frame |
-| --- | --- | --- | --- | --- | --- |
-| Windows Forward+ | 1920×1080 | 143,97 | 8,188 / 8,437 / 18,218 | 32,285 s | 1938,0 ms |
-| Windows Forward+ | 2560×1440 | 143,98 | 8,102 / 8,372 / 18,037 | 32,297 s | 2021,0 ms |
-| Desktop-Chrome Compatibility | 2320×1305 | 59,95 | 16,900 / 17,000 / 18,900 | 32,360 s | 4795,1 ms |
+Windows zählt am ersten Entscheidungsfeld 477 Draw Calls / 395.094 gerenderte Primitive, Chrome 200 / 126.710; die Budgets sind eingehalten. Die hohe native Bildrate ist gemessener Headroom, kein neues Produktziel.
 
-Alle drei finalen Proben schließen alle vier Routen mit null Fehlern ab. Windows enthält bei beiden Auflösungen keinen Frame über 20 ms; das 60-FPS-Ziel wird unter diesen dokumentierten Bedingungen erfüllt. Windows: 645 Draw Calls / 79.840 Primitive. Chrome: 256 Draw Calls / 28136 Primitive, 0 Frames über 20 ms und 0 über 33,334 ms. Das Szenenbudget von unter 800 Draw Calls / 100.000 Primitiven bleibt eingehalten.
+**1080p-Taktungsgrenze:** Mit unverändertem Standard-VSync erreicht das Fenster im Mittel etwa 60 FPS, zeigt aber deutlich ungleichmäßigere Frameabstände als 1440p und Chrome. Ein gleichmäßiger 16,7-ms-Takt ist damit für diese Fensterkonfiguration nicht belegt. Derselbe Export ohne VSync und mit explizitem 144-FPS-Diagnoselimit erreicht 144,01 FPS bei p99 7,299 ms. Das spricht für einen Einfluss der Fenster-/Displaysynchronisation; es beweist keine alleinige Ursache. Keine VSync-Projekteinstellung wurde geändert und die Diagnose ersetzt den normalen Nachweis nicht. [Diagnoserohdaten](evidence/p2b/windows-1080-vsync-diagnostic/metrics.json), [Laufprotokoll](evidence/p2b/windows-1080-vsync-diagnostic/render.txt). Diese Grenze bleibt bei der persönlichen Windows-Abnahme zu prüfen.
 
-Browserkennung des finalen Laufs: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36`. Tatsächlicher Canvas: 2560×1305; der Spielviewport ist oben separat angegeben. Der Webadapter meldet nur `WebKit WebGL`. Lokaler HTTP-Transfer mit deaktiviertem HTTP-Cache; Startzeiten enthalten Initialisierung einschließlich Panoramaberechnung, aber keinen behaupteten kalten Treiber-/Dateicache. Keine Aussage über Internetladezeiten oder beliebige Hardware. Einzelne Ressourcengrößen und Transferzeiten stehen vollständig in den Browser-Rohdaten.
+Erstes tatsächlich gerendertes Bild ab Engine-Start: Windows 1080p 2,258 s, 1440p 2,354 s. Chrome ab Navigation 3,094 s; gesamte Browserprüfung einschließlich Aufwärmen, PNG-Übertragung und Messung 49,66 s. Lokaler HTTP-Transfer: WASM 39.515.054 Bytes in 97,5 ms, PCK 9.227.956 Bytes in 18,4 ms. Das sind Loopback-Ladebeobachtungen dieses Rechners, keine Internetladezeit oder Mindesthardwarezusage.
 
 ### Versionierte Belege
 
-[Quellmanifest](evidence/p2b/source-manifest.json): SHA-256 über UTF-8 mit LF für Laufzeit-/Prüfquellen sowie Binärhashes der erzeugten Releaseartefakte. Die folgenden finalen Bildordner und Rohdaten gehören zu diesem Quellstand. PNG-Pixelmaße wurden aus den Bildheadern gegen die Berichte geprüft; keine nachbearbeiteten Mockups oder Ersatzrenderer.
+[Quellmanifest](evidence/p2b/source-manifest.json): SHA-256 über UTF-8/LF für Laufzeit-/Prüfquellen, Binärhashes für Assets, Releaseartefakte und finale PNGs. Die frühen Iterationsbilder sind ausdrücklich Zwischenstände; die drei folgenden finalen Bildordner gehören zum manifestierten Quellstand. PNG-Größen werden aus den Bildheadern kontrolliert; keine nachbearbeiteten Ersatzbilder.
 
-Rohdaten: [Windows 1080p](evidence/p2b/windows-1080/metrics.json), [Windows 1440p](evidence/p2b/windows-1440/metrics.json), [Desktop-Chrome](evidence/p2b/web-chrome/metrics.json). Native Laufprotokolle: [1080p](evidence/p2b/windows-1080/render.txt), [1440p](evidence/p2b/windows-1440/render.txt).
+Rohdaten: [Windows 1080p](evidence/p2b/windows-1080/metrics.json), [Windows 1440p](evidence/p2b/windows-1440/metrics.json), [Chrome](evidence/p2b/web-chrome/metrics.json). Native Laufprotokolle: [1080p](evidence/p2b/windows-1080/render.txt), [1440p](evidence/p2b/windows-1440/render.txt).
 
 | Zustand | Windows 1080p | Windows 1440p | Desktop-Chrome |
 | --- | --- | --- | --- |
@@ -86,12 +89,12 @@ Rohdaten: [Windows 1080p](evidence/p2b/windows-1080/metrics.json), [Windows 1440
 | Ergebnis | [PNG](evidence/p2b/windows-1080/result.png) | [PNG](evidence/p2b/windows-1440/result.png) | [PNG](evidence/p2b/web-chrome/result.png) |
 | Entwickleransicht | [PNG](evidence/p2b/windows-1080/debug.png) | [PNG](evidence/p2b/windows-1440/debug.png) | [PNG](evidence/p2b/web-chrome/debug.png) |
 
-Die Bildprüfung umfasst Kappensilhouette, Randabstand/Integration der Hauptzeichen, schmale und lange Formate, beide Entscheidungen, Besuchs-/Erreichbarkeitspriorität, Fehler, Ergebnis, F3 sowie Himmel-/Timer-Hierarchie. Web zeigt erwartungsgemäß einfachere Beleuchtung; Pflichtzeichen und Route bleiben erhalten. Die Bilder zeigen keine Rückkehr der weißen P1b-Callouts.
+Die Sichtprüfung umfasst alle acht Zustände: Kappenform, Standard-/schmale/lange Legenden, Alternativen vor beiden Entscheidungen, besuchten Rückweg, Hub, Fehler, Ergebnis/F3 und Himmel-/Timer-Hierarchie. Die reduzierte Webbeleuchtung bleibt bewusst einfacher. Referenznahe Qualitätsmerkmale wurden umgesetzt; die eigene Sichtprüfung ist keine ästhetische Freigabe durch den Nutzer.
 
-## Offene Nutzerabnahme
+## Offene Abnahmegates
 
-**Die erneute subjektive Nutzerabnahme von Look, Figur, Animation, Lesbarkeit und Spielgefühl sowie ein persönlich gespielter vollständiger Windows-Lauf im überarbeiteten Slice bleiben offen.** Synthetische Vollroutenläufe ersetzen diesen Schritt nicht. PR #18 bleibt Draft und wird nicht automatisch gemergt. Die ältere physische P1b-Chrome-Eingabeabnahme bleibt separat offen. Mindesthardware bleibt mangels realer schwächerer Testmaschine unbestimmt.
+**Subjektive Nutzerabnahme von Look, Figur, Animation, Lesbarkeit und Spielgefühl sowie ein persönlich gespielter vollständiger Windows-Lauf bleiben ausdrücklich offen.** Synthetische Vollrouten ersetzen beides nicht. PR #18 bleibt Draft, kein automatischer Merge. Die ältere physische P1b-Chrome-Eingabeabnahme bleibt separat offen. Ohne reale schwächere Testmaschine bleibt die Mindesthardware unbestimmt.
 
-Nächster Schritt: `build/windows/parkey.exe` normal ohne Prüfargument starten, beide Entscheidungen und Rückweg, Press/Halten/Loslassen, Fehler, Timer und F3 betrachten und einen vollständigen Lauf subjektiv abnehmen. Reproduktion der technischen Nachweise: [development.md](development.md#p2b-grafikprüfung-reproduzieren).
+Nächster klar begrenzter Schritt: `build/windows/parkey.exe` ohne Prüfargument starten, beide Entscheidungen/Rückweg, Press/Halten/Loslassen, Fehler, Timer/F3 und einen vollständigen Lauf persönlich prüfen. Technische Reproduktion: [development.md](development.md#p2b-grafikprüfung-reproduzieren).
 
-Technische Primärquellen, geprüft 2026-09-06; tatsächliche Ausführung mit der gepinnten lokalen Engine: [Label3D](https://docs.godotengine.org/en/4.4/classes/class_label3d.html), [SurfaceTool](https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/surfacetool.html). Kein Engine-Upgrade.
+Technische Primärquellen, geprüft 2026-09-06; ausgeführt mit der lokal gepinnten Engine: [SurfaceTool](https://docs.godotengine.org/en/stable/classes/class_surfacetool.html), [Environment](https://docs.godotengine.org/en/stable/classes/class_environment.html), [Sky-Shader](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/sky_shader.html). Tatsächliche Profil-/Laufbelege haben Vorrang vor allgemeinen Enginebeschreibungen.

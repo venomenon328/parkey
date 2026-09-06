@@ -5,55 +5,65 @@
       2560,
       1305
     ],
-    "navigation_to_complete_ms": 51506.5,
+    "navigation_to_complete_ms": 49658.700000003,
     "resources": [
       {
-        "duration_ms": 29.2000000029802,
+        "duration_ms": 28.6999999955297,
         "name": "index.png",
         "transfer_bytes": 21743
       },
       {
-        "duration_ms": 29.5999999977648,
+        "duration_ms": 29.1000000014901,
         "name": "index.js",
         "transfer_bytes": 280115
       },
       {
-        "duration_ms": 119,
+        "duration_ms": 97.5,
         "name": "index.wasm",
         "transfer_bytes": 39515054
       },
       {
-        "duration_ms": 5.40000000223517,
+        "duration_ms": 18.3999999985099,
         "name": "index.pck",
-        "transfer_bytes": 670828
+        "transfer_bytes": 9227956
       },
       {
-        "duration_ms": 3.09999999776483,
+        "duration_ms": 3,
         "name": "index.icon.png",
         "transfer_bytes": 6000
       },
       {
-        "duration_ms": 2.90000000223517,
+        "duration_ms": 3.19999999552965,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 16.8000000007451,
+        "duration_ms": 29.5,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 14.6999999992549,
+        "duration_ms": 10.8999999985099,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 10.8000000007451,
+        "duration_ms": 10.2999999970198,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 8.69999999925494,
+        "duration_ms": 8.30000000447035,
+        "name": "__evidence",
+        "transfer_bytes": 302
+      },
+      {
+        "duration_ms": 12.0999999940395,
+        "name": "__evidence",
+        "transfer_bytes": 302
+      },
+      {
+        "duration_ms": 10.1000000014901,
         "name": "__evidence",
         "transfer_bytes": 302
       },
@@ -63,52 +73,42 @@
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 8,
+        "duration_ms": 7.69999999552965,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 10.3999999985099,
+        "duration_ms": 9.60000000149012,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 8.69999999925494,
+        "duration_ms": 7.5,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 28.5,
+        "duration_ms": 10.6000000014901,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 4.80000000074506,
+        "duration_ms": 8.5,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 10.6999999992549,
+        "duration_ms": 10.7999999970198,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 5.89999999850988,
+        "duration_ms": 8.79999999701977,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 10.3000000007451,
-        "name": "__evidence",
-        "transfer_bytes": 302
-      },
-      {
-        "duration_ms": 8.30000000074506,
-        "name": "__evidence",
-        "transfer_bytes": 302
-      },
-      {
-        "duration_ms": 9.10000000149012,
+        "duration_ms": 9,
         "name": "__evidence",
         "transfer_bytes": 302
       },
@@ -120,21 +120,22 @@
     ],
     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"
   },
-  "draw_calls": 256,
+  "draw_calls": 200,
   "engine": "4.7.2-stable (official)",
-  "frames_over_20_ms": 0,
+  "frames_over_20_ms": 1,
   "frames_over_33_ms": 0,
+  "frames_without_focus": 0,
   "kind": "complete",
-  "max_ms": 18.9,
-  "mean_fps": 59.9505562422733,
+  "max_ms": 20.2,
+  "mean_fps": 59.9509267671606,
   "p50_ms": 16.7,
   "p95_ms": 16.9,
   "p99_ms": 17,
-  "primitives": 28136,
+  "primitives": 126710,
   "renderer": "gl_compatibility",
   "runs": [
     {
-      "duration_usec": 2835800,
+      "duration_usec": 2835700,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -142,7 +143,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3169800,
+      "duration_usec": 3169500,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -150,7 +151,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3335900,
+      "duration_usec": 3336000,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -158,7 +159,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3669700,
+      "duration_usec": 3669800,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -167,16 +168,19 @@
     }
   ],
   "sample_frames": 1940,
-  "sample_seconds": 32.3600000000006,
+  "sample_seconds": 32.3598000000006,
   "viewport": "2320x1305",
   "first_frame": {
     "adapter": "WebKit WebGL",
-    "engine_ticks_ms": 4546,
+    "engine_ticks_ms": 2864,
     "kind": "first_frame",
-    "navigation_to_frame_ms": 4795.09999999776,
+    "navigation_to_frame_ms": 3093.60000000149,
     "renderer": "gl_compatibility",
+    "screen_index": 0,
     "screen_refresh_hz": -1,
-    "viewport": "2320x1305"
+    "viewport": "2320x1305",
+    "vsync_mode": 1,
+    "window_position": "(0, 0)"
   },
   "screenshots": 8
 }

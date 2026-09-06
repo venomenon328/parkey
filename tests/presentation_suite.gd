@@ -19,7 +19,7 @@ static func run(harness) -> void:
 	harness._assert_equal(scene.course_identity_after_render, REFERENCE_ID, "Instantiated presentation preserves canonical layout and rules.")
 	harness._assert_equal(scene.transition_root.get_child_count(), scene.course.transitions.size(), "Only explicit P2a transitions receive a visible connector.")
 	var quality := ProfileScript.quality_enabled()
-	harness._assert_equal(scene.get_viewport().msaa_3d, Viewport.MSAA_2X if quality else Viewport.MSAA_DISABLED, "The actual viewport uses the selected MSAA budget.")
+	harness._assert_equal(scene.get_viewport().msaa_3d, Viewport.MSAA_4X if quality else Viewport.MSAA_DISABLED, "The actual viewport uses the selected MSAA budget.")
 	harness._assert_equal(scene.get_node("KeyLight").shadow_enabled, quality, "The actual key light respects the profile's shadow budget.")
 	harness._assert_false(scene.get_node("FillLight").shadow_enabled, "The fill light never adds a second shadow pass.")
 	for field_id in scene.field_nodes:
@@ -32,9 +32,11 @@ static func run(harness) -> void:
 		harness._assert_true(is_equal_approx(cap.rotation_degrees.y, -float(layout.rotation_deg)), "Field %s keeps its canonical rotation." % field_id)
 		harness._assert_equal(cap.get_node("Letter").text, scene.course.field_by_id(field_id).letter, "Field %s keeps its required surface letter." % field_id)
 		harness._assert_true(cap.get_node("Letter").position.y > cap.get_node("StateSurface").position.y, "The integrated %s legend clears the cap surface." % field_id)
+		harness._assert_equal(cap.get_node_or_null("StateMarker"), null, "Field %s has no normal-view status symbols." % field_id)
+		harness._assert_true(cap.get_node("Letter").font.resource_path == "res://assets/fonts/Barlow-Medium.ttf", "Required legend %s uses the versioned font resource." % field_id)
 		var letter: Label3D = cap.get_node("Letter")
 		var bounds := letter.get_aabb()
-		var half := Vector2(float(layout.size[0]), float(layout.size[1])) * 0.5 - Vector2.ONE * (KeycapVisual.TOP_INSET + 0.09)
+		var half := Vector2(float(layout.size[0]), float(layout.size[1])) * 0.5 - Vector2.ONE * KeycapVisual.TOP_INSET
 		var contained := bounds.size.x > 0.0 and bounds.size.y > 0.0
 		for corner in 8:
 			var point := letter.transform * bounds.get_endpoint(corner)
@@ -53,8 +55,6 @@ static func run(harness) -> void:
 	harness._assert_false(scene.workshop_hud.debug_enabled, "F3 closes diagnostics even with the test text field focused.")
 	harness._assert_false(scene.input_test.has_focus(), "Hiding debug releases text focus so gameplay remains reachable.")
 	harness._assert_equal(scene.session.state, RunSession.State.READY, "Debug toggles never start a run.")
-	var start_symbols: Node3D = scene.field_nodes.start.get_node("StateMarker")
-	harness._assert_true(start_symbols.get_node("CurrentDot").visible and start_symbols.get_node("VisitedCheck").visible, "Current/visited signals are instantiated geometry independent of font fallback.")
 	var start_cap: KeycapVisual = scene.field_nodes.start
 	var next_cap: KeycapVisual = scene.field_nodes.approach_a
 	harness._assert_true(is_equal_approx(start_cap.press_offset, -KeycapVisual.PRESS_DEPTH), "Occupied start is held down in readiness.")
@@ -63,9 +63,8 @@ static func run(harness) -> void:
 	_key(scene, KEY_A, "A")
 	harness._assert_equal(scene.session.current_field_id, "approach_a", "A valid step is immediate before any press animation frame.")
 	harness._assert_true(next_cap.pressed and not start_cap.pressed, "The new current cap takes over depression without a queue.")
-	harness._assert_true(start_symbols.get_node("VisitedCheck").visible, "Visited return retains its geometric check.")
-	harness._assert_false(start_symbols.get_node("ReachableDiamond").visible, "Visited return never regains a reachable diamond.")
-	harness._assert_false(start_symbols.get_node("CurrentDot").visible, "Only the actual current cap displays the geometric dot.")
+	harness._assert_false(start_cap.get_node("Selection").visible, "Visited return suppresses the reachable border.")
+	harness._assert_equal(start_cap.get_node_or_null("StateMarker"), null, "Returning never recreates a status symbol.")
 	scene._process(0.05)
 	harness._assert_true(is_equal_approx(next_cap.press_offset, -KeycapVisual.PRESS_DEPTH), "Press reaches its endpoint within the visual budget.")
 	harness._assert_true(is_zero_approx(start_cap.press_offset), "The previous cap returns to rest.")
@@ -96,16 +95,38 @@ static func run(harness) -> void:
 	harness._assert_equal(scene.session.error_count, 0, "Presentation adds no false errors to high-frequency input.")
 	harness._assert_true(scene.visual_waypoints.size() <= SceneScript.MAX_VISUAL_WAYPOINTS, "Animation backlog stays bounded.")
 	_key(scene, KEY_BACKSPACE)
+	_assert_camera_framing(scene, harness)
 	var direct := RunSession.new(scene.course)
 	for letter in HandcraftedCourse.UPPER_ROUTE:
 		clock.current_usec += 1000
 		_key(scene, letter.unicode_at(0), letter)
 		direct.process_action({"action": "letter", "letter": letter}, clock.current_usec)
 	harness._assert_equal(scene.session.last_result, direct.last_result, "Rendered scene and direct kernel produce exactly the same result for identical timestamps.")
+	harness._assert_true(scene.timer_label.get_theme_font("font").resource_path == "res://assets/fonts/BarlowSemiCondensed-SemiBold.ttf", "The prominent timer uses its explicit licensed font.")
+	harness._assert_false(scene.result_label.text.contains(" us") or scene.leaderboard_label.text.contains(" us"), "Standard result and leaderboard hide raw microseconds.")
+	harness._assert_false(scene.workshop_hud.result_debug.visible, "Exact result audit is hidden outside F3.")
 	harness._assert_false(scene.leaderboard_label.text.contains("Routenmessung"), "Technical section measurements stay out of the normal result card.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/LeftArm/Hand"), "Figure has connected arms and hands.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/RightLeg/Shoe"), "Figure has legs and shoes.")
 	harness._assert_equal(scene.get_node_or_null("PlayerFigure/HeadPivot/HeadIndicator"), null, "The protruding head box is removed.")
+	# A full actual result card must fit, including a new-best line and ten rows.
+	var crowded := scene.session.last_result.duplicate(true)
+	for index in 11:
+		var item := crowded.duplicate(true)
+		item["run_id"] = "presentation-board-%02d" % index
+		item["duration_usec"] = 60000123 + index * 1001
+		scene.result_store.offer_result(item)
+	crowded["run_id"] = "presentation-board-00"
+	crowded["duration_usec"] = 60000123
+	scene._show_result(crowded, {"rank": 1, "best_kind": "improved"})
+	await harness.process_frame
+	harness._assert_equal(scene.workshop_hud.result_rows.get_child_count(), 10, "The real result table renders the full Top 10.")
+	harness._assert_true(scene.get_viewport().get_visible_rect().encloses(scene.result_panel.get_global_rect()), "Ten results and new-best feedback fit inside the viewport.")
+	for row in scene.workshop_hud.result_rows.get_children():
+		for label in row.get_children():
+			harness._assert_false(label.text.contains(" us") or label.text.contains("µs"), "Every rendered table cell hides raw microseconds.")
+	scene._show_result(crowded, {"rank": 101, "retained": false})
+	harness._assert_not_null(scene.workshop_hud.result_rows.get_node_or_null("RetentionNote"), "An unretained result keeps its visible Top-100 explanation.")
 	for method in ["forward_plus", "gl_compatibility"]:
 		var config := ProfileScript.settings_for_method(method)
 		var parent := Node3D.new()
@@ -118,8 +139,8 @@ static func run(harness) -> void:
 		harness._assert_equal(environment.environment.ssao_enabled, method == "forward_plus", "Actual %s environment respects the bounded SSAO profile." % method)
 		harness._assert_false(environment.environment.glow_enabled, "No profile needs bloom for required signals.")
 		harness._assert_equal(environment.environment.fog_sky_affect, 0.0, "Distance fog must not replace the cloud panorama with a flat background.")
-		var sky_material := environment.environment.sky.sky_material as PanoramaSkyMaterial
-		harness._assert_not_null(sky_material.panorama, "Both profiles receive the baked cloud panorama.")
+		var sky_material := environment.environment.sky.sky_material as ShaderMaterial
+		harness._assert_not_null(sky_material.get_shader_parameter("panorama"), "Both profiles receive the baked cloud panorama.")
 		harness._assert_not_null(parent.get_node_or_null("Workshop"), "Both profiles instantiate the same workshop environment.")
 		parent.queue_free()
 	scene.queue_free()
@@ -151,3 +172,22 @@ static func _outward_sides(mesh: Mesh) -> bool:
 		if normal.dot(Vector3(center.x, 0, center.z)) <= 0.0 or normal.dot(normals[index]) <= 0.0:
 			return false
 	return checked > 0
+
+
+static func _assert_camera_framing(scene: PlayableCourseScene, harness) -> void:
+	# Test every canonical camera pose, including both decisions and return options.
+	# Actual glyph corners, not just anchors being in front of the camera.
+	var safe := scene.get_viewport().get_visible_rect().grow(-8.0)
+	for field_id in scene.field_nodes:
+		scene._initialize_camera(scene.camera_target_for_field(field_id), scene.camera_focus_for_field(field_id))
+		var required: Array = scene.course.neighbor_ids(field_id).duplicate()
+		required.append(field_id)
+		for neighbor in required:
+			var letter: Label3D = scene.field_nodes[neighbor].get_node("Letter")
+			var bounds := letter.get_aabb()
+			var inside := true
+			for corner in 8:
+				var point := letter.global_transform * bounds.get_endpoint(corner)
+				inside = inside and not scene.camera.is_position_behind(point) and safe.has_point(scene.camera.unproject_position(point))
+			harness._assert_true(inside, "Camera at %s retains the complete required %s glyph." % [field_id, neighbor])
+	scene._snap_presentation_to_logical(true)

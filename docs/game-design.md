@@ -52,7 +52,7 @@ Nach D-019 sind Standard, bereits besucht, aktuell und erreichbar visuell unters
 
 Für P1b wird der Status aus logischen Schritten geführt. Das besetzte Startfeld gehört bereits dazu; nach Quick Restart ist nur dieser neue Ausgangszustand markiert. Ungültige, während der Sperre verworfene oder in der UI verwendete Eingaben markieren keine neuen Felder. Besuchsstatus ist lokaler Darstellungszustand und verändert weder Graph noch Streckenidentität.
 
-Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie. Ein unbesuchtes erreichbares Feld darf dazu heller/Rand-markiert sein; bei bereits besuchten Feldern werden diese Erreichbarkeitssignale unterdrückt.
+Die große P2b-Nacharbeit aus #6 entfernt zusätzliche Statussymbole aus der normalen Spieleransicht. Gut sichtbare Material-/Farbunterschiede vermitteln besucht und erreichbar, Hub und Figurposition zusätzlich das aktuelle Feld. Ein unbesuchtes erreichbares Feld darf heller bzw. subtil randbetont sein; bei bereits besuchten Feldern werden diese Erreichbarkeitssignale unterdrückt. Präsentation erläutert die vorhandene Erreichbarkeit und legitimiert keine widersprüchliche Streckengeometrie.
 
 Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken. P2a bindet den kontrastreichen Hauptbuchstaben direkt an die Keycap und dreht ihn im übernommenen Handkurs gegenüber P1b um 90° im Uhrzeigersinn; die großen weißen schwebenden P1b-Callouts sind entfernt. Für spätere frei gedrehte Tiles gilt daraus keine starre Rotation: Tile-Ausrichtung und Kamera sind gemeinsam zu prüfen. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben.
 
@@ -90,10 +90,12 @@ Räumliche Gestaltung beeinflusst Lesen und Routenwahl und ist keine pauschale K
 
 ## P2b-Gestaltungsvertrag
 
-Das bestätigte Nutzerbriefing D-025–D-028 konkretisiert Figur, Keycaps, Beispielwelt, HUD und Leistungsziel in [p2b-visual-slice.md](p2b-visual-slice.md). Es ersetzt den bisherigen offenen PoC-Look: gegliederter Mensch mit Idle/Bewegung/Fehlerreaktion, integrierte Keycap-Legenden und Drücken/Halten/Loslassen ohne Gameplay-Verzögerung. P2a-Geometrie, Kamera und Besuchsstatus-Priorität bleiben verbindlich. Technische Diagnosen sind ausschließlich Entwickleransicht; Ergebnisdaten einschließlich exakter Zeiten bleiben zugänglich.
+Das bestätigte Nutzerbriefing D-025–D-028 konkretisiert Figur, Keycaps, Beispielwelt, HUD und Leistungsziel in [p2b-visual-slice.md](p2b-visual-slice.md). Es ersetzt den bisherigen offenen PoC-Look: gegliederter Mensch mit Idle/Bewegung/Fehlerreaktion, integrierte Keycap-Legenden und Drücken/Halten/Loslassen ohne Gameplay-Verzögerung. P2a-Geometrie und Besuchsstatus-Priorität bleiben verbindlich; #6 erlaubt Präsentations-Kameratuning unter den obigen Lesbarkeitsbedingungen. Technische Diagnosen und exakte Mikrosekunden sind ausschließlich Entwickleransicht; normales Ergebnis und Top 10 verwenden `MM:SS.mmm`. Legenden und Timer erhalten explizite versionierte Schriftressourcen.
 
 Die visuelle Nacharbeit zu #6 konkretisiert die Formensprache: geschlossene verjüngte Kappen mit weicher Schulter und flacher Mulde, dunkle beleuchtete Legenden innerhalb der nutzbaren Topfläche, helles Wolkenpanorama und zentraler kräftiger Timer mit Stoppuhr. Die vorhandene Werkstatt bleibt die einzige Beispielwelt. Der Mock legt kein bestimmtes Holzmaterial fest; die erneute subjektive Nutzerabnahme bleibt offen.
 
 ## Bewusst später
 
 Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum ersten PoC. Eine fertige Pausemenü-/Übungsfortsetzungsoberfläche ist kein versteckter Pflichtumfang von P1a/P1b.
+
+Die seitlichen Werkstattstationen stehen auf einem zusammenhängenden texturierten Kulissenboden unterhalb der kanonischen Strecke. Keine frei schwebenden Start-/Zieltexte und kein zusätzlicher Boden-Schriftzug; das eigentliche Zielportal bleibt beschriftet. Der Kulissenboden erzeugt keine begehbaren Felder oder Verbindungen.

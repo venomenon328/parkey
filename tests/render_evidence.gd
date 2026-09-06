@@ -9,6 +9,7 @@ var measuring := false
 var last_tick := 0
 var started := 0
 var skip_frames := 0
+var frames_without_focus := 0
 var output_directory := "user://parkey-test-results/render-evidence"
 
 
@@ -29,6 +30,8 @@ func _process(_delta: float) -> void:
 	var tick := Time.get_ticks_usec()
 	if measuring and last_tick > 0 and skip_frames <= 0:
 		frames_ms.append(float(tick - last_tick) / 1000.0)
+		if not get_window().has_focus():
+			frames_without_focus += 1
 	skip_frames = maxi(0, skip_frames - 1)
 	last_tick = tick
 
@@ -36,6 +39,12 @@ func _process(_delta: float) -> void:
 func _run() -> void:
 	# Set physical client pixels after startup DPI negotiation, then verify the texture.
 	if not OS.has_feature("web"):
+		get_window().current_screen = DisplayServer.get_primary_screen()
+		for screen_index in DisplayServer.get_screen_count():
+			if DisplayServer.screen_get_refresh_rate(screen_index) > DisplayServer.screen_get_refresh_rate(get_window().current_screen):
+				get_window().current_screen = screen_index
+		get_window().position = DisplayServer.screen_get_position(get_window().current_screen)
+		get_window().grab_focus()
 		for argument in OS.get_cmdline_user_args():
 			if argument.begins_with("--evidence-size="):
 				var dimensions := argument.trim_prefix("--evidence-size=").split("x")
@@ -43,7 +52,7 @@ func _run() -> void:
 					get_window().size = Vector2i(int(dimensions[0]), int(dimensions[1]))
 		await get_tree().process_frame
 	await RenderingServer.frame_post_draw
-	_emit({"kind": "first_frame", "engine_ticks_ms": Time.get_ticks_msec(), "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "adapter": RenderingServer.get_video_adapter_name(), "screen_refresh_hz": DisplayServer.screen_get_refresh_rate() if not OS.has_feature("web") else -1.0})
+	_emit({"kind": "first_frame", "engine_ticks_ms": Time.get_ticks_msec(), "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "adapter": RenderingServer.get_video_adapter_name(), "screen_refresh_hz": DisplayServer.screen_get_refresh_rate(get_window().current_screen) if not OS.has_feature("web") else -1.0, "screen_index": get_window().current_screen, "window_position": str(get_window().position), "vsync_mode": DisplayServer.window_get_vsync_mode()})
 	await get_tree().create_timer(3.0).timeout
 	await _capture("ready")
 	await _letters("AZK", 0.24)
@@ -93,7 +102,7 @@ func _run() -> void:
 			over_20 += 1
 		if frame > 33.334:
 			over_33 += 1
-	var report := {"kind": "complete", "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "engine": Engine.get_version_info().string, "adapter": RenderingServer.get_video_adapter_name(), "sample_frames": frames_ms.size(), "sample_seconds": total / 1000.0, "mean_fps": frames_ms.size() * 1000.0 / total, "p50_ms": _percentile(0.5), "p95_ms": _percentile(0.95), "p99_ms": _percentile(0.99), "max_ms": frames_ms[-1], "frames_over_20_ms": over_20, "frames_over_33_ms": over_33, "draw_calls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), "primitives": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME), "runs": reports}
+	var report := {"kind": "complete", "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "engine": Engine.get_version_info().string, "adapter": RenderingServer.get_video_adapter_name(), "frames_without_focus": frames_without_focus, "sample_frames": frames_ms.size(), "sample_seconds": total / 1000.0, "mean_fps": frames_ms.size() * 1000.0 / total, "p50_ms": _percentile(0.5), "p95_ms": _percentile(0.95), "p99_ms": _percentile(0.99), "max_ms": frames_ms[-1], "frames_over_20_ms": over_20, "frames_over_33_ms": over_33, "draw_calls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), "primitives": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME), "runs": reports}
 	var file := FileAccess.open(output_directory.path_join("metrics.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(report, "\t"))
 	file.close()

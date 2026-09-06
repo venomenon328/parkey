@@ -58,4 +58,4 @@ P2a ist vollständig abgenommen und über PR #15 nach `main` gemergt (`a12cb8f14
 
 ## Nachfolgender P2b-Slice
 
-[P2b](p2b-visual-slice.md) behält diesen Kurs samt Identität, Kamera und Statuspriorität bei. Die flüchtige Abschnittsmessung erscheint dort nach gültigem Abschluss ausschließlich in der F3-Entwickleransicht; sie bleibt dem jeweiligen Versuch zugeordnet. Die P2a-Hypothesen und historischen menschlichen Zeiten werden dadurch nicht neu bewertet.
+[P2b](p2b-visual-slice.md) behält diesen Kurs samt Identität und Statuspriorität bei. Die neueste #6-Entscheidung erlaubt präsentationsseitiges Kamera-/Kompositionstuning unter den bestehenden Lesbarkeitsbedingungen; die Mittelpunkte der Entscheidungsvorschau bleiben erhalten. Die flüchtige Abschnittsmessung erscheint dort nach gültigem Abschluss ausschließlich in der F3-Entwickleransicht; sie bleibt dem jeweiligen Versuch zugeordnet. Die P2a-Hypothesen und historischen menschlichen Zeiten werden dadurch nicht neu bewertet.
