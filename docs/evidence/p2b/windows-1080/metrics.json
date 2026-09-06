@@ -1,20 +1,20 @@
 {
   "adapter": "NVIDIA GeForce RTX 3070",
-  "draw_calls": 675.0,
+  "draw_calls": 645.0,
   "engine": "4.7.2-stable (official)",
   "frames_over_20_ms": 0,
   "frames_over_33_ms": 0,
   "kind": "complete",
-  "max_ms": 16.7,
-  "mean_fps": 143.881776025336,
-  "p50_ms": 6.939,
-  "p95_ms": 8.166,
-  "p99_ms": 8.401,
-  "primitives": 74730.0,
+  "max_ms": 18.218,
+  "mean_fps": 143.967827031452,
+  "p50_ms": 6.914,
+  "p95_ms": 8.188,
+  "p99_ms": 8.437,
+  "primitives": 79840.0,
   "renderer": "forward_plus",
   "runs": [
     {
-      "duration_usec": 2800936,
+      "duration_usec": 2819418,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -22,7 +22,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3169492,
+      "duration_usec": 3166073,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -30,7 +30,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3335946,
+      "duration_usec": 3333761,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -38,7 +38,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3669658,
+      "duration_usec": 3666965,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -46,14 +46,16 @@
       "state": 6
     }
   ],
-  "sample_frames": 4644,
-  "sample_seconds": 32.2764990000001,
+  "sample_frames": 4648,
+  "sample_seconds": 32.284991,
   "viewport": "1920x1080",
   "first_frame": {
     "adapter": "NVIDIA GeForce RTX 3070",
-    "engine_ticks_ms": 1720,
+    "engine_ticks_ms": 1938,
     "kind": "first_frame",
     "renderer": "forward_plus",
+    "screen_refresh_hz": 143.973007202148,
     "viewport": "1920x1080"
-  }
+  },
+  "screenshots": 8
 }

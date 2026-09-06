@@ -1,6 +1,6 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0, P1 und P2a / #5 sind vollständig abgenommen und nach `main` gemergt. P2b / #6 ist im Draft umgesetzt; subjektive Nutzerabnahme offen.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [P1c-Ergebnisspeicher](p1c-local-results.md), [P2a-Routenentscheidungen](p2a-route-decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
+Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0, P1 und P2a / #5 sind vollständig abgenommen und nach `main` gemergt. P2b / #6 ist im Draft visuell nachgearbeitet; erneute Nutzerabnahme offen.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [P1c-Ergebnisspeicher](p1c-local-results.md), [P2a-Routenentscheidungen](p2a-route-decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
@@ -11,7 +11,7 @@ Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0,
 | P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | Abgenommen, PR #13 gemergt | `codex/p1b-playable-course` |
 | P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | Abgenommen, PR #14 gemergt | `codex/p1c-local-leaderboards` |
 | P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | **Abgenommen, PR #15 gemergt** | `codex/p2a-route-decisions` |
-| P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | **Im Draft umgesetzt; Nutzerabnahme offen** | `codex/p2b-visual-slice` |
+| P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | **Im Draft visuell nachgearbeitet; erneute Nutzerabnahme offen** | `codex/p2b-visual-slice` |
 | P3a / [#7](https://github.com/venomenon328/parkey/issues/7) | Deterministischer validierter Generator | #5-Merge/Bausteinfreigabe erfüllt; parallel zu #6 möglich | `codex/p3a-seeded-generator` |
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` |
 | P4 / [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | #8 | `codex/p4-poc-acceptance` |
@@ -74,3 +74,5 @@ Die verbindliche Windows-Ablage für projektbezogene Tools ist `E:\Zeuch\Coding\
 ## P2b-Lieferstand
 
 Issue #6 hat Visualbriefing und Referenzbudget bestätigt (D-025–D-028). Der [P2b-Bericht](p2b-visual-slice.md) dokumentiert Umsetzung, reale Windows-/Web-Nachweise, Grenzen und offene subjektive Nutzerabnahme. Der bestehende 30-Feld-Kurs und seine Identität sind unverändert. P3a wird nicht mitimplementiert; #8 wartet weiterhin auf beide vorausgesetzten Abnahmen und Merges.
+
+Die verbindliche visuelle Nacharbeit aus #6 / PR #18 korrigiert Kappenform und Seitenflächen, passt die beleuchteten Legenden vollständig in die Topflächen ein und ergänzt Wolkenhimmel sowie einen mittigen kräftigen Timer. Aktualisierte technische und reale Rendernachweise stehen im [P2b-Bericht](p2b-visual-slice.md); die erneute subjektive Nutzerabnahme bleibt offen.

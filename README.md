@@ -22,7 +22,7 @@ Stand: 2026-09-06. P0 / Issue #1 ist implementiert und vollständig abgenommen: 
 
 Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
 
-**P2b / Issue #6 ist implementiert; subjektive Nutzerabnahme offen.** Die Tastatur-Werkstatt ergänzt plastische Keycaps mit rein visuellem Hub, eine animierte menschliche Figur und transparentes HUD mit F3-Diagnosen. P2a-Geometrie und Kernregeln bleiben erhalten. `presentation` 203, `integration` 233 und `all` 748 Assertions sowie beide Releaseexporte sind erfolgreich. Reale Windows-1080p-/1440p- und Desktop-Chrome-Läufe, Bilder, Leistungsdaten und Assetquellen stehen im [P2b-Bericht](docs/p2b-visual-slice.md). Der PR bleibt Draft.
+**P2b / Issue #6 ist visuell nachgearbeitet; erneute subjektive Nutzerabnahme offen.** Die Tastatur-Werkstatt zeigt geschlossene gerundete Keycaps mit formatgerecht eingepasster Druckschrift, rein visuellem Hub, animierter Figur, Wolkenhimmel und mittigem Stoppuhr-HUD mit F3-Diagnosen. P2a-Geometrie und Kernregeln bleiben erhalten. `presentation` 298, `integration` 233 und `all` 843 Assertions sowie beide Releaseexporte sind erfolgreich. Reale Windows-1080p-/1440p- und Desktop-Chrome-Läufe, Bilder, Leistungsdaten und Assetquellen stehen im [P2b-Bericht](docs/p2b-visual-slice.md). Der PR bleibt Draft.
 
 ## Dokumentation
 
@@ -45,7 +45,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-**P2b / Issue #6 visuell abnehmen.** Das bestätigte Briefing ist als Tastatur-Werkstatt mit gegliederter Figur, Keycap-Hub und neuem HUD/Debug-Modus umgesetzt. Technische Nachweise und offene Nutzerabnahme stehen im [P2b-Bericht](docs/p2b-visual-slice.md). P3-Inhalte sind nicht vorgezogen; kein automatischer Merge.
+**P2b / Issue #6 nach der visuellen Nacharbeit erneut abnehmen.** Das bestätigte Briefing ist als Tastatur-Werkstatt mit gegliederter Figur, Keycap-Hub und neuem HUD/Debug-Modus umgesetzt. Technische Nachweise und offene Nutzerabnahme stehen im [P2b-Bericht](docs/p2b-visual-slice.md). P3-Inhalte sind nicht vorgezogen; kein automatischer Merge.
 
 
 ## Zusammenarbeit

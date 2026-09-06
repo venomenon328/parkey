@@ -2,31 +2,32 @@ class_name WorkshopWorld
 extends RefCounted
 
 const KeycapVisualScript = preload("res://scripts/presentation/keycap_visual.gd")
+static var _sky_panorama: ImageTexture
 
 
 static func build(parent: Node3D, world_environment: WorldEnvironment, floor_node: MeshInstance3D, quality: bool) -> void:
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
-	var sky_material := ProceduralSkyMaterial.new()
-	sky_material.sky_top_color = Color("173238")
-	sky_material.sky_horizon_color = Color("789991")
-	sky_material.ground_horizon_color = Color("789991")
-	sky_material.ground_bottom_color = Color("29494b")
-	sky_material.sky_energy_multiplier = 0.65
+	var sky_material := PanoramaSkyMaterial.new()
+	if _sky_panorama == null:
+		_sky_panorama = _create_sky_panorama()
+	sky_material.panorama = _sky_panorama
+	sky.radiance_size = Sky.RADIANCE_SIZE_256
 	sky.sky_material = sky_material
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color("c3d8d3")
-	environment.ambient_light_energy = 0.62
+	environment.ambient_light_color = Color("dce3e0")
+	environment.ambient_light_energy = 0.48
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC if quality else Environment.TONE_MAPPER_LINEAR
 	environment.ssao_enabled = quality
 	environment.ssao_radius = 0.5
 	environment.ssao_intensity = 0.65
 	environment.glow_enabled = false
 	environment.fog_enabled = true
-	environment.fog_light_color = Color("557a79")
-	environment.fog_density = 0.003
+	environment.fog_light_color = Color("c7d1c4")
+	environment.fog_density = 0.0015
+	environment.fog_sky_affect = 0.0
 	world_environment.environment = environment
 	var world := Node3D.new()
 	world.name = "Workshop"
@@ -37,6 +38,7 @@ static func build(parent: Node3D, world_environment: WorldEnvironment, floor_nod
 	floor_node.mesh = floor_mesh
 	floor_node.position = Vector3(20, -1.05, 6)
 	floor_node.material_override = _material("29494b", 0.95)
+	floor_node.visible = false
 	# Recessed workbench: below the course, never a same-height apparent route.
 	_box(world, "Workbench", Vector3(21, -0.58, 0), Vector3(52, 0.7, 17), _material("795941", 0.82), 0.18)
 	_box(world, "DeskMat", Vector3(21, -0.20, 0), Vector3(50, 0.06, 15.5), _material("233f43", 0.95), 0.12)
@@ -70,7 +72,9 @@ static func build(parent: Node3D, world_environment: WorldEnvironment, floor_nod
 	title.position = Vector3(17, -0.145, -6.9)
 	title.rotation_degrees = Vector3(-90, -90, 0)
 	title.font_size = 72
-	title.pixel_size = 0.013
+	title.pixel_size = 0.004
+	title.outline_size = 0
+	title.shaded = true
 	title.modulate = Color("bb9560")
 	world.add_child(title)
 	# Small mechanical still lifes, well outside the route's widest +/-3.7 bounds.
@@ -116,3 +120,31 @@ static func _material(hex: String, roughness: float, metallic: float = 0.0) -> S
 	material.roughness = roughness
 	material.metallic = metallic
 	return material
+
+
+static func _create_sky_panorama() -> ImageTexture:
+	# Bake our static cloud painting once, rather than evaluate noise per screen
+	# pixel every frame. Spherical sampling joins the longitude seam continuously.
+	var image := Image.create(1024, 512, false, Image.FORMAT_RGB8)
+	var noise := FastNoiseLite.new()
+	noise.seed = 26
+	noise.frequency = 1.0
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	noise.fractal_octaves = 5
+	for y in image.get_height():
+		var latitude := PI * (0.5 - float(y) / float(image.get_height() - 1))
+		for x in image.get_width():
+			var longitude := TAU * float(x) / float(image.get_width() - 1)
+			var direction := Vector3(cos(longitude) * cos(latitude), sin(latitude), sin(longitude) * cos(latitude))
+			# Painted horizon lifted into the existing downward-looking P2a camera.
+			var elevation := direction.y + 0.42
+			var color := Color("b9cbd3").lerp(Color("356d9b"), smoothstep(-0.12, 0.32, elevation))
+			var cloud := noise.get_noise_3dv(direction * Vector3(5, 9, 5) + Vector3(4, 1, 8)) * 0.5 + 0.5
+			var cover := smoothstep(0.51, 0.69, cloud) * smoothstep(-0.18, 0.12, elevation)
+			var cloud_color := Color("849db3").lerp(Color("f5e8d8"), smoothstep(0.54, 0.76, cloud))
+			color = color.lerp(cloud_color, cover * 0.95)
+			var bank := 1.0 - smoothstep(-0.45, -0.05, elevation)
+			color = color.lerp(Color("8badc1").lerp(Color("c9d8dc"), cloud), bank)
+			image.set_pixel(x, y, color)
+	image.generate_mipmaps()
+	return ImageTexture.create_from_image(image)

@@ -43,7 +43,7 @@ func _run() -> void:
 					get_window().size = Vector2i(int(dimensions[0]), int(dimensions[1]))
 		await get_tree().process_frame
 	await RenderingServer.frame_post_draw
-	_emit({"kind": "first_frame", "engine_ticks_ms": Time.get_ticks_msec(), "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "adapter": RenderingServer.get_video_adapter_name()})
+	_emit({"kind": "first_frame", "engine_ticks_ms": Time.get_ticks_msec(), "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "adapter": RenderingServer.get_video_adapter_name(), "screen_refresh_hz": DisplayServer.screen_get_refresh_rate() if not OS.has_feature("web") else -1.0})
 	await get_tree().create_timer(3.0).timeout
 	await _capture("ready")
 	await _letters("AZK", 0.24)
@@ -55,6 +55,11 @@ func _run() -> void:
 	await get_tree().create_timer(0.05).timeout
 	await _capture("error")
 	await get_tree().create_timer(0.3).timeout
+	_key(KEY_BACKSPACE)
+	await _letters("AZKFJKMVB", 0.16)
+	await _capture("beta")
+	await _letters("QW", 0.24)
+	await _capture("beta_long")
 	_key(KEY_BACKSPACE)
 	await get_tree().create_timer(0.3).timeout
 	# All four complete P2a combinations; frame timings include movement and result I/O.

@@ -5,112 +5,132 @@
       2560,
       1305
     ],
-    "navigation_to_complete_ms": 43938.5999999978,
+    "navigation_to_complete_ms": 51506.5,
     "resources": [
       {
-        "duration_ms": 26.3000000007451,
+        "duration_ms": 29.2000000029802,
         "name": "index.png",
         "transfer_bytes": 21743
       },
       {
-        "duration_ms": 26.8999999985099,
+        "duration_ms": 29.5999999977648,
         "name": "index.js",
         "transfer_bytes": 280115
       },
       {
-        "duration_ms": 3.20000000298023,
-        "name": "index.pck",
-        "transfer_bytes": 647768
-      },
-      {
-        "duration_ms": 85,
+        "duration_ms": 119,
         "name": "index.wasm",
         "transfer_bytes": 39515054
       },
       {
-        "duration_ms": 4.59999999776483,
+        "duration_ms": 5.40000000223517,
+        "name": "index.pck",
+        "transfer_bytes": 670828
+      },
+      {
+        "duration_ms": 3.09999999776483,
         "name": "index.icon.png",
         "transfer_bytes": 6000
       },
       {
-        "duration_ms": 2.80000000074506,
+        "duration_ms": 2.90000000223517,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 11.1999999992549,
+        "duration_ms": 16.8000000007451,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 9.90000000223517,
+        "duration_ms": 14.6999999992549,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 6.30000000074506,
+        "duration_ms": 10.8000000007451,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 4.60000000149012,
+        "duration_ms": 8.69999999925494,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 5.59999999776483,
+        "duration_ms": 10,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 4.19999999925494,
+        "duration_ms": 8,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 10.2999999970198,
+        "duration_ms": 10.3999999985099,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 3.89999999850988,
+        "duration_ms": 8.69999999925494,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 7.30000000074506,
+        "duration_ms": 28.5,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 6,
+        "duration_ms": 4.80000000074506,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 6.40000000223517,
+        "duration_ms": 10.6999999992549,
         "name": "__evidence",
         "transfer_bytes": 302
       },
       {
-        "duration_ms": 5.09999999776483,
+        "duration_ms": 5.89999999850988,
+        "name": "__evidence",
+        "transfer_bytes": 302
+      },
+      {
+        "duration_ms": 10.3000000007451,
+        "name": "__evidence",
+        "transfer_bytes": 302
+      },
+      {
+        "duration_ms": 8.30000000074506,
+        "name": "__evidence",
+        "transfer_bytes": 302
+      },
+      {
+        "duration_ms": 9.10000000149012,
+        "name": "__evidence",
+        "transfer_bytes": 302
+      },
+      {
+        "duration_ms": 6.70000000298023,
         "name": "__evidence",
         "transfer_bytes": 302
       }
     ],
     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"
   },
-  "draw_calls": 281,
+  "draw_calls": 256,
   "engine": "4.7.2-stable (official)",
   "frames_over_20_ms": 0,
   "frames_over_33_ms": 0,
   "kind": "complete",
-  "max_ms": 18.8,
-  "mean_fps": 59.9515193489731,
+  "max_ms": 18.9,
+  "mean_fps": 59.9505562422733,
   "p50_ms": 16.7,
   "p95_ms": 16.9,
   "p99_ms": 17,
-  "primitives": 26138,
+  "primitives": 28136,
   "renderer": "gl_compatibility",
   "runs": [
     {
@@ -122,7 +142,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3169200,
+      "duration_usec": 3169800,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -146,16 +166,17 @@
       "state": 6
     }
   ],
-  "sample_frames": 1939,
-  "sample_seconds": 32.3428000000006,
+  "sample_frames": 1940,
+  "sample_seconds": 32.3600000000006,
   "viewport": "2320x1305",
   "first_frame": {
     "adapter": "WebKit WebGL",
-    "engine_ticks_ms": 1736,
+    "engine_ticks_ms": 4546,
     "kind": "first_frame",
-    "navigation_to_frame_ms": 1949.59999999776,
+    "navigation_to_frame_ms": 4795.09999999776,
     "renderer": "gl_compatibility",
+    "screen_refresh_hz": -1,
     "viewport": "2320x1305"
   },
-  "screenshots": 6
+  "screenshots": 8
 }

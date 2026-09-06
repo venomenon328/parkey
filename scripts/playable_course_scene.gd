@@ -305,44 +305,47 @@ func _build_field_mesh(node: Node3D, field_id: String, letter: String, layout: D
 	selection.name = "Selection"
 	var selection_mesh := KeycapVisualScript.rounded_mesh(size, 0.04, 0.015)
 	selection.mesh = selection_mesh
-	selection.position.y = 0.31
+	selection.position.y = 0.045
 	node.add_child(selection)
 
 	var keycap := MeshInstance3D.new()
 	keycap.name = "Keycap"
-	var key_mesh := KeycapVisualScript.rounded_mesh(size, FIELD_HEIGHT + 0.10, 0.11)
-	var color := Color("d78b3d")
+	var key_mesh := KeycapVisualScript.cap_mesh(size, false)
+	var color := _default_field_color(field_id)
 	if field_id == course.start_id:
 		color = Color("3e9e75")
 	elif field_id == course.target_id:
 		color = Color("b95c78")
 	keycap.material_override = _material(color, 0.48)
 	keycap.mesh = key_mesh
-	keycap.position.y = 0.02
+	keycap.position.y = 0.0
 	node.add_child(keycap)
 
 	var state_surface := MeshInstance3D.new()
 	state_surface.name = "StateSurface"
-	var state_mesh := KeycapVisualScript.rounded_mesh(size - Vector2.ONE * 0.22, 0.035, 0.025)
+	var state_mesh := KeycapVisualScript.cap_mesh(size, true)
 	state_surface.mesh = state_mesh
-	state_surface.position.y = 0.44
+	state_surface.position.y = 0.0
 	node.add_child(state_surface)
 
 	var label := Label3D.new()
 	label.name = "Letter"
 	label.text = letter
 	label.font_size = 192
-	label.outline_size = 3
-	label.modulate = Color("fff4d7")
-	label.outline_modulate = Color("514030")
-	label.pixel_size = 0.0075
-	label.position = Vector3(0.0, 0.49, -minf(0.48, size.y * 0.24))
+	label.outline_size = 0
+	label.shaded = true
+	label.modulate = Color("302b26")
+	label.font = ThemeDB.fallback_font
+	var region := KeycapVisualScript.legend_region(size)
+	var glyph_size := label.font.get_string_size(letter, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size)
+	label.pixel_size = minf(0.0048, minf(region.size.y / glyph_size.x, region.size.x / glyph_size.y))
+	label.position = Vector3(region.get_center().x, KeycapVisualScript.TOP_HEIGHT + 0.004, region.get_center().y)
 	label.rotation_degrees = Vector3(-90.0, SURFACE_LABEL_CLOCKWISE_ROTATION_DEG, 0.0)
 	node.add_child(label)
 
 	var marker := KeycapStatusScript.new()
 	marker.name = "StateMarker"
-	marker.position = Vector3(0.0, 0.5, minf(0.5, size.y * 0.28))
+	marker.position = Vector3(0.0, KeycapVisualScript.TOP_HEIGHT + 0.004, minf(0.5, size.y * 0.24))
 	marker.rotation_degrees.y = SURFACE_LABEL_CLOCKWISE_ROTATION_DEG
 	node.add_child(marker)
 	marker.build()
@@ -525,7 +528,7 @@ func _update_markers() -> void:
 			base_color.lightened(CURRENT_BORDER_LIGHTEN_AMOUNT if is_current else REACHABLE_LIGHTEN_AMOUNT),
 			0.3,
 		)
-		state_surface.material_override = _material(surface_color, 0.38)
+		state_surface.material_override = _material(surface_color, 0.62)
 		marker.set_state(is_current, is_reachable, is_visited, _marker_color(base_color, is_current, is_reachable, is_visited))
 
 
@@ -548,7 +551,7 @@ func _default_field_color(field_id: String) -> Color:
 		return Color("3e9e75")
 	if field_id == course.target_id:
 		return Color("b95c78")
-	return Color("d78b3d")
+	return Color("c2ad89")
 
 
 func _status_surface_color(base_color: Color, is_reachable: bool, is_visited: bool) -> Color:

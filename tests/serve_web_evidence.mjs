@@ -8,7 +8,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 const [port = '8147', root = 'build/web', output = 'build/evidence/p2b/web-1080'] = process.argv.slice(2);
 const webRoot = path.resolve(root);
 await mkdir(output, { recursive: true });
-const allowedLabels = new Set(['ready', 'alpha', 'visited_return', 'error', 'result', 'debug']);
+const allowedLabels = new Set(['ready', 'alpha', 'visited_return', 'error', 'beta', 'beta_long', 'result', 'debug']);
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm', '.pck': 'application/octet-stream', '.png': 'image/png' };
 let firstFrame;
 let screenshots = 0;
@@ -36,7 +36,7 @@ const server = http.createServer(async (request, response) => {
       } else if (report.kind === 'complete') {
         await writeFile(path.join(output, 'metrics.json'), JSON.stringify({ ...report, first_frame: firstFrame, screenshots }, null, 2));
         console.log(JSON.stringify({ viewport: report.viewport, mean_fps: report.mean_fps, p95_ms: report.p95_ms, p99_ms: report.p99_ms, runs: report.runs.length, screenshots }));
-        if (screenshots !== 6 || report.runs.some(run => !run.finished || run.errors)) process.exitCode = 1;
+        if (screenshots !== allowedLabels.size || report.runs.some(run => !run.finished || run.errors)) process.exitCode = 1;
         response.end('ok');
         server.close();
         return;

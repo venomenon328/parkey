@@ -9,7 +9,7 @@ Stand: 2026-09-06. **P0, P1 und P2a / #5 sind vollständig abgenommen und gemerg
 | D0 | Dokumentation/Planung | Anforderungen, Architektur, neun Issues, Abhängigkeiten und Testvertrag | Dokumentiert; P1-Profil freigegeben |
 | P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Projekt, Windows/Web, minimale Tests/CI | Abgenommen und gemergt |
 | P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Kern, Handparcours, Timer, Fehlerpause, dauerhafte Bestzeiten | Vollständig abgenommen und gemergt |
-| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | #5 abgenommen/gemergt; #6 im Draft umgesetzt; subjektive Nutzerabnahme offen |
+| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | #5 abgenommen/gemergt; #6 im Draft visuell nachgearbeitet; erneute Nutzerabnahme offen |
 | P3 | [#7](https://github.com/venomenon328/parkey/issues/7), [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Generator, Integration und Export-Regelparität | #7 nach #5 grundsätzlich startfähig, aktuell nicht das aktive Paket |
 | P4 | [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | Nicht begonnen |
 
@@ -44,3 +44,5 @@ Gestaltete Windows-Anwendung plus Web-Version aus demselben Projekt: lesbarer Th
 Nicht Bestandteil: Onlinekonten/-Ranglisten, Cloud-Sync, Ghosts, Tagesparcours, Echtzeit-Mehrspieler, Editor, Shop, automatische Updates oder mehrere Themenwelten. Die Menüfunktion ist in ihrer Bedeutung festgelegt; eine vollständige Menü-/Übungsfortsetzungsoberfläche wird dadurch nicht als zusätzliche P1a-/P1b-Abnahme gefordert.
 
 Statusänderungen nur mit Nachweisen. Neue Erkenntnisse in Entscheidungen und offenen Paketen pflegen, statt an einem überholten Plan festzuhalten. Keine unbelegten Zeitversprechen.
+
+Die verbindliche visuelle Nacharbeit aus #6 / PR #18 korrigiert Kappenform und Seitenflächen, passt die beleuchteten Legenden vollständig in die Topflächen ein und ergänzt Wolkenhimmel sowie einen mittigen kräftigen Timer. Aktualisierte technische und reale Rendernachweise stehen im [P2b-Bericht](p2b-visual-slice.md); die erneute subjektive Nutzerabnahme bleibt offen.

@@ -1,6 +1,7 @@
 class_name WorkshopHUD
 extends RefCounted
 
+const StopwatchIcon = preload("res://scripts/presentation/stopwatch_icon.gd")
 var debug_enabled := false
 var debug_controls: Array[Control] = []
 var player_status: Label
@@ -12,32 +13,51 @@ func build(scene: Node) -> void:
 	var hud: CanvasLayer = scene.get_node("HUD")
 	var card := Panel.new()
 	card.name = "TimerCard"
-	card.position = Vector2(28, 24)
-	card.size = Vector2(252, 118)
+	card.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	card.offset_left = -184
+	card.offset_right = 184
+	card.offset_top = 16
+	card.offset_bottom = 108
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_theme_stylebox_override("panel", _panel(0.66))
+	card.add_theme_stylebox_override("panel", _panel(0.48))
 	hud.add_child(card)
 	hud.move_child(card, 0)
-	var title := _label(hud, "Brand", "PARKEY  /  ATELIER 01", 13, Color("cdbb99"))
-	title.position = Vector2(46, 37)
-	scene.timer_label.position = Vector2(44, 55)
-	scene.timer_label.add_theme_font_size_override("font_size", 36)
+	var title := _label(hud, "Brand", "PARKEY", 21, Color("fff2d9"))
+	title.position = Vector2(28, 24)
+	var subtitle := _label(hud, "WorldName", "T A S T A T U R – W E R K S T A T T", 10, Color("d2e0dc"))
+	subtitle.position = Vector2(29, 56)
+	var stopwatch := StopwatchIcon.new()
+	stopwatch.name = "Stopwatch"
+	stopwatch.position = Vector2(18, 14)
+	stopwatch.size = Vector2(36, 42)
+	stopwatch.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(stopwatch)
+	scene.timer_label.reparent(card)
+	scene.timer_label.position = Vector2(66, 0)
+	scene.timer_label.size = Vector2(285, 62)
+	var timer_font := FontVariation.new()
+	timer_font.base_font = ThemeDB.fallback_font
+	timer_font.variation_embolden = 0.65
+	scene.timer_label.add_theme_font_override("font", timer_font)
+	scene.timer_label.add_theme_font_size_override("font_size", 46)
 	scene.timer_label.add_theme_color_override("font_color", Color("fff2d9"))
-	player_status = _label(hud, "PlayerStatus", "Bereit", 14, Color("c8ded7"))
-	player_status.position = Vector2(46, 108)
-	errors = _label(hud, "Errors", "0 Fehler", 14, Color("c8ded7"))
-	errors.position = Vector2(193, 108)
+	player_status = _label(card, "PlayerStatus", "Bereit", 13, Color("d4e2dc"))
+	player_status.position = Vector2(68, 66)
+	errors = _label(card, "Errors", "0 Fehler", 13, Color("d4e2dc"))
+	errors.position = Vector2(285, 66)
 	scene.lock_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	scene.lock_label.position = Vector2(510, 35)
-	scene.lock_label.size = Vector2(260, 34)
+	scene.lock_label.offset_left = -150
+	scene.lock_label.offset_right = 150
+	scene.lock_label.offset_top = 118
+	scene.lock_label.offset_bottom = 150
 	scene.lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var help: Label = hud.get_node("Help")
 	help.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	help.offset_left = -380
+	help.offset_left = -545
 	help.offset_top = -62
 	help.offset_right = -30
 	help.offset_bottom = -24
-	help.text = "Buchstabe: Bewegen · Backspace: Neustart · Esc: Menü\nF3: Entwickleransicht"
+	help.text = "Buchstabe: Bewegen   ·   Backspace: Neustart   ·   Esc: Menü\nF3: Entwickleransicht"
 	help.add_theme_color_override("font_color", Color("d1ded6"))
 	help.add_theme_color_override("font_shadow_color", Color("182f32"))
 	help.add_theme_constant_override("shadow_offset_y", 1)

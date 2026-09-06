@@ -6,7 +6,7 @@ Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md
 
 Parkey verbindet räumliches Lesen, Routenentscheidung und präzises Tippen. Der Spieler erkennt erreichbare Buchstabenfelder, wählt einen Weg und setzt ihn unmittelbar in Bewegung um. Wiederholungen sollen bessere Linien, flüssigere Eingaben und persönliche Bestzeiten ermöglichen.
 
-Die Bildreferenz aus der Projektabstimmung dient als visuelle Orientierung: plastische Tastenkappen, kleine Figur, warme Materialien und eine übersichtliche 3D-Welt. Ihre Third-Person-Rückansicht ist durch D-021 als bevorzugte Kamerarichtung festgehalten; genaue Kameraparameter, Figur und Materialien sind damit nicht endgültig festgelegt. Die Bilddatei selbst ist nicht Bestandteil des Repositorys; die textliche Kamerabeschreibung unten ist auch ohne Zugriff auf den Mock verständlich.
+Die Bildreferenz aus der Projektabstimmung dient als visuelle Orientierung: plastische Tastenkappen, kleine Figur, warme Materialien und eine übersichtliche 3D-Welt. Ihre Third-Person-Rückansicht ist durch D-021 als bevorzugte Kamerarichtung festgehalten; genaue Kameraparameter, Figur und Materialien sind damit nicht endgültig festgelegt. Referenz und Zustand der versionierten Kopie sind unter [P2b-Visualreferenz](reference/p2b/README.md) eingeordnet; die textliche Kamerabeschreibung bleibt auch ohne Bildzugriff verständlich.
 
 ## Bewegung und Eingabe
 
@@ -91,6 +91,8 @@ Räumliche Gestaltung beeinflusst Lesen und Routenwahl und ist keine pauschale K
 ## P2b-Gestaltungsvertrag
 
 Das bestätigte Nutzerbriefing D-025–D-028 konkretisiert Figur, Keycaps, Beispielwelt, HUD und Leistungsziel in [p2b-visual-slice.md](p2b-visual-slice.md). Es ersetzt den bisherigen offenen PoC-Look: gegliederter Mensch mit Idle/Bewegung/Fehlerreaktion, integrierte Keycap-Legenden und Drücken/Halten/Loslassen ohne Gameplay-Verzögerung. P2a-Geometrie, Kamera und Besuchsstatus-Priorität bleiben verbindlich. Technische Diagnosen sind ausschließlich Entwickleransicht; Ergebnisdaten einschließlich exakter Zeiten bleiben zugänglich.
+
+Die visuelle Nacharbeit zu #6 konkretisiert die Formensprache: geschlossene verjüngte Kappen mit weicher Schulter und flacher Mulde, dunkle beleuchtete Legenden innerhalb der nutzbaren Topfläche, helles Wolkenpanorama und zentraler kräftiger Timer mit Stoppuhr. Die vorhandene Werkstatt bleibt die einzige Beispielwelt. Der Mock legt kein bestimmtes Holzmaterial fest; die erneute subjektive Nutzerabnahme bleibt offen.
 
 ## Bewusst später
 

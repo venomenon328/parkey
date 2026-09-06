@@ -32,6 +32,17 @@ static func run(harness) -> void:
 		harness._assert_true(is_equal_approx(cap.rotation_degrees.y, -float(layout.rotation_deg)), "Field %s keeps its canonical rotation." % field_id)
 		harness._assert_equal(cap.get_node("Letter").text, scene.course.field_by_id(field_id).letter, "Field %s keeps its required surface letter." % field_id)
 		harness._assert_true(cap.get_node("Letter").position.y > cap.get_node("StateSurface").position.y, "The integrated %s legend clears the cap surface." % field_id)
+		var letter: Label3D = cap.get_node("Letter")
+		var bounds := letter.get_aabb()
+		var half := Vector2(float(layout.size[0]), float(layout.size[1])) * 0.5 - Vector2.ONE * (KeycapVisual.TOP_INSET + 0.09)
+		var contained := bounds.size.x > 0.0 and bounds.size.y > 0.0
+		for corner in 8:
+			var point := letter.transform * bounds.get_endpoint(corner)
+			contained = contained and absf(point.x) < half.x and absf(point.z) < half.y
+		harness._assert_true(contained, "Actual rotated glyph bounds of %s remain inside its flat top, clear of the shoulder." % field_id)
+		harness._assert_true(letter.shaded and letter.outline_size == 0, "The %s print receives surface lighting without an overlay outline." % field_id)
+		harness._assert_true(_outward_sides(mesh), "The %s skirt has outward facing triangles and normals." % field_id)
+	harness._assert_true(_outward_sides(KeycapVisual.rounded_mesh(Vector2(2, 2), 0.4)), "Workshop beveled solids also have outward facing sides.")
 	harness._assert_false(scene.workshop_hud.debug_enabled, "The player starts outside debug mode.")
 	for control in scene.workshop_hud.debug_controls:
 		harness._assert_false(control.visible, "Technical control %s is hidden by default." % control.name)
@@ -106,6 +117,9 @@ static func run(harness) -> void:
 		WorldScript.build(parent, environment, floor_mesh, config.ssao)
 		harness._assert_equal(environment.environment.ssao_enabled, method == "forward_plus", "Actual %s environment respects the bounded SSAO profile." % method)
 		harness._assert_false(environment.environment.glow_enabled, "No profile needs bloom for required signals.")
+		harness._assert_equal(environment.environment.fog_sky_affect, 0.0, "Distance fog must not replace the cloud panorama with a flat background.")
+		var sky_material := environment.environment.sky.sky_material as PanoramaSkyMaterial
+		harness._assert_not_null(sky_material.panorama, "Both profiles receive the baked cloud panorama.")
 		harness._assert_not_null(parent.get_node_or_null("Workshop"), "Both profiles instantiate the same workshop environment.")
 		parent.queue_free()
 	scene.queue_free()
@@ -121,3 +135,19 @@ static func _key(scene: Node, code: int, letter: String = "") -> void:
 	event = event.duplicate()
 	event.pressed = false
 	scene.get_viewport().push_input(event, true)
+
+
+static func _outward_sides(mesh: Mesh) -> bool:
+	var arrays := mesh.surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var normals: PackedVector3Array = arrays[Mesh.ARRAY_NORMAL]
+	var checked := 0
+	for index in range(0, vertices.size(), 3):
+		var center := (vertices[index] + vertices[index + 1] + vertices[index + 2]) / 3.0
+		var normal := (vertices[index + 2] - vertices[index]).cross(vertices[index + 1] - vertices[index]).normalized()
+		if absf(normal.y) > 0.95:
+			continue
+		checked += 1
+		if normal.dot(Vector3(center.x, 0, center.z)) <= 0.0 or normal.dot(normals[index]) <= 0.0:
+			return false
+	return checked > 0

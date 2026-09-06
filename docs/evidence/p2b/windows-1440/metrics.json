@@ -1,20 +1,20 @@
 {
   "adapter": "NVIDIA GeForce RTX 3070",
-  "draw_calls": 675.0,
+  "draw_calls": 645.0,
   "engine": "4.7.2-stable (official)",
   "frames_over_20_ms": 0,
   "frames_over_33_ms": 0,
   "kind": "complete",
-  "max_ms": 17.084,
-  "mean_fps": 143.882005237714,
-  "p50_ms": 6.94,
-  "p95_ms": 8.149,
-  "p99_ms": 8.308,
-  "primitives": 74730.0,
+  "max_ms": 18.037,
+  "mean_fps": 143.977410965994,
+  "p50_ms": 6.934,
+  "p95_ms": 8.102,
+  "p99_ms": 8.372,
+  "primitives": 79840.0,
   "renderer": "forward_plus",
   "runs": [
     {
-      "duration_usec": 2821508,
+      "duration_usec": 2819738,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -22,7 +22,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3169053,
+      "duration_usec": 3166215,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -30,7 +30,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3321790,
+      "duration_usec": 3333746,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -38,7 +38,7 @@
       "state": 6
     },
     {
-      "duration_usec": 3669892,
+      "duration_usec": 3666906,
       "errors": 0,
       "finished": true,
       "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
@@ -46,14 +46,16 @@
       "state": 6
     }
   ],
-  "sample_frames": 4647,
-  "sample_seconds": 32.297298,
+  "sample_frames": 4650,
+  "sample_seconds": 32.296733,
   "viewport": "2560x1440",
   "first_frame": {
     "adapter": "NVIDIA GeForce RTX 3070",
-    "engine_ticks_ms": 1650,
+    "engine_ticks_ms": 2021,
     "kind": "first_frame",
     "renderer": "forward_plus",
+    "screen_refresh_hz": 143.973007202148,
     "viewport": "2560x1440"
-  }
+  },
+  "screenshots": 8
 }

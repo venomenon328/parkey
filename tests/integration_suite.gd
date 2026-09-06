@@ -74,7 +74,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	var fixture := await _scene_fixture(harness)
 	var scene: PlayableCourseScene = fixture["scene"]
 	var clock: MonotonicClock = fixture["clock"]
-	harness._assert_not_null(scene.get_node_or_null("HUD/TimerLabel"), "The real scene initializes its timer HUD in the SceneTree.")
+	harness._assert_not_null(scene.get_node_or_null("HUD/TimerCard/TimerLabel"), "The real scene initializes its timer inside the centered HUD card.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Head"), "The real scene contains a distinguishable player head.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Nose"), "The fitted nose provides human facial orientation without a protruding box.")
 	harness._assert_not_null(scene.get_node_or_null("CourseCamera"), "The real scene initializes the automatic camera.")

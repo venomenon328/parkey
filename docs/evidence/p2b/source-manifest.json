@@ -18,15 +18,32 @@
     "scripts/foundation_scene.gd": "b0ec769f6dd24cfb09439efa599731bd70bb3b94173b2871d85278e91ed93784",
     "scripts/input/key_input_normalizer.gd": "1ecd8b02560e6b62fe568e95e556e49a2f5946f8638c9cc6bf1411f1a336e4ec",
     "scripts/input/run_input_adapter.gd": "9b9f4a42f349458c3cf5b6cf759bbde3263797738b8811c205ccdb0993fd3be8",
-    "scripts/playable_course_scene.gd": "bdb536ec3b1ec9494791b6aa0eb24dd4263826a6f3f994be9301b3e54f7327ed",
+    "scripts/playable_course_scene.gd": "663a518d19f60e9a188919f9e8875ae4ba93947651fe6444d65cbc25b8068f44",
     "scripts/presentation/keycap_status.gd": "4057f4144811552fd511c996526b242baf597cdbe992f51ddebbec9f80c273e6",
-    "scripts/presentation/keycap_visual.gd": "e003f6ad57fd6ea48411264d1524bd3d9a78cb34a38e1f62e4ee2a57dff4f95b",
+    "scripts/presentation/keycap_visual.gd": "ac9a01a8b861602c47f5554a460c91c80b0fce1058595951e652b6dc98c77ca7",
     "scripts/presentation/render_profile.gd": "2d3565e9d93c7bc1bacfa115b756ee0e63248d9439b42a5348a89cf0dec0e93e",
     "scripts/presentation/runner_visual.gd": "25671265e6875bc938e9dab1dc047c420f94158af4f175ef7a0a08dfa08d898b",
-    "scripts/presentation/workshop_hud.gd": "38403b5158e9b0e41c71df3cb556d4707d7299dc09813718d6899cd0696185df",
-    "scripts/presentation/workshop_world.gd": "458df806072c450f368b1282a2e45f57dbecf981fe66dfca577cfbb9e8a746be",
+    "scripts/presentation/stopwatch_icon.gd": "fde48869df6109712b2f2048ca7f15dd08b0653ecdda231e24e8cadeff5c60b4",
+    "scripts/presentation/workshop_hud.gd": "0b027ac0b67cd8c3c2b94bfa5f6d64f7dbbd6118f3a1e91bac55c124d64abd3b",
+    "scripts/presentation/workshop_world.gd": "cfbd3730203ed036c3139e1aa532741c2233250d43a9c079761e7c501e967a5c",
     "scripts/storage/local_result_store.gd": "027631c787ac95c5a88964715cae6d018666c0f287d583e3ec31c4f0e9305dc2",
     "scripts/storage/run_id_generator.gd": "1dfada3f697aff42f97c729bb5b78464e63bd14e064d5a9f5dd120014382282e",
-    "tests/render_evidence.gd": "880a68803cd1527df4bcf310e05986771e49e1526f36452493207f5d2ca8fd26"
+    "tests/render_evidence.gd": "3ceffd475475765d297c5163027b774c2531cb66a02764fdb50f353817afbca4"
+  },
+  "evidence_sources": {
+    "tests/core_suite.gd": "2bcfb432dd9efbf135d108d57f59adef8a886349616d4cbb8e49edbe99e3e5c1",
+    "tests/integration_suite.gd": "24b3aa8573123e673768ae2bd920cf6666ae6810083068c94af02bbabf76b3f9",
+    "tests/presentation_suite.gd": "941b63beca12f0e4165be9e94a4cd8bcaed12e0ade3c52fee93e59e929be86bc",
+    "tests/render_evidence.gd": "3ceffd475475765d297c5163027b774c2531cb66a02764fdb50f353817afbca4",
+    "tests/routes_suite.gd": "2437ddee7a1b5010792ac3145dcef86ff6a461a3cc0ca453b5cee4e6a9cc59ea",
+    "tests/run_tests.gd": "51ddc0ea3b68bf943aa6de84eb765fc011e918418022b1ab792720f3f80507a0",
+    "tests/serve_web_evidence.mjs": "bb790388ff6301cbaa74c56989fb52b7eaf99386bebbc2b5353ca18eec59b834",
+    "tests/storage_suite.gd": "dea47cb4b459c6176a5d5573795ded3f90af3b76aa0d9655a78cc48b8c09c36a"
+  },
+  "release_artifacts_sha256": {
+    "build/windows/parkey.exe": "fd0f4557c6de5bdb0ed81e1eaef6ddb82df5589d32a4a863d9e634f3c44c5855",
+    "build/windows/parkey.pck": "92cd152212bdd35ab825636c6609a62ad8ffb61d0e14baf94d7f1baff89fc48e",
+    "build/web/index.pck": "92cd152212bdd35ab825636c6609a62ad8ffb61d0e14baf94d7f1baff89fc48e",
+    "build/web/index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
   }
 }
