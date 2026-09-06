@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1a und P1b sind abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P1c implementiert den [Speicher-/Ergebnisvertrag](p1c-local-results.md) im Draft-PR. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); P1b-Details in [p1b-implementation.md](p1b-implementation.md).
+Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1 ist abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P2a / #5 ist technisch und menschlich für den Referenzkurs abgenommen; die letzte Feldstatus-Nacharbeit ist durch CI regressionsgeprüft. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); Referenzkurs und Abnahmegrenzen in [p2a-route-decisions.md](p2a-route-decisions.md).
 
 ## Spielkern
 
@@ -48,13 +48,13 @@ Nach D-020 müssen **Position und Blickrichtung kontinuierlich** geführt werden
 
 ### Feldzustände
 
-Nach D-019 sind Standard, bereits besucht, aktuell und erreichbar visuell unterscheidbar. Der Besuchsstatus bleibt während desselben Versuchs erhalten, auch nach Rückwegen. Ein besuchter Nachbar ist gleichzeitig besucht und erreichbar; diese Informationen dürfen sich nicht gegenseitig ausblenden. Das aktuelle Feld hat eine eindeutige zusätzliche Kennzeichnung.
+Nach D-019 sind Standard, bereits besucht, aktuell und erreichbar visuell unterscheidbar. Der Besuchsstatus bleibt während desselben Versuchs erhalten, auch nach Rückwegen. Ein besuchter Nachbar kann logisch weiterhin erreichbar sein, wird visuell aber **nur als besucht** dargestellt; der Besuchsstatus hat Vorrang vor der Erreichbarkeitsdarstellung. Ein zusätzlicher kombinierter Zustand „besucht und erreichbar“ ist nicht nötig. Das aktuelle Feld hat unabhängig davon eine eindeutige zusätzliche Kennzeichnung.
 
 Für P1b wird der Status aus logischen Schritten geführt. Das besetzte Startfeld gehört bereits dazu; nach Quick Restart ist nur dieser neue Ausgangszustand markiert. Ungültige, während der Sperre verworfene oder in der UI verwendete Eingaben markieren keine neuen Felder. Besuchsstatus ist lokaler Darstellungszustand und verändert weder Graph noch Streckenidentität.
 
-Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie.
+Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie. Ein unbesuchtes erreichbares Feld darf dazu heller/Rand-markiert sein; bei bereits besuchten Feldern werden diese Erreichbarkeitssignale unterdrückt.
 
-Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; die P1b-Handstrecke verwendet zusätzlich für aktuelles und direkt erreichbare Tiles eine kontrastreiche, kameragerichtete und dem jeweiligen Tile zugeordnete Beschriftung oberhalb der Kopfmitte. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben. Diese großen weißen P1b-Callouts sind nach D-023/D-024 keine akzeptierte Enddarstellung; ihre Ablösung und die Orientierung der primären Tile-Buchstaben gehören zu P2a / #5, nicht zum P1c-Speicherausbau.
+Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken. P2a bindet den kontrastreichen Hauptbuchstaben direkt an die Keycap und dreht ihn im übernommenen Handkurs gegenüber P1b um 90° im Uhrzeigersinn; die großen weißen schwebenden P1b-Callouts sind entfernt. Für spätere frei gedrehte Tiles gilt daraus keine starre Rotation: Tile-Ausrichtung und Kamera sind gemeinsam zu prüfen. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben.
 
 Während des P1b-Laufs genügen Timer und Fehlerfeedback, nach Abschluss Zeit und Fehlerzahl. Eine persönliche Bestzeit und ausführliche Rangliste kommen mit dem separaten Speicherausbau. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Effekte vermittelt werden. Fenstergrößenwechsel darf keine wichtigen Inhalte außerhalb der sichtbaren Fläche ablegen.
 
@@ -64,7 +64,7 @@ Während des P1b-Laufs genügen Timer und Fehlerfeedback, nach Abschluss Zeit un
 
 Das endgültige Streckendesign darf unregelmäßig sein: variable Grundformen, Ausrichtungen, Anordnungen, moderate Größenunterschiede und wechselnde Nachbarzahlen statt bloß eines anderen regelmäßigen Rasters. Übermäßig große Felder sind nicht das Ziel. Übersichtliche Passagen und markante Entscheidungspunkte bleiben wichtiger als maximaler Zufall. Eine größere Fläche darf an einem Rand mehrere kleinere Nachbarn haben.
 
-Ein erkennbarer gemeinsamer Randabschnitt kann einen Übergang bilden, auch ohne vollständige Seitenübereinstimmung. Bloße Eckberührung, diagonale Lage in einem gedachten Raster oder optische Nähe allein erzeugen keine Verbindung. Kleine konsistent lesbare Fugen sind möglich. Sichtbar begehbare Anschlüsse und gespeicherte Kanten müssen übereinstimmen; keine unsichtbaren Verbote oder willkürlichen Fernverbindungen. Größere Sprünge, gesonderte Brücken und Höhenparcours sind nicht beschlossen.
+Ein erkennbarer gemeinsamer Randabschnitt kann einen Übergang bilden, auch ohne vollständige Seitenübereinstimmung. Bloße Eckberührung, diagonale Lage in einem gedachten Raster oder optische Nähe allein erzeugt keine Verbindung. Kleine konsistent lesbare Fugen sind möglich. Sichtbar begehbare Anschlüsse und gespeicherte Kanten müssen übereinstimmen; keine unsichtbaren Verbote oder willkürlichen Fernverbindungen. Größere Sprünge, gesonderte Brücken und Höhenparcours sind nicht beschlossen.
 
 Die P1b-Rückmeldung am W-Feld konkretisiert diese Regel: Zwei fast bündig nebeneinander liegende Routen dürfen nicht wie eine zusammenhängende Fläche aussehen, wenn Querbewegungen verboten sind. Entweder passen Graph und lesbare Übergänge dazu, oder die Routen werden eindeutig räumlich getrennt. Ein minimal anderer Fugenabstand, eine Liste im HUD oder die fehlende Nachbarmarkierung allein ist keine ausreichende Trennung.
 
@@ -76,13 +76,13 @@ Geeignete Stand-/Landepunkte liegen innerhalb der Felder; Übergangsverläufe bl
 
 Frühe Handstrecken dürfen einfach sein, ohne den Kern auf ihr Layout zu beschränken. P1a prüft unter anderem fünf eindeutig beschriftete Nachbarn und einen gedrehten größeren Knoten mit zwei kleineren Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem nicht rechtwinkligen lesbaren Übergang. Wenige einfache Formen genügen, kein beliebiger Polygon-Generator.
 
-Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze schwierige gegen längere flüssige Route, gemeinsames Finale. Alternativen führen zunächst überwiegend wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
+Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze vermutete gegen längere vermutete Tippfolge und gemeinsames Finale. P2a implementiert dazu zwei Entscheidungen mit `FJK`/`ASDFGH` und `PLM`/`QWERT`; die Beschreibungen sind Testhypothesen, keine allgemeine Ergonomiebehauptung. Die menschliche P2a-Stichprobe bestätigte die Funktion und Lesbarkeit der Entscheidungssituationen, nicht aber einen Geschwindigkeitsvorteil der längeren Folgen; in den vier Läufen waren die kurzen Varianten jeweils schneller. Alternativen führen zunächst wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
 
 Eine Routenwahl benötigt vorher genügend Information über Verlauf und erste Buchstabenfolgen. Tippbarkeit hängt von Tastaturlayout, Eingabemethode und Spielerfahrung ab; ein anfängliches QWERTZ-Modell ist eine zu prüfende Hypothese, keine universelle Ergonomiebewertung.
 
 Die Eindeutigkeitsprüfung betrachtet die gesamte Nachbarschaft. Bereits **A–B–A** ist bei beidseitigen Verbindungen vom mittleren B aus ungültig. Gabelungen, Rückwege und Zusammenführungen erfüllen dieselbe Regel. Sichtbare Anordnung und erlaubte Verbindungen bleiben konsistent.
 
-Der spätere Generator kombiniert geprüfte Abschnitte und variiert Topologie, räumliche Anordnung und Beschriftung kontrolliert. Er prüft Erreichbarkeit, Eindeutigkeit, Anschlüsse und brauchbare Alternativen. Die beste Route darf vom Können abhängen.
+Der spätere Generator kombiniert geprüfte Abschnitte und variiert Topologie, räumliche Anordnung und Beschriftung kontrolliert. Er prüft Erreichbarkeit, Eindeutigkeit, Anschlüsse und brauchbare Alternativen. Die beste Route darf vom Können abhängen. Die P2a-Ergebnisse erlauben dabei die Nutzung der geprüften Entscheidungs-/Geometriebausteine, aber noch keine feste Heuristik „länger = leichter bzw. schneller“.
 
 ### Streckenidentität
 

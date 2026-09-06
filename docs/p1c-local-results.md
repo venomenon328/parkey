@@ -1,6 +1,6 @@
 # P1c: Lokale Ergebnisse und Bestzeiten
 
-Stand: 2026-09-06. **Implementiert auf `codex/p1c-local-leaderboards`; Review/Abnahme bleiben Draft-PR-Gates.** Auftrag: [Issue #4](https://github.com/venomenon328/parkey/issues/4), vorbereitet auf `main` bei `5e60d53f02d6a772677956d23016504d1227bead`. P1b ist über PR #13 abgenommen und gemergt. Verbindlich bleiben [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md), [Architektur](architecture.md) und [Tests](testing.md).
+Stand: 2026-09-06. **P1c ist über PR #14 abgenommen und nach `main` gemergt** (`63f1851dc9e3cf2ee72412b1a352ce5a191cbac2`). Auftrag: [Issue #4](https://github.com/venomenon328/parkey/issues/4), vorbereitet auf `main` bei `5e60d53f02d6a772677956d23016504d1227bead`. P1b ist über PR #13 abgenommen und gemergt. Verbindlich bleiben [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md), [Architektur](architecture.md) und [Tests](testing.md).
 
 Dieses Dokument konkretisiert den beauftragten lokalen Speicherausbau. Die unten gewählten Gleichstands-, Anzeige- und Aufbewahrungsparameter sind **vorläufige Arbeitsfestlegungen für P1c**, keine behaupteten zusätzlichen Nutzerentscheidungen oder endgültigen Regeln einer Onlinewertung. Sie gelten für diese Umsetzung; begründete Änderungen müssen Spezifikation und Tests gemeinsam aktualisieren.
 

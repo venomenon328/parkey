@@ -3,6 +3,8 @@ extends Node3D
 
 const HandcraftedCourseScript = preload("res://scripts/course/handcrafted_course.gd")
 const CourseValidatorScript = preload("res://scripts/core/course_validator.gd")
+const RouteSectionContractScript = preload("res://scripts/course/route_section_contract.gd")
+const RouteMeasurementScript = preload("res://scripts/course/route_measurement.gd")
 const RuleProfileScript = preload("res://scripts/core/rule_profile.gd")
 const RunSessionScript = preload("res://scripts/core/run_session.gd")
 const RunInputAdapterScript = preload("res://scripts/input/run_input_adapter.gd")
@@ -18,10 +20,10 @@ const MAX_VISUAL_WAYPOINTS := 18
 const MAX_CATCH_UP_SECONDS := 0.05
 const CAMERA_CATCH_UP_SECONDS := 0.08
 const HEAD_SHAKE_SECONDS := 0.24
-const CAMERA_DISTANCE := 6.4
-const CAMERA_HEIGHT := 5.4
-const CAMERA_LOOK_AHEAD := 5.2
-const CALLOUT_HEIGHT := 2.65
+const CAMERA_DISTANCE := 7.2
+const CAMERA_HEIGHT := 6.2
+const CAMERA_LOOK_AHEAD := 7.2
+const SURFACE_LABEL_CLOCKWISE_ROTATION_DEG := -90.0
 const VISITED_DARKEN_AMOUNT := 0.28
 const REACHABLE_LIGHTEN_AMOUNT := 0.18
 const CURRENT_BORDER_LIGHTEN_AMOUNT := 0.12
@@ -56,6 +58,8 @@ var course_identity_before_render := ""
 var course_identity_after_render := ""
 var visited_field_ids := {}
 var result_store: RefCounted
+var route_measurement: RouteMeasurement
+var section_contracts: Array[Dictionary] = []
 
 var _clock_override: MonotonicClock
 var _has_application_focus := true
@@ -93,7 +97,10 @@ func configure_for_test(
 func _ready() -> void:
 	course = HandcraftedCourseScript.build()
 	var errors := CourseValidatorScript.validate(course)
+	section_contracts = HandcraftedCourseScript.section_contracts()
+	errors.append_array(RouteSectionContractScript.validate(course, section_contracts))
 	session = RunSessionScript.new(course, RuleProfileScript.new(), _clock_override)
+	route_measurement = RouteMeasurementScript.new(section_contracts)
 	if _run_id_generator == null:
 		_run_id_generator = RunIdGeneratorScript.new()
 	result_store = LocalResultStoreScript.new(_storage_base_path, _storage_persistent_override, _storage_faults)
@@ -111,7 +118,7 @@ func _ready() -> void:
 	_reset_visited_fields()
 	_snap_presentation_to_logical(true)
 	_refresh_view(_now_usec())
-	print("Parkey P1c started: fields=%d identity=%s profile=%s renderer=%s" % [
+	print("Parkey P2a started: fields=%d identity=%s profile=%s renderer=%s" % [
 		course.fields.size(), course_identity_before_render, RenderProfileScript.expected_profile(), RenderProfileScript.current_method(),
 	])
 
@@ -158,11 +165,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func simulate_focus_lost(received_usec: int = -1) -> Dictionary:
 	_has_application_focus = false
-	var event := session.handle_focus_lost(_now_usec() if received_usec < 0 else received_usec)
+	var now_usec := _now_usec() if received_usec < 0 else received_usec
+	var previous_field_id := session.current_field_id
+	var event := session.handle_focus_lost(now_usec)
+	if route_measurement != null:
+		route_measurement.record_session_event(event, previous_field_id, session.current_field_id, now_usec)
 	visual_waypoints.clear()
 	_visual_budget_seconds = 0.0
 	_reconcile_figure_to_logical()
-	_refresh_view(_now_usec() if received_usec < 0 else received_usec)
+	_refresh_view(now_usec)
 	return event
 
 
@@ -180,6 +191,8 @@ func _notification(what: int) -> void:
 
 
 func _apply_session_event(event: Dictionary, previous_field_id: String, received_usec: int) -> void:
+	if route_measurement != null:
+		route_measurement.record_session_event(event, previous_field_id, session.current_field_id, received_usec)
 	match str(event.get("kind", "")):
 		"moved":
 			visited_field_ids[session.current_field_id] = true
@@ -291,28 +304,14 @@ func _build_field_mesh(node: Node3D, field_id: String, letter: String, layout: D
 	var label := Label3D.new()
 	label.name = "Letter"
 	label.text = letter
-	label.font_size = 150
-	label.outline_size = 16
-	label.modulate = Color("20160f")
-	label.pixel_size = 0.007
-	label.position = Vector3(0.0, 0.49, -minf(0.55, size.y * 0.28))
-	label.rotation_degrees.x = -90.0
+	label.font_size = 192
+	label.outline_size = 18
+	label.modulate = Color("fff4d7")
+	label.outline_modulate = Color("17233a")
+	label.pixel_size = 0.0075
+	label.position = Vector3(0.0, 0.49, -minf(0.48, size.y * 0.24))
+	label.rotation_degrees = Vector3(-90.0, SURFACE_LABEL_CLOCKWISE_ROTATION_DEG, 0.0)
 	node.add_child(label)
-
-	# The keycap inscription remains useful from above. This raised, tile-owned
-	# duplicate keeps the current row and its immediate choices legible from the
-	# required rear camera without moving the camera sideways or adding HUD keys.
-	var callout := Label3D.new()
-	callout.name = "LetterCallout"
-	callout.text = letter
-	callout.font_size = 108
-	callout.outline_size = 20
-	callout.modulate = Color("fff4d7")
-	callout.outline_modulate = Color("17233a")
-	callout.pixel_size = 0.006
-	callout.position = Vector3(0.0, CALLOUT_HEIGHT, 0.0)
-	callout.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	node.add_child(callout)
 
 	var marker := Label3D.new()
 	marker.name = "StateMarker"
@@ -434,6 +433,9 @@ func camera_target_for_field(field_id: String) -> Vector3:
 
 
 func camera_focus_for_field(field_id: String) -> Vector3:
+	var preview_anchor = RouteSectionContractScript.preview_anchor(course, section_contracts, field_id)
+	if preview_anchor != null:
+		return Vector3(preview_anchor.x, FIGURE_HEIGHT, preview_anchor.y)
 	return _anchor_world(field_id) + course_forward() * CAMERA_LOOK_AHEAD
 
 
@@ -479,23 +481,22 @@ func _update_markers() -> void:
 		var keycap: MeshInstance3D = node.get_node("Keycap")
 		var state_surface: MeshInstance3D = node.get_node("StateSurface")
 		var marker: Label3D = node.get_node("StateMarker")
-		var callout: Label3D = node.get_node("LetterCallout")
 		var is_current: bool = field_id == session.current_field_id
 		var is_reachable: bool = neighbors.has(field_id)
 		var is_visited: bool = visited_field_ids.has(field_id)
 		var base_color := _default_field_color(field_id)
 		var surface_color := _status_surface_color(base_color, is_reachable, is_visited)
+		var show_reachable_status := is_reachable and not is_visited
 		keycap.material_override = _material(base_color, 0.48)
-		selection.visible = is_current or is_reachable
+		selection.visible = is_current or show_reachable_status
 		selection.material_override = _material(
 			base_color.lightened(CURRENT_BORDER_LIGHTEN_AMOUNT if is_current else REACHABLE_LIGHTEN_AMOUNT),
 			0.3,
 		)
 		state_surface.material_override = _material(surface_color, 0.38)
 		marker.visible = is_current or is_reachable or is_visited
-		marker.text = "● ✓" if is_current else "◇ ✓" if is_reachable and is_visited else "◇" if is_reachable else "✓"
+		marker.text = "● ✓" if is_current else "✓" if is_visited else "◇" if is_reachable else ""
 		marker.modulate = _marker_color(base_color, is_current, is_reachable, is_visited)
-		callout.visible = is_current or is_reachable
 
 
 func field_visual_state(field_id: String) -> Dictionary:
@@ -521,18 +522,20 @@ func _default_field_color(field_id: String) -> Color:
 
 
 func _status_surface_color(base_color: Color, is_reachable: bool, is_visited: bool) -> Color:
-	if is_reachable:
-		return base_color.lightened(REACHABLE_LIGHTEN_AMOUNT)
 	if is_visited:
 		return base_color.darkened(VISITED_DARKEN_AMOUNT)
+	if is_reachable:
+		return base_color.lightened(REACHABLE_LIGHTEN_AMOUNT)
 	return base_color
 
 
 func _marker_color(base_color: Color, is_current: bool, is_reachable: bool, is_visited: bool) -> Color:
-	if is_current or is_reachable:
+	if is_current:
 		return base_color.darkened(0.72)
 	if is_visited:
 		return base_color.lightened(0.45)
+	if is_reachable:
+		return base_color.darkened(0.72)
 	return base_color
 
 
@@ -664,6 +667,9 @@ func _render_result(snapshot: Dictionary, outcome: Dictionary) -> void:
 				int(entry["duration_usec"]),
 				int(entry["error_count"]),
 			])
+	if route_measurement != null and not route_measurement.completed_sections.is_empty():
+		leaderboard_lines.append("Routenmessung (nur dieser Lauf):")
+		leaderboard_lines.append_array(route_measurement.summary_lines())
 	if outcome.has("retained") and not bool(outcome["retained"]):
 		leaderboard_lines.append("Dieser Lauf bleibt sichtbar, liegt aber ausserhalb der Top 100.")
 	leaderboard_label.text = "\n".join(leaderboard_lines)

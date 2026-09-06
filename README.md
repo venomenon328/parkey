@@ -18,7 +18,7 @@ Stand: 2026-09-06. P0 / Issue #1 ist implementiert und vollständig abgenommen: 
 
 **P1c / Issue #4 ist abgenommen und über PR #14 nach `main` gemergt** (`63f1851dc9e3cf2ee72412b1a352ce5a191cbac2`). Der lokale versionierte Ergebnisspeicher hält Bestzeiten und Top 10 je vollständiger Strecken-/Regelidentität, bewahrt bis zu 100 Läufe, behandelt exakte Gleichstände deterministisch und zeigt die Originalzeit zusätzlich in Mikrosekunden. Backup-only-Recovery bleibt auch bei einem Ersetzungsfehler lesbar. Auf dem finalen PR-Stand bestanden Import, `storage` mit 67, `integration` mit 218 und `all` mit 446 Assertions sowie Windows- und Web-Releaseexport; Windows-/Chrome-Persistenz und der eingeschränkte Chrome-Speicherfall wurden tatsächlich geprüft. Die separat verschobene physische P1b-Chrome-Eingabeabnahme bleibt offen.
 
-Die P1b-Kamera-/Beschriftung ist noch nicht als endgültige Darstellung festgelegt. Die großen weißen Nahbereichs-Callouts sollen in P2a möglichst entfallen; die Tile-Beschriftungen selbst sollen aus der üblichen Third-Person-Perspektive gut lesbar orientiert werden. Für den aktuellen Handkurs ist gegenüber dem P1b-Stand eine 90°-Drehung der Beschriftung im Uhrzeigersinn als konkrete Folgearbeit dokumentiert.
+**P2a / Issue #5 ist auf `codex/p2a-route-decisions` fachlich abgenommen und PR #15 ist merge-bereit.** Der 30-Feld-Referenzkurs enthält zwei handgestaltete Entscheidungen mit gemeinsamem Finale, datenbasierte Abschnittsports/-geometrie, vorausschauende Kamera, auf der Keycap gedrehte Hauptbeschriftungen und eine rein lokale Abschnittsmessung. Die großen weißen P1b-Callouts sind entfernt. Vier menschliche Routenkombinationen wurden funktional fehlerfrei gespielt; die Kamera wird für diesen Referenzkurs akzeptiert. Besuchsstatus hat nach der Abnahme visuell Vorrang vor erneuter Erreichbarkeit. Die Status-Nacharbeit und der Branch sind durch erfolgreiche GitHub-CI-Läufe mit Import, Tests sowie Windows-/Web-Export bestätigt; die konkreten Nachweise stehen in [P2a-Routenentscheidungen](docs/p2a-route-decisions.md) und [Teststrategie](docs/testing.md). Die physische P1b-Chrome-Eingabeabnahme bleibt separat offen und ist kein P2a-Mergeblocker.
 
 Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
 
@@ -30,6 +30,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 | [P1-Regelprofil](docs/p1-rule-profile.md) | Verbindlicher Start-/Eingabe-/Fehler-/Restart-/Menü-/Fokusvertrag |
 | [P1b-Integration](docs/p1b-implementation.md) | Szenen-/Eingabe-/Darstellungsvertrag und Abnahme des ersten Spielparcours |
 | [P1c-Ergebnisspeicher](docs/p1c-local-results.md) | Implementierter Speicher-, Gleichstands-, UI- und Abnahmevertrag |
+| [P2a-Routenentscheidungen](docs/p2a-route-decisions.md) | Abschnittsports, Referenzkurs, Tipp-Hypothesen, Messung und Abnahmegrenzen |
 | [P1b-Spielbarkeit](docs/p1b-playability.md) | Reaktionsgefühl, Feldstatus, Windows-Abnahme und visuelle Folgearbeit |
 | [Spieldesign](docs/game-design.md) | Spielschleife, Bewegung, Kamera und Parcours |
 | [Architektur](docs/architecture.md) | Gemeinsamer Spielkern und Windows-/Web-Profile |
@@ -41,9 +42,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-**P2a / Issue #5: lesbare Routenentscheidungen und erprobte Parcours-Bausteine.** Die Abhängigkeiten sind erfüllt: P1c ist abgenommen/gemergt und der echte P1-Spieltest auf Windows ist bestanden. P2a soll handgestaltete Entscheidungsabschnitte, ihre Anschluss-/Geometrieverträge, vorausschauende Kamera und die Tile-Beschriftung praktisch erproben. Die großen weißen P1b-Callouts sollen möglichst entfallen; die bekannten 90°-Beschriftungsfolgearbeit und D-023/D-024 sind verbindlich.
-
-Erst auf Grundlage dieser real erprobten Bausteine werden P2b-Grafikgestaltung und P3a-Generator fortgesetzt. P2a zieht weder Generator noch finale Assetproduktion vor.
+**PR #15 / P2a mergen.** Danach können P2b / #6 und P3a / #7 gemäß Roadmap vom dann aktuellen `main` vorbereitet werden. P2b übernimmt hochwertige Grafikgestaltung und Leistungs-/Plattformbudget; P3a darf die in P2a erprobten Entscheidungs-/Geometriebausteine verwenden, aber keine unbelegte Regel „länger = leichter/schneller“ festschreiben.
 
 ## Zusammenarbeit
 
