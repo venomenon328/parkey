@@ -9,7 +9,7 @@ Stand: 2026-09-06. **P0, P1 und P2a / #5 sind vollständig abgenommen und gemerg
 | D0 | Dokumentation/Planung | Anforderungen, Architektur, neun Issues, Abhängigkeiten und Testvertrag | Dokumentiert; P1-Profil freigegeben |
 | P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Projekt, Windows/Web, minimale Tests/CI | Abgenommen und gemergt |
 | P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Kern, Handparcours, Timer, Fehlerpause, dauerhafte Bestzeiten | Vollständig abgenommen und gemergt |
-| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | #5 abgenommen/gemergt; #6 vorbereitet, wartet auf Visualbriefing und Leistungsbudget |
+| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | #5 abgenommen/gemergt; #6 im Draft umgesetzt; subjektive Nutzerabnahme offen |
 | P3 | [#7](https://github.com/venomenon328/parkey/issues/7), [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Generator, Integration und Export-Regelparität | #7 nach #5 grundsätzlich startfähig, aktuell nicht das aktive Paket |
 | P4 | [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | Nicht begonnen |
 
@@ -17,7 +17,7 @@ Stand: 2026-09-06. **P0, P1 und P2a / #5 sind vollständig abgenommen und gemerg
 
 `#1 → #2 → #3 → #4 → #5 → (#6 und #7) → #8 → #9`
 
-Nächster Schritt: **P2b / #6 visuell konkretisieren und danach umsetzen.** Die technische Abhängigkeit ist erfüllt. Vor dem eigentlichen Implementierungslauf werden das visuelle Nutzerbriefing sowie Referenzhardware, Auflösung und Leistungsbudget verbindlich festgehalten. P3a / #7 kann bei stabilen gemeinsamen P2a-Verträgen parallel laufen; #8 wartet auf beide Merges.
+Nächster Schritt: **P2b / #6 anhand des exportierten Slices visuell durch den Nutzer abnehmen.** Briefing und Leistungsziel sind bestätigt; [Umsetzung und technische Nachweise](p2b-visual-slice.md) bleiben von der subjektiven Freigabe getrennt. #8 wartet weiterhin auf #6/#7. Keine P3-Inhalte vorgezogen.
 
 ## Abnahme-Gates
 
@@ -31,7 +31,7 @@ Nächster Schritt: **P2b / #6 visuell konkretisieren und danach umsetzen.** Die 
 
 **P2a / #5:** Abgeschlossen und über PR #15 gemergt (`a12cb8f148e6c90d66c6c198b7d923eee9d5eebc`). Der Referenzkurs enthält zwei asymmetrische Entscheidungen mit expliziten Ports, moderaten Größen/Formen, Keycap-Beschriftungen und vorausschauender Kamera. Vier menschliche Vollroutenläufe (`kurz/lang`, `kurz/kurz`, `lang/kurz`, `lang/lang`) waren funktional fehlerfrei; die Kamera wird für den Referenzkurs akzeptiert. Die kleine Stichprobe zeigt die kurzen Varianten jeweils schneller, belegt aber keine allgemeine Tippbarkeitsheuristik. Auf Nutzerwunsch hat Besuchsstatus visuell Vorrang vor erneuter Erreichbarkeit; Umsetzung und Regression sind grün. Die ursprünglich zusätzlich gewünschte zweite Tippmethode bzw. separate Web-Kamerawiederholung wurde für diese P2a-Abnahme ausdrücklich nicht mehr verlangt und wird nicht als durchgeführt dargestellt. `main`-CI `34028827332` nach dem Merge war erfolgreich.
 
-**P2b / #6:** Nächstes aktiv vorbereitetes Paket. Zielhardware, Auflösung, Leistungsbudget und finale visuelle Nutzerabnahme gehören hierher. Größere gestalterische/ästhetische Kritik am P2a-PoC ist daher nicht rückwirkend P2a-Blocker, sofern sie keine Mechanik-/Lesbarkeitsanforderung verletzt. Vor Implementierungsstart werden Visualbriefing und Leistungsziel bestätigt.
+**P2b / #6:** Im Draft umgesetzt: eine Tastatur-Werkstatt, plastische Keycaps mit rein visuellem Hub, gegliederter Mensch mit Idle/Bewegung/Fehlerreaktion, transparentes HUD und F3-Entwickleransicht. D-025–D-028 definieren Briefing und Referenzbudget. Reale Nachweise und offene Nutzerabnahme stehen im [Paketbericht](p2b-visual-slice.md); schwächere Mindesthardware ist ungeprüft.
 
 **P3:** Graph und Layout gemeinsam validieren und in Identität/Golden-Fällen binden; keine feste Raster-/Nachbarzahlregel. Begrenzte Generierungsversuche, Versionierung und echte Windows-/Web-Konformität in #8. P3a darf die P2a-Entscheidungs-/Geometriebausteine nutzen, aber keine unbelegte Regel „länger = leichter/schneller“ festschreiben.
 

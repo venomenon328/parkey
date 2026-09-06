@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-06. P0/P1 sind abgenommen und gemergt. PR #13 liefert den sichtbaren Parcours; Windows ist physisch/manuell abgenommen, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P2a implementiert im Draft Referenzabschnitte, Kamera-Vorschau und flüchtige Routenmessung; Generator und Onlinewertung sind nicht implementiert. [P1-Regeln](p1-rule-profile.md), [P2a-Routenvertrag](p2a-route-decisions.md) und [Entscheidungsregister](decisions.md) sind maßgeblich.
+Stand: 2026-09-06. P0/P1 sind abgenommen und gemergt. PR #13 liefert den sichtbaren Parcours; Windows ist physisch/manuell abgenommen, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P2a liefert abgenommene Referenzabschnitte, Kamera-Vorschau und flüchtige Routenmessung; Generator und Onlinewertung sind nicht implementiert. [P1-Regeln](p1-rule-profile.md), [P2a-Routenvertrag](p2a-route-decisions.md) und [Entscheidungsregister](decisions.md) sind maßgeblich.
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -85,3 +85,11 @@ Historische Prüfung der technischen Grundlage: **2026-09-05**. Bewegliche `stab
 - Plattform-Overrides: https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
 - Tastaturereignisse: https://docs.godotengine.org/en/stable/classes/class_inputeventkey.html
 - Monotone Zeit: https://docs.godotengine.org/en/stable/classes/class_time.html
+
+## P2b-Präsentation
+
+`KeycapVisual` erzeugt kosmetische Fasen innerhalb unveränderter P2a-Grundflächen und verwaltet nur den vertikalen Hub seiner sichtbaren Kinder. `KeycapStatus` zeichnet Punkt, Haken und Raute als kleine Geometrie ohne Font-Fallback-Abhängigkeit. Die Feldtransforms, Anker und expliziten Transitionen bleiben kanonisch. `RunnerVisual` verbindet Kopf, Rumpf und Gliedmaßen und mischt Idle-, Bewegungs- und Reaktionsposen; der bestehende Szenencontroller besitzt weiterhin allein die begrenzten Wegpunkte. `WorkshopWorld` baut dieselbe Umgebung für beide Profile, `WorkshopHUD` trennt Spielerinformationen von F3-Diagnosen. Keine Animation schreibt in die Session.
+
+Forward+ verwendet einen schattenwerfenden Hauptscheinwerfer, ein schattenloses Fülllicht, 2× MSAA und begrenztes SSAO. Compatibility verwendet die gleiche Geometrie mit Ambient-/Direktlicht ohne SSAO/Schatten/MSAA. Kein Bloom, DOF, SSR, volumetrischer Nebel oder Partikelsystem. Pflichtsignale verwenden Oberflächenfarben und Symbole. Materialrauhigkeit nutzt eine eigene 64×64-Mikrostruktur; keine externe Texturabhängigkeit.
+
+`tests/render_evidence.gd` ist ausschließlich über `--p2b-evidence` bzw. `?evidence=1` aktiv. Es startet synthetische Viewport-Eingaben in der echten Szene, verwendet reale monotone Zeit und isolierte Testablage; im Normalbetrieb bleibt es inaktiv. `presentation` ergänzt instanziierte Szenenregressionen. Details und Abnahmegrenzen: [P2b](p2b-visual-slice.md).

@@ -12,3 +12,12 @@ static func expected_profile() -> String:
 
 static func current_method() -> String:
 	return RenderingServer.get_current_rendering_method()
+
+
+static func quality_enabled() -> bool:
+	return not OS.has_feature("web") and current_method() == "forward_plus"
+
+
+static func settings_for_method(method: String) -> Dictionary:
+	var quality := method == "forward_plus"
+	return {"ssao": quality, "shadows": quality, "glow": false, "msaa_samples": 2 if quality else 0}

@@ -88,12 +88,13 @@ godot --headless --path . --script res://tests/run_tests.gd -- --suite core
 godot --headless --path . --script res://tests/run_tests.gd -- --suite storage
 godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
 godot --headless --path . --script res://tests/run_tests.gd -- --suite routes
+godot --headless --path . --script res://tests/run_tests.gd -- --suite presentation
 godot --headless --path . --script res://tests/run_tests.gd -- --suite all
 godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
 godot --headless --path . --export-release "Web" build/web/index.html
 ~~~
 
-Der Runner kennt ab P2a `smoke`, `core`, `storage`, `integration`, `routes` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
+Der Runner kennt ab P2b `smoke`, `core`, `storage`, `integration`, `routes`, `presentation` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
 
 ~~~powershell
 godot --headless --path . --script res://tests/run_tests.gd -- --suite does-not-exist
@@ -116,3 +117,24 @@ Die P0-Testszene zeigt eine Taste mit Y, eine Platzhalterfigur mit Kopf, eine er
 `KeyInputNormalizer` wertet den erzeugten Unicodewert eines neuen A-Z-Key-down aus, nicht die physische Taste. Shift wird normalisiert; Key-up, Echo sowie Ctrl/Alt/Meta-Kombinationen werden verworfen.
 
 Die P0-Szene liest `Time.get_ticks_usec()` beim Eintritt in `_unhandled_input`; `captured_usec` ist nur der monotone Zeitpunkt des Anwendungsempfangs. P1a stellt darauf aufbauend den testbaren `RunSession`-/Uhrvertrag bereit. P1b verdrahtet ihn über genau einen `_unhandled_input`-Pfad mit dem sichtbaren Parcours. Hardware-, OS- und Browserlatenzen werden nicht als identisch behauptet.
+
+## P2b-Grafikprüfung reproduzieren
+
+Normal spielen: Windows-Release starten bzw. Webexport über HTTP öffnen. F3 schaltet technische Diagnosen samt optionalem Textfokus-Test zu; erneutes F3 gibt Textfokus frei. Backspace/Escape behalten ihre P1-Bedeutung. Keine automatische Testeingabe ohne ausdrücklichen Prüfparameter.
+
+```powershell
+build/windows/parkey.exe --resolution 1920x1080 -- --p2b-evidence --evidence-size=1920x1080
+build/windows/parkey.exe --resolution 2560x1440 -- --p2b-evidence --evidence-size=2560x1440
+```
+
+Die zusätzliche Größenangabe setzt nach der anfänglichen DPI-Aushandlung die Clientgröße; der Prüfhelfer protokolliert die tatsächlichen PNG-Pixelmaße, nicht nur die skalierte `WindowTexture`-Breitenangabe. Screenshots und `metrics.json` entstehen unter `user://parkey-test-results/render-evidence/`; vor der nächsten Auflösung in einen eigenen Nachweisordner kopieren. Testresultate liegen in einem separaten Unterordner je Prozessstart. Benutzerbestzeiten werden nicht verändert.
+
+Web: Der lokale Prüftreiber verwendet nur Node-24-Bordmittel. Er dient den unveränderten Webexport aus und nimmt ausschließlich die eigenen Bilder/Messwerte des explizit aktivierten Spiels entgegen; keine Browser-Debugging-Schnittstelle, keine Profilzugriffe und kein externer Dienst.
+
+```powershell
+node tests/serve_web_evidence.mjs 8147 build/web build/evidence/p2b/web-1080
+```
+
+In Desktop-Chrome `http://127.0.0.1:8147/?evidence=1&capture=1` öffnen und etwa 45 Sekunden im Vordergrund lassen. Bilder und Bericht tragen die tatsächliche Canvasauflösung. Für eine zweite Fenstergröße den Server mit einem neuen Ausgabeordner neu starten und denselben Ablauf wiederholen. Fenster-/Vollbildgröße vor dem Lauf setzen; Fokuswechsel invalidieren laufende Versuche wie im Normalspiel. Auflösung immer an den erzeugten PNGs kontrollieren.
+
+Der Server bindet ausschließlich `127.0.0.1`, akzeptiert nur begrenzte JSON-Nachweise mit festen Screenshotnamen und beendet sich nach dem Abschlussbericht. Ohne `evidence=1` wird kein Prüfhelfer instanziiert; ohne `capture=1` auf `127.0.0.1` sendet selbst der Helfer keine HTTP-Nachweise. Normale Spielläufe haben keinen Uploadpfad. Die Berichte enthalten GPU, Canvas, Browserkennung, erste Bildzeit, lokale Ressourcenladezeiten, vier vollständige Läufe und Framebeobachtungen. Exporte und Screenshots sind weiterhin keine subjektive Nutzerabnahme.

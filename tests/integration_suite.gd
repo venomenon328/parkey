@@ -76,7 +76,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	var clock: MonotonicClock = fixture["clock"]
 	harness._assert_not_null(scene.get_node_or_null("HUD/TimerLabel"), "The real scene initializes its timer HUD in the SceneTree.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Head"), "The real scene contains a distinguishable player head.")
-	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/HeadIndicator"), "The head has an asymmetric orientation signal that makes shaking visible.")
+	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Nose"), "The fitted nose provides human facial orientation without a protruding box.")
 	harness._assert_not_null(scene.get_node_or_null("CourseCamera"), "The real scene initializes the automatic camera.")
 	harness._assert_equal(scene.field_nodes.size(), 30, "The renderer builds every field from CourseData.")
 	harness._assert_equal(scene.course_identity_after_render, scene.course_identity_before_render, "Scene construction does not mutate course identity.")
@@ -134,6 +134,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_true(scene.field_visual_state("approach_a")["current"] and scene.field_visual_state("approach_a")["visited"], "The logical destination becomes current and visited before animation catches up.")
 	await scene.get_tree().process_frame
 	var field_before_ui := scene.session.current_field_id
+	scene.workshop_hud.set_debug(true)
 	await _push_mouse_click(scene, scene.input_test.get_global_rect().get_center())
 	harness._assert_equal(scene.get_viewport().gui_get_focus_owner(), scene.input_test, "A real viewport click focuses the LineEdit.")
 	await _push_key(scene, _key(KEY_B, 98))

@@ -88,6 +88,10 @@ Der spätere Generator kombiniert geprüfte Abschnitte und variiert Topologie, r
 
 Räumliche Gestaltung beeinflusst Lesen und Routenwahl und ist keine pauschale Kosmetik. Bei gleichen Buchstaben/Verbindungen, aber anderen relevanten relativen Positionen, Grundflächen, Größen, Ausrichtungen oder Übergängen ändert sich die Streckenidentität. Reine Materialwechsel, Oberflächendetails und nicht spielrelevante Dekoration ändern sie nicht. Dies gilt bereits für Handstrecken; eine andere Identität ist kein Anlass für eine andere Eingabe- oder Zeitregel. Dynamische Besuchs-/Nachbarmarkierungen ändern die zugrunde liegenden Streckendaten nicht.
 
+## P2b-Gestaltungsvertrag
+
+Das bestätigte Nutzerbriefing D-025–D-028 konkretisiert Figur, Keycaps, Beispielwelt, HUD und Leistungsziel in [p2b-visual-slice.md](p2b-visual-slice.md). Es ersetzt den bisherigen offenen PoC-Look: gegliederter Mensch mit Idle/Bewegung/Fehlerreaktion, integrierte Keycap-Legenden und Drücken/Halten/Loslassen ohne Gameplay-Verzögerung. P2a-Geometrie, Kamera und Besuchsstatus-Priorität bleiben verbindlich. Technische Diagnosen sind ausschließlich Entwickleransicht; Ergebnisdaten einschließlich exakter Zeiten bleiben zugänglich.
+
 ## Bewusst später
 
 Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum ersten PoC. Eine fertige Pausemenü-/Übungsfortsetzungsoberfläche ist kein versteckter Pflichtumfang von P1a/P1b.

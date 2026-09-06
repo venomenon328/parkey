@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+Running suite: smoke
+Running suite: core
+Running suite: storage
+Running suite: integration
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+P2a regular presentation metrics: max_backlog=2.738, mean_backlog=0.459, rest=0.000, figure_snaps=0
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+Running suite: routes
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+Running suite: presentation
+Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
+PASS: 748 assertions, 0 failures.

@@ -190,3 +190,24 @@ Moderate Größen, variable Nachbarn und schräge Anschlüsse prüfen: Anker auf
 Fehlerfeedback und Fristende müssen verständlich sein. Eingaben nahe Sperrende und wahlloses Tastendrücken praktisch prüfen; Änderungen an Dauer/Puffer explizit versionieren. Routen mit verschiedenen Tippmethoden testen, Zeiten/Fehler/Entscheidungs-/Sichtprobleme getrennt betrachten. Keine unnötigen personenbezogenen Daten; P2b braucht visuelle Nutzerabnahme und Leistungsbudget.
 
 Jeder Nachweis nennt Commit, Engine, Plattform/Browser, Befehle bzw. manuelle Schritte und Ergebnis. Build-, Regel-, Grafik- und Spieltests getrennt berichten. Neue P1-Freigaben sind kein Testnachweis. Fehlende verpflichtende Tests lassen den PR Draft und Abnahme offen. P4 prüft verpackte Artefakte, nicht nur den Editorstand.
+
+## P2b: Präsentation und echte Renderläufe
+
+`presentation` ist implementiert und Bestandteil von `all`: instanziierte Szene, unveränderte P2a-Identität/Grundflächen/Positionen/Drehungen/Legenden/Transitionsanzahl, Press/Halten/Loslassen/Restart, Idle/Bewegung/Fehlerreaktion, exakte 200-ms-Grenze trotz laufender Reaktion, 60 Eingaben ohne Renderfortschritt, Kernresultatparität sowie normale HUD-/F3-/Textfokus-Trennung und beide Umgebungsprofile. Die P2a-/P1-Regressionen bleiben erhalten; der historische Kopfquader-Test prüft jetzt die passende Nase, der UI-Fokustest öffnet vorher F3 und die Abschnittsmessung wird in der Entwickleransicht geprüft.
+
+Pflichtbefehle für #6, alle auf dem vorhandenen gepinnten Windows-Editor:
+
+```sh
+godot --headless --path . --import
+godot --headless --path . --script res://tests/run_tests.gd -- --suite presentation
+godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
+godot --headless --path . --script res://tests/run_tests.gd -- --suite all
+godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
+godot --headless --path . --export-release "Web" build/web/index.html
+```
+
+Die Renderprüfung läuft separat im **Releaseexport**, unter Windows nativ und in Chrome über HTTP mit Compatibility. Der opt-in Prüfhelfer `tests/render_evidence.gd` spielt vier P2a-Kombinationen mit synthetischen Viewport-Ereignissen, realer Uhr und isolierten Ergebnissen. Screenshots zeigen Bereitschaft, erste Entscheidung, besuchten Rückweg, Fehler, Ziel und Debug. Rund 32 Sekunden Frameabstände werden nach Aufwärmen erfasst; Screenshot-Readback liegt außerhalb der Messfenster. Dies misst Anwendungsframeabstände, keine externe Scanout-/Eingabelatenz. Alle Pflichtzeichen und Statussignale werden zusätzlich anhand tatsächlicher Bilder kontrolliert. Prüfmethode, Bildgrößen, Hardware/Browser, Resultate und Grenzen stehen im [P2b-Bericht](p2b-visual-slice.md).
+
+Die subjektive Windows-Spiel-/Grafikabnahme dieses Slices durch den Nutzer bleibt offen. Die ältere physische P1b-Chrome-Eingabeabnahme bleibt separat offen; synthetische Renderläufe schließen sie nicht.
+
+Finaler technischer Stand am 2026-09-06: `presentation` 203, `integration` 233 und `all` 748 Assertions ohne Fehler; Import und beide Releaseexporte Exit 0, fehlende/unbekannte Suite Exit 1. Native Windows-Läufe bei 1920×1080 und 2560×1440 sowie Desktop-Chrome mit 2320×1305-Spielviewport schließen jeweils alle vier Routen fehlerfrei ab. Versionierte Logs, Quellhashes, Screenshots und reale Frame-/Ladezahlen sind im [P2b-Bericht](p2b-visual-slice.md#versionierte-belege) verlinkt. Sie ersetzen nicht die offene subjektive Abnahme.

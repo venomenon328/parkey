@@ -51,6 +51,17 @@ D-019/D-022 sind Darstellungszustände und verändern weder Streckendaten noch -
 
 D-012 gilt auch für die sichtbare Reaktionsnähe: ein technisch begrenzter, aber deutlich wahrnehmbarer Rückstand genügt nicht. Der abgenommene P1b-Stand verwendet kurze 50-ms-Figuren- und 80-ms-Kamerabudgets, die während eines laufenden Aufholens nicht durch jeden neuen Schritt neu gestartet werden. Diese Zahlen bleiben vorläufige Darstellungsparameter.
 
+## Bestätigtes P2b-Briefing (Issue #6, 2026-09-06)
+
+| ID | Entscheidung |
+| --- | --- |
+| D-025 | Eine konsistente gestaltete Beispielwelt mit plastischen, abgerundeten Keycaps und integrierten lesbaren Buchstaben; etwas weniger stilisierter Mensch mit zusammenhängenden Proportionen, ohne Kopfquader, mit Idle, Bewegung und Fehlerreaktion. Keine komplexe Rigging-Pipeline, zweite Welt oder Charakterauswahl. |
+| D-026 | Betreten drückt die Taste rein visuell ein; sie bleibt während des Aufenthalts unten und kehrt beim Verlassen zurück. Figur/Animation/Press-Reaktion verändern weder Eingabeverarbeitung, Aufholbudgets, Kernzeiten noch P2a-Geometrie und Identität. D-019/D-022 bleiben verbindlich. |
+| D-027 | Grundlegend überarbeitetes, modernes transparentes/halbtransparentes HUD mit klarer Hierarchie. Timer, Fehler, Ergebnis und Bestzeiten bleiben lesbar; Renderprofil, technische Feld-/Nachbarlisten und UI-Fokustest sind nur in einer gezielt einschaltbaren Entwickleransicht sichtbar. |
+| D-028 | Ziel: stabile 60 FPS im Windows-Qualitätsprofil bei variabler Auflösung, insbesondere 1920×1080 und 2560×1440. Referenz: Ryzen 7 5800X / RTX 3070, ausdrücklich keine Mindesthardware. Ohne reale schwächere Hardwareprüfung bleibt die Mindestklasse offen. Web priorisiert Lesbarkeit und flüssige Bedienung vor Effektgleichheit. |
+
+Issue #6 bestätigt das Briefing und hebt den früheren Vorbereitungs-Wartezustand auf. Umsetzung und subjektive Nutzerabnahme sind davon getrennt; Vertrag und Nachweise: [P2b-Visual-Slice](p2b-visual-slice.md).
+
 ## Parameter und Rückmeldungen
 
 | ID | Wert/Idee | Einordnung |
@@ -90,6 +101,7 @@ D-012 gilt auch für die sichtbare Reaktionsnähe: ein technisch begrenzter, abe
 
 ## Änderungshistorie
 
+- 2026-09-06: D-025 bis D-028 übernehmen das bestätigte P2b-Briefing aus #6. Die Tastatur-Werkstatt ist mit Figurenphasen, Keycap-Hub, transparentem HUD/F3 und budgetierten Profilen implementiert; P2a-Identität und Kernregeln bleiben unverändert. Reale Windows-/Chrome-Nachweise stehen im [P2b-Bericht](p2b-visual-slice.md); subjektive Nutzerabnahme bleibt offen, kein automatischer Merge.
 - 2026-09-05: Initiale Anforderungen, Godot/Windows-Fokus und P0-Plan dokumentiert.
 - 2026-09-05: D-010 bis D-013 präzisieren freie Streckengeometrie, explizite Übergänge, darstellungsunabhängige Schrittlogik und räumliche Identität.
 - 2026-09-05: D-014 bis D-018 geben `p1-input-start-v1` frei: Start per erstem Buchstaben, Quick Restart, Escape-Menü, 200-ms-Fehlerfrist, A–Z/Rückwege und Fokusinvalidierung.

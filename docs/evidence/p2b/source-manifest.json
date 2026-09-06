@@ -1,0 +1,32 @@
+{
+  "format": "sha256-utf8-lf-v1",
+  "runtime_sources": {
+    "export_presets.cfg": "085d315b6e7d5e24c4e8b7f3f3cea6001e8168703c0da5998f209bcc9b3606e5",
+    "project.godot": "3fff6afbddceebc2b17f96d02e73fd41b1c8df8c827451f6fbf3ebb081594054",
+    "scenes/foundation.tscn": "ebdb56fd510ba72aaa07cc4e9bc4481b886a9a17327abd45764998a8f0a7ef5e",
+    "scenes/playable_course.tscn": "6bc024435bb7646d81f6d3d30459d0095d9aefb50bfc52852bedc20bce59aff8",
+    "scripts/core/course_data.gd": "aa9bfc665921668f173ff92f003c39697a7a60c8be4943b26bd79f2fa44a175a",
+    "scripts/core/course_identity.gd": "c1b73c15e31c60e6c2ae86cd36e71847bc15aca211b0924f6839626ba869215f",
+    "scripts/core/course_validator.gd": "032d3a17455775b6f2e9b3829cad6aaaa69d429d3e3448c1d1be0215cd7f1072",
+    "scripts/core/monotonic_clock.gd": "65244c6f8ddb4b61af7bede5821af4810fabbc5fd430866a1920c53cb3d35c5c",
+    "scripts/core/rule_profile.gd": "0a231ac31b4b6909bcb329440c21438edbdf974aca8544d7a77fcb4fc0ec1428",
+    "scripts/core/run_session.gd": "986a00e457ffd2ac77682c8f2fd16992ca17245fa9eb875c5ddc3e9563432319",
+    "scripts/course/handcrafted_course.gd": "ee66a2a0cced76d29d8ff337b5a34c2c73aa08e46b1430a973439a0c851266b8",
+    "scripts/course/qwertz_typing_hypotheses.gd": "2e397b3bdf1cbe0020a06ceff1a4d80bdc1c8c95f23899f3c3fb8577dae5e4d7",
+    "scripts/course/route_measurement.gd": "e6c183ff60bb6af7e2f02f3af99da713bb32493fc8b449e2aa5046976c186ebe",
+    "scripts/course/route_section_contract.gd": "444623870a7d2cac28e5124610ed4d2dc730496c767dd7a937868a0cfa88d849",
+    "scripts/foundation_scene.gd": "b0ec769f6dd24cfb09439efa599731bd70bb3b94173b2871d85278e91ed93784",
+    "scripts/input/key_input_normalizer.gd": "1ecd8b02560e6b62fe568e95e556e49a2f5946f8638c9cc6bf1411f1a336e4ec",
+    "scripts/input/run_input_adapter.gd": "9b9f4a42f349458c3cf5b6cf759bbde3263797738b8811c205ccdb0993fd3be8",
+    "scripts/playable_course_scene.gd": "bdb536ec3b1ec9494791b6aa0eb24dd4263826a6f3f994be9301b3e54f7327ed",
+    "scripts/presentation/keycap_status.gd": "4057f4144811552fd511c996526b242baf597cdbe992f51ddebbec9f80c273e6",
+    "scripts/presentation/keycap_visual.gd": "e003f6ad57fd6ea48411264d1524bd3d9a78cb34a38e1f62e4ee2a57dff4f95b",
+    "scripts/presentation/render_profile.gd": "2d3565e9d93c7bc1bacfa115b756ee0e63248d9439b42a5348a89cf0dec0e93e",
+    "scripts/presentation/runner_visual.gd": "25671265e6875bc938e9dab1dc047c420f94158af4f175ef7a0a08dfa08d898b",
+    "scripts/presentation/workshop_hud.gd": "38403b5158e9b0e41c71df3cb556d4707d7299dc09813718d6899cd0696185df",
+    "scripts/presentation/workshop_world.gd": "458df806072c450f368b1282a2e45f57dbecf981fe66dfca577cfbb9e8a746be",
+    "scripts/storage/local_result_store.gd": "027631c787ac95c5a88964715cae6d018666c0f287d583e3ec31c4f0e9305dc2",
+    "scripts/storage/run_id_generator.gd": "1dfada3f697aff42f97c729bb5b78464e63bd14e064d5a9f5dd120014382282e",
+    "tests/render_evidence.gd": "880a68803cd1527df4bcf310e05986771e49e1526f36452493207f5d2ca8fd26"
+  }
+}

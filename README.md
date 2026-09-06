@@ -22,6 +22,8 @@ Stand: 2026-09-06. P0 / Issue #1 ist implementiert und vollständig abgenommen: 
 
 Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
 
+**P2b / Issue #6 ist implementiert; subjektive Nutzerabnahme offen.** Die Tastatur-Werkstatt ergänzt plastische Keycaps mit rein visuellem Hub, eine animierte menschliche Figur und transparentes HUD mit F3-Diagnosen. P2a-Geometrie und Kernregeln bleiben erhalten. `presentation` 203, `integration` 233 und `all` 748 Assertions sowie beide Releaseexporte sind erfolgreich. Reale Windows-1080p-/1440p- und Desktop-Chrome-Läufe, Bilder, Leistungsdaten und Assetquellen stehen im [P2b-Bericht](docs/p2b-visual-slice.md). Der PR bleibt Draft.
+
 ## Dokumentation
 
 | Datei | Inhalt |
@@ -30,6 +32,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 | [P1-Regelprofil](docs/p1-rule-profile.md) | Verbindlicher Start-/Eingabe-/Fehler-/Restart-/Menü-/Fokusvertrag |
 | [P1b-Integration](docs/p1b-implementation.md) | Szenen-/Eingabe-/Darstellungsvertrag und Abnahme des ersten Spielparcours |
 | [P1c-Ergebnisspeicher](docs/p1c-local-results.md) | Implementierter Speicher-, Gleichstands-, UI- und Abnahmevertrag |
+| [P2b-Visual-Slice](docs/p2b-visual-slice.md) | Gestaltungsvertrag, Profile, Assetquellen und Render-/Leistungsnachweise |
 | [P2a-Routenentscheidungen](docs/p2a-route-decisions.md) | Abschnittsports, Referenzkurs, Tipp-Hypothesen, Messung und Abnahmegrenzen |
 | [P1b-Spielbarkeit](docs/p1b-playability.md) | Reaktionsgefühl, Feldstatus, Windows-Abnahme und visuelle Folgearbeit |
 | [Spieldesign](docs/game-design.md) | Spielschleife, Bewegung, Kamera und Parcours |
@@ -42,7 +45,8 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-**P2b / Issue #6 vorbereiten und das visuelle Ziel konkretisieren.** Die technische Abhängigkeit ist durch den P2a-Merge erfüllt. Vor dem eigentlichen visuellen Implementierungslauf werden das Nutzer-Visualbriefing sowie Referenzhardware, Auflösung und Leistungsbudget festgelegt. P3a / #7 darf anschließend grundsätzlich parallel laufen, ohne gemeinsame P2a-Datenverträge still auseinanderzuentwickeln.
+**P2b / Issue #6 visuell abnehmen.** Das bestätigte Briefing ist als Tastatur-Werkstatt mit gegliederter Figur, Keycap-Hub und neuem HUD/Debug-Modus umgesetzt. Technische Nachweise und offene Nutzerabnahme stehen im [P2b-Bericht](docs/p2b-visual-slice.md). P3-Inhalte sind nicht vorgezogen; kein automatischer Merge.
+
 
 ## Zusammenarbeit
 
