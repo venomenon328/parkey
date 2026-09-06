@@ -1,6 +1,6 @@
 # Freigegebenes P1-Regelprofil
 
-Stand: 2026-09-05. **Für den PoC freigegeben; der P1a-Kern ist über PR #12 abgenommen und gemergt. Die sichtbare P1b-Integration ist im Draft-PR #13 implementiert, aber noch nicht vollständig abgenommen.** Profilkennung: `p1-input-start-v1`. Grundlage sind die Nutzerentscheidungen D-014 bis D-018 im [Entscheidungsregister](decisions.md); D-001 bis D-013 bleiben unverändert. Diese Datei ist die maßgebliche Detailspezifikation für P1a und seine Folgepakete. Die früheren Vorschläge eines Enter-Starts, Countdowns und Escape-Abbruchs mit Rücksetzen sind ersetzt.
+Stand: 2026-09-06. **Für den PoC freigegeben; P1a über PR #12 und P1b über PR #13 abgenommen und gemergt.** P1b ist auf Windows physisch/manuell abgenommen, die physische Chrome-Abnahme ausdrücklich verschoben. Profilkennung: `p1-input-start-v1`. Grundlage sind D-014 bis D-018 im [Entscheidungsregister](decisions.md); D-001 bis D-013 bleiben unverändert. Diese Datei ist die maßgebliche Regelspezifikation für P1 und seine Folgepakete. P1c ergänzt den [Ergebnis-/Speichervertrag](p1c-local-results.md), ohne Start, Fehler oder Zeitmessung zu ändern. Die früheren Vorschläge eines Enter-Starts, Countdowns und Escape-Abbruchs mit Rücksetzen sind ersetzt.
 
 ## 1. Bereitschaft und Start durch den ersten Buchstaben
 

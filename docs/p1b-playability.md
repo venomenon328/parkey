@@ -1,6 +1,6 @@
 # P1b: Reaktionsgefühl, Nahbereich und zurückhaltende Feldzustände
 
-Stand: 2026-09-06. Verbindliche Präzisierung für Issue #3 / PR #13 nach Nutzerprüfung der P1b-Nacharbeiten. Grundlage: [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md) und [Integration](p1b-implementation.md). **N1–N3 sind implementiert, automatisiert regressionsgeprüft und auf Windows physisch/manuell abgenommen. P1b ist damit für den Merge freigegeben.** Die physische Chrome-Nutzerabnahme wird ausdrücklich auf später verschoben und ist für diesen Merge kein Blocker, da Windows die führende Zielplattform ist. Automatisierte Web-Exporte und Chrome-Sanity-Checks bleiben Bestandteil des vorhandenen Nachweises. Keine neue Spielmechanik und kein vorgezogenes P2-Grafikpaket.
+Stand: 2026-09-06. Verbindliche Präzisierung für Issue #3 / PR #13 nach Nutzerprüfung der P1b-Nacharbeiten. Grundlage: [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md) und [Integration](p1b-implementation.md). **N1–N3 sind implementiert, automatisiert regressionsgeprüft und auf Windows physisch/manuell abgenommen. P1b ist damit abgenommen und über PR #13 gemergt (`e8e947e4100c8f3e534ae425752ac2c30c7fee7a`).** Die physische Chrome-Nutzerabnahme wird ausdrücklich auf später verschoben und ist für diesen Merge kein Blocker, da Windows die führende Zielplattform ist. Automatisierte Web-Exporte und Chrome-Sanity-Checks bleiben Bestandteil des vorhandenen Nachweises. Keine neue Spielmechanik und kein vorgezogenes P2-Grafikpaket.
 
 ## 1. Abgrenzung zum vorherigen Review
 
@@ -44,6 +44,6 @@ Die Umsetzung nutzt `Color.darkened(0,28)` für besucht, `Color.lightened(0,18)`
 
 ## 5. P1b-Abschluss und verbleibende Folgearbeit
 
-P1b ist technisch re-reviewt, die finale CI ist grün und die physische/manuelle Windows-Abnahme wurde vom Nutzer als erfolgreich bestätigt. Da Windows gemäß D-008 die führende Zielplattform ist, ist PR #13 ausdrücklich mergefähig, obwohl die physische Chrome-Abnahme erst später erfolgt. Das Web-Artefakt bleibt gebaut und automatisiert/synthetisch geprüft; die offene Browser-Hardwareabnahme darf später nicht rückwirkend als bereits bestanden behauptet werden.
+P1b ist technisch re-reviewt, die finale CI ist grün und die physische/manuelle Windows-Abnahme wurde vom Nutzer als erfolgreich bestätigt. Da Windows gemäß D-008 die führende Zielplattform ist, wurde PR #13 ausdrücklich abgenommen und gemergt, obwohl die physische Chrome-Abnahme erst später erfolgt. Das Web-Artefakt bleibt gebaut und automatisiert/synthetisch geprüft; die offene Browser-Hardwareabnahme darf später nicht rückwirkend als bereits bestanden behauptet werden.
 
 Die noch nicht zufriedenstellende endgültige Perspektive, die 90°-Neuausrichtung der primären Tile-Beschriftung und das Zurückbauen/Ersetzen der großen weißen Callouts werden in P2a weitergeführt. Keine Persistenz, Generatoren, finale Assets oder neue Eingaberegeln in P1b nachziehen.

@@ -1,6 +1,6 @@
 # Technische Architektur
 
-Stand: 2026-09-05. P0 liefert die abgenommene Godot-/GDScript-Grundlage, Renderdiagnose, Export-Presets und Eingabenormalisierung. P1a ist über PR #12 abgenommen und nach `main` gemergt: testbarer Spielkern, Streckendaten und Validierung. P1b integriert im Draft-PR #13 den sichtbaren Parcours; die Nacharbeit einschließlich N1–N3 aus Re-Review 5122577064 ist implementiert, Re-Review und physische Abnahme bleiben offen. Speicherung und Generator bleiben unimplementiert. [p1-rule-profile.md](p1-rule-profile.md) und D-014 bis D-018 sind zusätzlich zu D-001 bis D-013 verbindlich; die Integration ist in [p1b-implementation.md](p1b-implementation.md) konkretisiert. Siehe [Entscheidungsregister](decisions.md).
+Stand: 2026-09-06. P0, P1a und P1b sind abgenommen und gemergt. PR #13 liefert den sichtbaren Parcours; Windows ist physisch/manuell abgenommen, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P1c ist vorbereitet; Speicherung und Generator sind noch nicht implementiert. [P1-Regeln](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1c-Vertrag](p1c-local-results.md) und [Entscheidungsregister](decisions.md) sind maßgeblich.
 
 ## Ein Projekt, zwei Darstellungsprofile
 
@@ -69,7 +69,7 @@ Projektdatei im Root, Szenen in `scenes/`, Code nach Bedarf in `scripts/core/`, 
 
 P0 liefert Smoke-Runner, zwei Export-Presets, Buildanleitung und CI. P1a hat `core`, P1b `integration` ergänzt und wartet im Runner auf die echten Szenentests. Tatsächliche grafische Windows-/HTTP(S)-Web-Starts bleiben eigene Abnahmen; erfolgreiche Headless-Exporte ersetzen sie nicht.
 
-P1c erhält versionierte lokale Ergebnisdaten und klare Fehlerbehandlung beim Laden/Schreiben; Browserpersistenz/Reload getrennt prüfen. Spielbarkeit bleibt unabhängig von späterer Onlinewertung. Die Kernsession übernimmt keine Dateisystem-/Serverzuständigkeit.
+P1c erhält versionierte lokale Ergebnisdaten und klare Fehlerbehandlung gemäß [p1c-local-results.md](p1c-local-results.md). Der vorhandene Kern liefert noch keine dauerhafte Lauf-ID: die Integration übernimmt einen unveränderlichen Abschluss mit einmaliger ID, der Store speichert idempotent nach vollständiger `course_identity`. Datei-I/O bleibt außerhalb des Bewegungsereignispfads; Restart und verzögerte Speicherantworten sind getrennt. Browserpersistenz/Reload im echten Export prüfen, temporäre und gespeicherte Resultate unterscheiden. Spielbarkeit bleibt unabhängig von späterer Onlinewertung; die Kernsession übernimmt keine Dateisystem-/Serverzuständigkeit.
 
 Online kann ein Eingabeverlauf gegen Strecke/Regeln plausibilisiert werden; dies beweist keinen menschlichen Ursprung. Anti-Cheat und Plattformvergleich sind spätere Aufgaben.
 

@@ -1,6 +1,6 @@
 # P1b: Integration des ersten spielbaren Parcours
 
-Stand: 2026-09-05. **Im Draft-PR #13 einschließlich N1–N3 aus Re-Review 5122577064 implementiert; CI `33987533119` auf dem Implementierungscommit ist erfolgreich, Re-Review und physische Nutzerabnahme bleiben offen.** Arbeitspaket: Issue #3. Voraussetzung P1a / Issue #2 ist über PR #12 abgenommen und mit `5ddf921fdf3736f9e521b8e37b833139beee636f` nach `main` gemergt. Arbeitsbranch: `codex/p1b-playable-course`.
+Stand: 2026-09-06. **P1b / Issue #3 ist über PR #13 mit `e8e947e4100c8f3e534ae425752ac2c30c7fee7a` abgenommen und gemergt.** N1–N3 sind technisch re-reviewt; finale PR-CI `34001773894` und Merge-CI `34001879727` sind erfolgreich. Physische/manuelle Windows-Abnahme bestanden; physische Chrome-Abnahme nach ausdrücklicher Nutzerentscheidung verschoben. Details: [P1b-Spielbarkeit](p1b-playability.md). Die dokumentierte Kamera-/Beschriftungsfolgearbeit bleibt P2a / #5. P1a / #2 ist seit PR #12 gemergt; damaliger P1b-Arbeitsbranch: `codex/p1b-playable-course`.
 
 Diese Datei konkretisiert die Integration des freigegebenen [P1-Regelprofils](p1-rule-profile.md). D-019 bis D-021 aus dem [Entscheidungsregister](decisions.md) ergänzen Feldstatus, durchgehend flüssige Kameraführung und die bevorzugte perspektivische Rückansicht. Umfang und Abnahmekriterien stehen in Issue #3, allgemeine Prüfungen in [testing.md](testing.md). Es fehlt keine weitere Start-, Eingabe-, Fehler-, Geometrie- oder Darstellungsfreigabe; konkrete finale Gestaltung bleibt offen.
 
@@ -88,7 +88,9 @@ Zusätzliche bzw. geschärfte Regressionen nach Review von `c4142a1`:
 
 Der Runner muss auf asynchrone Szeneninitialisierung bzw. ausstehende Tests warten, bevor er Erfolg meldet und beendet. Keine übersprungenen Tests durch vorzeitiges `quit(0)`; neue Suites in `all` aufnehmen. Unbekannte/fehlende/leere Suite sowie Testfehler müssen einen Fehlerstatus liefern. Tests zu gültiger vorhandener Funktion nicht entfernen, um grün zu werden.
 
-## 7. Reale Abnahme und Übergabe
+## 7. Ursprünglicher Abnahmevertrag und erfolgte Teilverschiebung
+
+Der folgende Vertrag beschreibt die P1b-Prüfungen. Windows und technischer Review sind inzwischen bestanden; die physische Chrome-Prüfung wurde ausdrücklich verschoben. Maßgeblich ist der Abschlussstand oben, nicht die historischen offenen Punkte in Abschnitt 8.
 
 Pflicht sind ein tatsächlich durchgespielter nativer Windows-Export mit Forward+ sowie ein über HTTP gestarteter Web-Export in Desktop-Chrome mit Compatibility. Jeweils Commit, Engine, OS/Browser, Hardware/Auflösung und Ergebnis dokumentieren. Firefox-Gesamtabnahme bleibt P4; mehr Tests sind willkommen, werden aber nicht stillschweigend Voraussetzung dieses Pakets.
 
@@ -96,7 +98,9 @@ Manuell beide Routen, Rückweg, erster korrekter/falscher Buchstabe, Fehlerpause
 
 Die Übergabe enthält eine kurze konkrete Bedien- und Abnahmeanleitung mit tatsächlichem Streckenverlauf, Startbuchstaben und erreichbaren Teststellen sowie den Buildpfaden. Nach Kursänderungen die Folgen unten und in PR/Tests gemeinsam aktualisieren. Fehlende reale Nutzerprüfung bleibt offen und der PR Draft, auch wenn alle Headless-Tests grün sind. Dieses Paket ist erst nach technischem Review und echter Spielabnahme abgeschlossen.
 
-## 8. Umgesetzter Nacharbeitsstand und offene Abnahme
+## 8. Historischer Nacharbeitsnachweis vor der finalen Nutzerabnahme
+
+Die folgenden Befunde dokumentieren den technischen Zwischenstand. Damals offene Windows-/Reviewpunkte sind durch die spätere Abnahme oben geschlossen; der synthetische Browsernachweis bleibt vom weiterhin offenen physischen Chrome-Test getrennt.
 
 `scripts/course/handcrafted_course.gd` bleibt die einzige Quelle der 26 Felder, Buchstaben, Kanten, Grundflächen, Anker und Übergänge. Der gesamte ebene Kurs ist um 18° gedreht. Die 2,0 Einheiten tiefen Paralleläste liegen nun bei lokal z = ±2,15 und lassen durchgehend 2,3 Einheiten freie Mitte; die 6,3 Einheiten tiefen Gabelungs-/Zusammenführungsfelder schließen beide Äste explizit an. W–F und repräsentative Paare beider Äste sind damit klar getrennte Nichtnachbarn. Die obere Passage wechselt weiterhin von 2,0 auf 2,6 und 1,4 Einheiten Breite.
 
@@ -114,7 +118,9 @@ Aktuell, erreichbar, besucht und besucht+erreichbar werden durch sichtbare Oberf
 
 Der lokale Nacharbeitsnachweis umfasst nach N1–N3 189 Integrations- und 350 Gesamtassertions ohne Fehler, erfolgreichen Import und beide Release-Exporte. CI `33987533119` auf `8d18dc0` ist erfolgreich. `build/windows/parkey.exe` startet als natives `Parkey`-Fenster; die neue native Vordergrund-/Eingabeprüfung ist wegen einer fremden Vordergrundanwendung nicht verwertbar und bleibt offen. Der Webexport lief isoliert über HTTP in Chrome mit Compatibility/WebGL-Canvas: CDP-synthetisch `A → Z → K → Q` bei 125 ms sowie Sichtprüfungen bei 1280 × 720 und 960 × 620; Screenshots liegen unversioniert unter `build/evidence/chrome-n1n3-ready-1280x720.png`, `build/evidence/chrome-n1n3-fork-1280x720.png` und `build/evidence/chrome-n1n3-fork-960x620.png`. Diese Browserereignisse und Bilder prüfen Paket, Renderer, Canvas und visuelle Sanity, aber nicht physische Hardwaretastatur, menschliche Wahrnehmbarkeit oder Spielgefühl. P0/P1a werden dadurch nicht rückwirkend als ungeprüft bezeichnet.
 
-## 9. Konkrete manuelle Abnahme nach der Nacharbeit
+## 9. Prüfschritte der manuellen Abnahme
+
+Unter Windows abgeschlossen; für die verschobene physische Chrome-Prüfung weiterhin als Anleitung verwendbar.
 
 Windows-Artefakt: `build/windows/parkey.exe`. Web-Einstieg: `build/web/index.html`, ausschließlich über den dokumentierten lokalen HTTP-Server öffnen. Die korrigierten Builds verwenden, nicht den alten Prüfstand.
 

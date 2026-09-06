@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-05. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das für P1 freigegebene Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-022 sind verbindlich. Die vollständigen Start-, Eingabe-, Fehler-, Restart-, Menü- und Fokusregeln stehen in [p1-rule-profile.md](p1-rule-profile.md). Andere Gestaltungsvorschläge bleiben als solche gekennzeichnet. Der P1a-Kern ist abgenommen und gemergt; der sichtbare P1b-Spielablauf einschließlich N1–N3 ist im Draft implementiert, Re-Review und physische Nutzerabnahme bleiben offen. Details: [p1b-implementation.md](p1b-implementation.md).
+Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1a und P1b sind abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P1c ist mit [Speicher-/Ergebnisvertrag](p1c-local-results.md) vorbereitet, noch nicht implementiert. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); P1b-Details in [p1b-implementation.md](p1b-implementation.md).
 
 ## Spielkern
 
@@ -36,7 +36,7 @@ Fokusverlust während eines begonnenen Laufs bricht ihn ab und macht ihn nicht w
 
 Zieleingang beendet die Zeit beim gültigen logischen Schritt, nicht bei der Landung. Genau ein Ergebnis; spätere Animationen oder Speicherantworten ändern es nicht. Timeranzeige während des Rennens in Minuten, Sekunden und drei Nachkommastellen. Numerische monotone Zeitwerte statt Framezählung oder Sortierung formatierter Zeichenketten; Anzeigepräzision ist keine garantierte identische Gerätelatenz.
 
-Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speicherausbau in P1c, nicht Teil des P1a-Kerns oder der P1b-Integration. P1b zeigt das aktuelle Ergebnis ohne Persistenz. Gleichstandsdetails werden im Speicherpaket festgelegt; Onlinewertung bleibt separat.
+Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speicherausbau in P1c, nicht Teil des P1a-Kerns oder der P1b-Integration. P1b zeigt das aktuelle Ergebnis ohne Persistenz. Der vorbereitete [P1c-Vertrag](p1c-local-results.md) konkretisiert Mikrosekundensortierung, gemeinsame Ränge bei exakter Zeitgleichheit, Top 100 je Identität und Top-10-Anzeige als vorläufige Arbeitsparameter. Onlinewertung bleibt separat.
 
 ## Kamera und Lesbarkeit
 
@@ -54,7 +54,7 @@ Für P1b wird der Status aus logischen Schritten geführt. Das besetzte Startfel
 
 Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie.
 
-Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; die P1b-Handstrecke verwendet zusätzlich für aktuelles und direkt erreichbare Tiles eine kontrastreiche, kameragerichtete und dem jeweiligen Tile zugeordnete Beschriftung oberhalb der Kopfmitte. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben.
+Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken; die P1b-Handstrecke verwendet zusätzlich für aktuelles und direkt erreichbare Tiles eine kontrastreiche, kameragerichtete und dem jeweiligen Tile zugeordnete Beschriftung oberhalb der Kopfmitte. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben. Diese großen weißen P1b-Callouts sind nach D-023/D-024 keine akzeptierte Enddarstellung; ihre Ablösung und die Orientierung der primären Tile-Buchstaben gehören zu P2a / #5, nicht zum P1c-Speicherausbau.
 
 Während des P1b-Laufs genügen Timer und Fehlerfeedback, nach Abschluss Zeit und Fehlerzahl. Eine persönliche Bestzeit und ausführliche Rangliste kommen mit dem separaten Speicherausbau. Pflichtinformationen dürfen nicht allein durch Windows-exklusive Effekte vermittelt werden. Fenstergrößenwechsel darf keine wichtigen Inhalte außerhalb der sichtbaren Fläche ablegen.
 

@@ -97,6 +97,8 @@ Der Runner kennt ab P1b `smoke`, `core`, `integration` und `all`; ein unbekannte
 godot --headless --path . --script res://tests/run_tests.gd -- --suite does-not-exist
 ~~~
 
+P1c / #4 ist auf `codex/p1c-local-leaderboards` vorbereitet. `storage` ist erst dort zu implementieren; anschließend gelten die zusätzlichen Befehle und realen Persistenzprüfungen aus [testing.md](testing.md). Bis dahin ist ein Aufruf dieser noch unbekannten Suite kein erfolgreicher Test. Ablagepfad, Dateiformat und konkrete Wiederanlauf-/Browsergrenzen mit der Implementierung gemäß [p1c-local-results.md](p1c-local-results.md) hier ergänzen. Bestehende Benutzerbestzeiten niemals als Testablage verwenden.
+
 Der Web-Export läuft derzeit ohne Threads. Für einen lokalen Testserver:
 
 ~~~powershell

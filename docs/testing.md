@@ -1,6 +1,6 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-05. P0 ist technisch und manuell abgenommen. Das P1-Profil ist freigegeben und der P1a-Kern abgenommen/gemergt. P1b samt `integration`-Suite und N1–N3 aus Re-Review 5122577064 ist im Draft-PR #13 implementiert; CI `33987533119` auf dem Implementierungscommit ist erfolgreich, Re-Review und physische Plattformabnahme bleiben offen. Grundlage: [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-06. P0, P1a und P1b sind abgenommen und gemergt. P1b umfasst 189 Integrations- und 350 Gesamtassertions; finale PR-CI `34001773894` und Merge-CI `34001879727` sind erfolgreich. Die physische Windows-Abnahme ist bestanden, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P1c ist vorbereitet, seine `storage`-Suite existiert noch nicht. Maßgeblich sind [P1-Regeln](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1c-Vertrag](p1c-local-results.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
 ## P0-Teststand
 
@@ -19,13 +19,13 @@ Issue #2 / PR #12 ist nach gezielter Review-Nacharbeit auf `617015da51edb6ef9df8
 
 Der Re-Review prüfte insbesondere den gültigen 30°-Großfeld-/Mehrfachanschluss und die typfeste Validierung von `neighbors = 42`. Merge-Commit: `5ddf921fdf3736f9e521b8e37b833139beee636f`. Auch der anschließende `main`-CI-Lauf `33972595464` war erfolgreich. Dies sind Kern-/Buildnachweise; kein sichtbarer P1b-Parcours und kein P1b-Spielgefühl wurden damit abgenommen.
 
-## P1b-Teststand im Draft
+## P1b-Teststand und Abschluss
 
-Lokaler Nacharbeitsnachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.official.ed1daf0bf: `git diff --check`, Import, `integration` mit **189 Assertions / 0 Failures**, `all` mit **350 Assertions / 0 Failures** sowie beide Release-Exporte erfolgreich. Die Szenenfolge misst bei 60-Hz-Renderfortschritt und 500/200/125/80-ms-Prüfabständen samt Tempowechsel, Rückweg und Stopp maximal **2,314**, im Mittel **0,407 Welteinheiten** Restweg, **0,000 s** Restlauf und **0** Figurenkorrekturen; das sind kontrollierte Darstellungswerte, kein Mensch-/Hardwarelatenzversprechen. CI `33987533119` auf `8d18dc0` ist erfolgreich; bis zum Re-Review und zur physischen Abnahme ist dies keine Mergeabnahme.
+Lokaler Nacharbeitsnachweis unter Windows 11 Pro 10.0.26200 mit Godot 4.7.2.stable.official.ed1daf0bf: `git diff --check`, Import, `integration` mit **189 Assertions / 0 Failures**, `all` mit **350 Assertions / 0 Failures** sowie beide Release-Exporte erfolgreich. Die Szenenfolge misst bei 60-Hz-Renderfortschritt und 500/200/125/80-ms-Prüfabständen samt Tempowechsel, Rückweg und Stopp maximal **2,314**, im Mittel **0,407 Welteinheiten** Restweg, **0,000 s** Restlauf und **0** Figurenkorrekturen; das sind kontrollierte Darstellungswerte, kein Mensch-/Hardwarelatenzversprechen. CI `33987533119` auf `8d18dc0` war erfolgreich. Der anschließende technische Re-Review und die physische Windows-Abnahme sind bestanden; finale PR-CI `34001773894` und Merge-CI `34001879727` ergänzen den Abschlussnachweis.
 
-Die verpackten Zwischenstände des vorherigen Nacharbeitsstands wurden auf AMD Ryzen 7 5800X, NVIDIA GeForce RTX 3070, 32 GB RAM und 2560 × 1440 Desktopauflösung tatsächlich gestartet. Dieser Nachweis bleibt als Grundlage erhalten, ersetzt aber keine Sicht-/Eingabeprüfung der N1–N3-Änderung. Auf dem korrigierten Arbeitsstand startet `build/windows/parkey.exe` als natives Fenster mit Titel `Parkey`; eine verlässliche Vordergrund-/Eingabeprüfung war in der belegten Umgebung nicht möglich, weil eine fremde bereits offene Anwendung den Vordergrund behielt. Dieser Start ist kein neuer Windows-Spielnachweis. Der HTTP-Webexport wurde mit isoliertem Chrome (headless, Compatibility/WebGL) geladen; CDP-synthetische `A → Z → K → Q`-Eingaben bei 125 ms und Bildprüfung bei 1280 × 720 und 960 × 620 belegen aktuelle/direkte Zusatzbuchstaben und die Statusoberflächen unter `build/evidence/chrome-n1n3-ready-1280x720.png`, `build/evidence/chrome-n1n3-fork-1280x720.png` und `build/evidence/chrome-n1n3-fork-960x620.png`. Browser-CDP ist synthetisch, nicht physisch.
+Historischer technischer Nachweis vor der abschließenden Nutzerabnahme: Die verpackten Zwischenstände des vorherigen Nacharbeitsstands wurden auf AMD Ryzen 7 5800X, NVIDIA GeForce RTX 3070, 32 GB RAM und 2560 × 1440 Desktopauflösung tatsächlich gestartet. Dieser Nachweis bleibt als Grundlage erhalten, ersetzt aber keine Sicht-/Eingabeprüfung der N1–N3-Änderung. Auf dem korrigierten Arbeitsstand startet `build/windows/parkey.exe` als natives Fenster mit Titel `Parkey`; eine verlässliche Vordergrund-/Eingabeprüfung war in der belegten Umgebung nicht möglich, weil eine fremde bereits offene Anwendung den Vordergrund behielt. Dieser Start ist kein neuer Windows-Spielnachweis. Der HTTP-Webexport wurde mit isoliertem Chrome (headless, Compatibility/WebGL) geladen; CDP-synthetische `A → Z → K → Q`-Eingaben bei 125 ms und Bildprüfung bei 1280 × 720 und 960 × 620 belegen aktuelle/direkte Zusatzbuchstaben und die Statusoberflächen unter `build/evidence/chrome-n1n3-ready-1280x720.png`, `build/evidence/chrome-n1n3-fork-1280x720.png` und `build/evidence/chrome-n1n3-fork-960x620.png`. Browser-CDP ist synthetisch, nicht physisch.
 
-**Offen:** Der neue Chrome-Lauf nutzt Browser-synthetische CDP-Ereignisse; der neue Windows-Lauf belegt bislang nur den nativen Start, nicht die Interaktion oder Sichtprüfung. Beides ist kein physischer Tastatur- oder Nutzer-Spieltest. Hardware-Y/Z und Shift, echtes Echo/Überlappen/Burstgefühl, händischer LineEdit-/Canvas-Fokus, Verständlichkeit der 200-ms-Grenze sowie menschliche Kamera-, Feldstatus-, Anschluss- und Routenlesbarkeit müssen auf Windows und Chrome anhand der Anleitung in [p1b-implementation.md](p1b-implementation.md) bestätigt werden. Re-Review und CI auf dem gepushten Head bleiben ebenfalls Abnahmegates; PR #13 bleibt Draft.
+**Abgeschlossen:** Technischer Re-Review sowie physische/manuelle Windows-Abnahme von beiden Routen/Rückweg, Reaktionsgefühl, Kamera, Feldstatus, Fehlerpause, Y/Z/Shift, Echo/Überlappung, Restart, Escape, Textfeld→Canvas und Fokusverlust. PR #13 ist gemergt. **Offen bleibt die physische Chrome-Abnahme**, ausdrücklich auf später verschoben und kein rückwirkender P1b-Mergeblocker. Automatisierte Browserereignisse bleiben synthetische Nachweise. P1c erhält zusätzlich eigene verpflichtende Browserpersistenztests.
 
 ## Verbindlicher Test-/Exportvertrag
 
@@ -100,7 +100,7 @@ P1b ergänzt die tatsächliche Start-/Quick-Restart-Verdrahtung, den Timer und U
 
 ## P1b: Szenenintegration und reale Spielabnahme
 
-Issue #3 und [p1b-implementation.md](p1b-implementation.md) sind der konkrete nächste Auftrag. Zusätzlich zum gemeinsamen Vertrag:
+Issue #3 und [p1b-implementation.md](p1b-implementation.md) beschreiben die abgeschlossene Integration und ihren fortbestehenden Regressionstestvertrag. Die physische Chrome-Prüfung bleibt gemäß dokumentierter Ausnahme offen. Zusätzlich zum gemeinsamen Vertrag:
 
 ```sh
 godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
@@ -117,6 +117,23 @@ HUD-Grenztests: `59.999.999 µs → 00:59.999` und `60.000.000 µs → 01:00.000
 Reale Abnahme: Windows-Export mit Forward+ und über HTTP gestarteter Chrome-Web-Export mit Compatibility jeweils tatsächlich durchspielen. Beide Routen, Rückweg, Fehler/Restart/Menü/Fokus, Y/Z, Shift, Echo/Überlappung und ein schneller Burst mit physischer Tastatur prüfen. Lesbarkeit auch beim Fenstergrößenwechsel kontrollieren. Commit, Engine, OS/Browser, Hardware/Auflösung, ausgeführte Schritte und offene Befunde dokumentieren. Firefox bleibt verpflichtend bei P4, nicht zusätzliches P1b-Gate.
 
 Keine Persistenz- oder Generatorabnahme vorziehen. Die P1b-Übergabe liefert die konkrete Bedien-/Testanleitung und Artefaktpfade. Ein fehlender echter Spieltest bleibt offen; grüne CI ersetzt ihn nicht.
+
+## P1c: Ergebnisablage und Persistenzabnahme
+
+Der nächste Auftrag ist Issue #4 mit [p1c-local-results.md](p1c-local-results.md). Die `storage`-Suite ist **erst in diesem Paket anzulegen**; aktuell kennt der Runner nur `smoke`, `core`, `integration` und `all`.
+
+```sh
+godot --headless --path . --import
+godot --headless --path . --script res://tests/run_tests.gd -- --suite storage
+godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
+godot --headless --path . --script res://tests/run_tests.gd -- --suite all
+godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
+godot --headless --path . --export-release "Web" build/web/index.html
+```
+
+Echte temporäre Dateien und gezielt injizierte I/O-Fehler verwenden. Auch bestehende Szenentests müssen ihre Speicherabhängigkeit vor `_ready` isolieren, damit `integration`/`all` keine Benutzerbestzeiten verändern. Der Paketvertrag konkretisiert einmalige IDs, verzögerte Speicherantworten nach Restart, tatsächliche Ranglistentrennung, Gleichstände, Aufbewahrung sowie beschädigte/unbekannte Formate und sichere Ersetzung. Tests des echten Szenen-/Viewport-Pfads ergänzen die Storetests.
+
+Zusätzlich im exportierten Windows-Spiel Abschluss→Schließen→Neustart und im tatsächlichen Desktop-Chrome-Webexport derselben Origin Abschluss→Reload sowie Tab schließen→erneut öffnen prüfen. Temporäre Speicherung bei eingeschränktem Browser-Speicher muss verständlich angezeigt werden. Commit, Engine, Plattform/Browser, Origin/Testpfad und beobachteter Speicherstatus gehören in den Nachweis. Die P1b-Verschiebung der physischen Chrome-Tastaturabnahme hebt diese neuen Persistenzprüfungen nicht auf; ein Dateisystem-Mock und ein Export allein erfüllen sie nicht. Firefox bleibt P4. Implementierungs-PR bis zur vollständigen P1c-Abnahme Draft lassen.
 
 ## Datenvalidator und Generator
 
