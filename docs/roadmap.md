@@ -1,15 +1,15 @@
 # PoC-Roadmap
 
-Stand: 2026-09-05. **P0 und P1a sind abgenommen und gemergt. P1b ist im Draft-PR #13 einschließlich N1–N3 aus Re-Review 5122577064 implementiert; CI `33987533119` auf dem Implementierungscommit ist erfolgreich, Re-Review und physische Nutzerabnahme bleiben offen.** Issues beschreiben den Lieferumfang; [Umsetzungsplan](implementation-plan.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md) und [Teststrategie](testing.md) enthalten die gemeinsamen Verträge. P4 ist Integrationsabnahme, keine zusätzliche Featurephase.
+Stand: 2026-09-06. **P0, P1a und P1b sind abgenommen und gemergt.** P1b wurde auf Windows physisch/manuell abgenommen; die physische Chrome-Abnahme wird wegen der bestätigten Windows-Priorität später nachgeholt und war ausdrücklich kein P1b-Mergeblocker. Issues beschreiben den Lieferumfang; [Umsetzungsplan](implementation-plan.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md) und [Teststrategie](testing.md) enthalten die gemeinsamen Verträge. P4 ist Integrationsabnahme, keine zusätzliche Featurephase.
 
 ## Meilensteine und Pakete
 
 | Meilenstein | Pakete | Ergebnis | Status |
 | --- | --- | --- | --- |
 | D0 | Dokumentation/Planung | Anforderungen, Architektur, neun Issues, Abhängigkeiten und Testvertrag | Dokumentiert; P1-Profil freigegeben |
-| P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Projekt, Windows/Web, minimale Tests/CI | Abgenommen: automatisierte Prüfungen, native Starts und Hardwaretastaturtests |
-| P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Kern, Handparcours, Timer, Fehlerpause, dauerhafte Bestzeiten | #2 abgenommen/gemergt; #3 N1–N3 im Draft; #4 nicht begonnen |
-| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | Nicht begonnen |
+| P0 | [#1](https://github.com/venomenon328/parkey/issues/1) | Gemeinsames Projekt, Windows/Web, minimale Tests/CI | Abgenommen und gemergt |
+| P1 | [#2](https://github.com/venomenon328/parkey/issues/2), [#3](https://github.com/venomenon328/parkey/issues/3), [#4](https://github.com/venomenon328/parkey/issues/4) | Kern, Handparcours, Timer, Fehlerpause, dauerhafte Bestzeiten | #2 und #3 abgenommen/gemergt; #4 nächstes Paket |
+| P2 | [#5](https://github.com/venomenon328/parkey/issues/5), [#6](https://github.com/venomenon328/parkey/issues/6) | Erprobte Routen und gestaltete Beispielwelt/Web-Fallback | Nicht begonnen; Kamera-/Beschriftungsfolgearbeit aus P1b in #5 vorgemerkt |
 | P3 | [#7](https://github.com/venomenon328/parkey/issues/7), [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Generator, Integration und Export-Regelparität | Nicht begonnen |
 | P4 | [#9](https://github.com/venomenon328/parkey/issues/9) | Geprüfte Testpakete aus einem Commit samt Abnahmematrix | Nicht begonnen |
 
@@ -17,7 +17,7 @@ Stand: 2026-09-05. **P0 und P1a sind abgenommen und gemergt. P1b ist im Draft-PR
 
 `#1 → #2 → #3 → #4 → #5 → (#6 und #7) → #8 → #9`
 
-Nächster Schritt: **Draft-PR #13 zu #3 / P1b vollständig abnehmen.** Die Implementierung liegt auf `codex/p1b-playable-course`; automatisierte Nachweise, reale Plattformtests und Review werden getrennt dokumentiert. Erst nach Abnahme und Merge ist P1b abgeschlossen. Danach folgt #4 mit dauerhaften Bestzeiten; keine späteren Pakete vorziehen.
+Nächster Schritt: **P1c / Issue #4 vorbereiten und vom aktuellen `main` starten.** P1b ist über PR #13 mit Merge-Commit `e8e947e4100c8f3e534ae425752ac2c30c7fee7a` abgeschlossen; `main`-CI `34001879727` ist erfolgreich. Keine späteren Pakete vorziehen.
 
 Nach #5 sind Abschnittsverträge und Eignung geprüft. #6/#7 können dann bei stabilen Verträgen parallel laufen; #8 wartet auf beide Merges. Sonst beginnt ein Paket nach seiner Abhängigkeit vom aktuellen `main`.
 
@@ -27,13 +27,15 @@ Nach #5 sind Abschnittsverträge und Eignung geprüft. #6/#7 können dann bei st
 
 **P1a:** Abgeschlossen nach Review-Nacharbeit auf `617015d`: gedrehter Großfeld-/Mehrfachanschluss und typfeste Behandlung fehlerhafter Nachbarlisten geprüft; 127 `core`-Assertions, 158 insgesamt, Exporte und CI erfolgreich. Ein Grafik-/Spieltest war kein Bestandteil der Kernabnahme.
 
-**P1b/P1c:** D-010 bis D-013 verlangen freien Graph-/Layoutvertrag und räumliche Identität. P1b muss die unregelmäßige Handstelle sichtbar integrieren und Start, Restart, Fehlerfeedback, Nachbarschaft, Kamera und Timer im Zusammenspiel prüfen. Automatisierte `integration`-Suite plus echte Windows-/Web-Spielabnahme; kein Abschluss allein durch Headless-Export. P1c ergänzt getrennt Persistenz und Bestzeiten. D-014 bis D-018 bleiben unverändert; keine vollständige Menü-/Übungsfortsetzungsoberfläche vorziehen.
+**P1b:** Abgeschlossen. `integration` mit 189 Assertions, `all` mit 350; Windows-/Web-Exporte und CI erfolgreich. Physische/manuelle Windows-Abnahme bestanden: beide Routen/Rückweg, Reaktionsgefühl, Kamera, Feldstatus, Fehlerpause, Y/Z/Shift, Echo/Überlappung, Restart, Escape, UI-Rückfokus und Fokusverlust. Die physische Chrome-Abnahme bleibt als späterer Nachweis offen und darf nicht als bereits bestanden ausgegeben werden. Die noch nicht gewünschte Enddarstellung der großen weißen Zusatzbuchstaben sowie die Ausrichtung der primären Tile-Beschriftung sind Folgearbeit von P2a / #5.
 
-**P2:** Einsehbare Routenwahl, asymmetrische Anschlüsse und moderate Größen/Formen in beiden Profilen erproben. Unterschiedliche Tippmethoden statt ungeprüfter Ergonomiebehauptung. Zielhardware, Auflösung, Leistungsbudget und visuelle Nutzerabnahme gehören zu #6.
+**P1c:** Ergänzt getrennt Persistenz, lokale Bestzeiten und Ergebnisschirm. Keine Onlinewertung vorziehen.
+
+**P2:** Einsehbare Routenwahl, asymmetrische Anschlüsse und moderate Größen/Formen in beiden Profilen erproben. In #5 außerdem die P1b-Kamera-/Beschriftungsfolgearbeit bearbeiten: primäre Tile-Buchstaben aus der Spielkamera sinnvoll ausrichten, im aktuellen Handkurs die gewünschte 90°-Drehung gegenüber P1b prüfen und große weiße Callouts möglichst entfernen. Unterschiedliche Tippmethoden statt ungeprüfter Ergonomiebehauptung. Zielhardware, Auflösung, Leistungsbudget und visuelle Nutzerabnahme gehören zu #6.
 
 **P3:** Graph und Layout gemeinsam validieren und in Identität/Golden-Fällen binden; keine feste Raster-/Nachbarzahlregel. Begrenzte Generierungsversuche, Versionierung und echte Windows-/Web-Konformität in #8.
 
-**P4:** Alle bestätigten und PoC-freigegebenen Anforderungen D-001 bis D-018 nachweisen. Gleicher geprüfter Commit, Plattformmatrix, Einschränkungen, Credits und Nutzerabnahme. Keine automatische öffentliche Veröffentlichung.
+**P4:** Alle bestätigten und PoC-freigegebenen Anforderungen nachweisen. Gleicher geprüfter Commit, Plattformmatrix, Einschränkungen, Credits und Nutzerabnahme. Die bis dahin noch offene physische Browserprüfung spätestens hier schließen oder transparent als Einschränkung ausweisen. Keine automatische öffentliche Veröffentlichung.
 
 ## Abschlussumfang
 
