@@ -2,7 +2,7 @@
 
 Stand: 2026-09-06. Diese Referenz gehört zur laufenden visuellen Nutzerabnahme von Issue #6 / PR #18.
 
-- [`mock-visual-reference.jpg`](mock-visual-reference.jpg) ist eine gültige, komprimierte und im Repository versionierte Referenzkopie des vom Nutzer bereitgestellten Mock-Screenshots. Die Datei wurde vor der nächsten Iteration ersetzt und ist als JPEG lesbar; `docs/reference/.gdignore` schließt Gestaltungsreferenzen weiterhin vom Runtime-Import aus.
+- Für die aktuelle Fidelity-Runde wird der im Auftrag lesbar bereitgestellte Original-Mock verwendet. Die frühere Behauptung, die Repo-Kopie sei eine gültige visuelle Referenz, wird hier nicht als Prüfbeleg übernommen. Gemäß [Issue #6](https://github.com/venomenon328/parkey/issues/6#issuecomment-5560962048) erfolgt keine Reparatur, Encoding-Arbeit oder erneuter Repo-Import. `docs/reference/.gdignore` schließt Gestaltungsreferenzen vom Runtime-Import aus.
 - Der Mock ist **qualitative Gestaltungsorientierung**, kein zur Laufzeit zu übernehmendes Asset und keine pixelgenaue Zielvorgabe.
 - Visuell übernommene Richtung: weich gerundete Kappen mit klarer Schulter, kleinere Druckzeichen mit Abstand zum Rand, bewölkter heller Himmel, räumliche Tiefe, hochwertige Material-/Lichtwirkung und kräftiger mittiger Timer mit Stoppuhr. Holzmaterial, Streckenanordnung und die Mock-Bestenliste sind keine Umsetzungspflicht.
 - Für die große P2b-Nacharbeit verbindlich: symbolfreie Keycap-Statusdarstellung (keine Punkte/Haken/Rauten), normale Ergebniszeiten ohne Mikrosekunden, explizite lizenzierte Schriftressourcen und Kamera-/Kompositionstuning unter Erhalt der Routenlesbarkeit.

@@ -94,6 +94,8 @@ Das bestätigte Nutzerbriefing D-025–D-028 konkretisiert Figur, Keycaps, Beisp
 
 Die visuelle Nacharbeit zu #6 konkretisiert die Formensprache: geschlossene verjüngte Kappen mit weicher Schulter und flacher Mulde, dunkle beleuchtete Legenden innerhalb der nutzbaren Topfläche, helles Wolkenpanorama und zentraler kräftiger Timer mit Stoppuhr. Die vorhandene Werkstatt bleibt die einzige Beispielwelt. Der Mock legt kein bestimmtes Holzmaterial fest; die erneute subjektive Nutzerabnahme bleibt offen.
 
+Der weitere Fidelity-Pass vertieft Möbel-/Pflanzenformen, Beschläge, Materialantwort, Licht und Figurdetails. Holzmaserung folgt gemäß ergänzender Nutzerentscheidung der Längsrichtung der Bretter; die Kappen bleiben warmer matter Kunststoff. Grafik- und Fenstersynchronisation ändern weder Eingabeannahme noch Laufzeit oder Streckenidentität.
+
 ## Bewusst später
 
 Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum ersten PoC. Eine fertige Pausemenü-/Übungsfortsetzungsoberfläche ist kein versteckter Pflichtumfang von P1a/P1b.

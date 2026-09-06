@@ -18,6 +18,7 @@ const RunnerVisualScript = preload("res://scripts/presentation/runner_visual.gd"
 const WorkshopWorldScript = preload("res://scripts/presentation/workshop_world.gd")
 const WorkshopHUDScript = preload("res://scripts/presentation/workshop_hud.gd")
 const RenderEvidenceScript = preload("res://tests/render_evidence.gd")
+const WindowPacingScript = preload("res://scripts/presentation/window_pacing.gd")
 
 const FIELD_HEIGHT := 0.32
 const FIGURE_HEIGHT := 0.55
@@ -108,6 +109,8 @@ func configure_for_test(
 
 
 func _ready() -> void:
+	if OS.has_feature("windows") and DisplayServer.get_name() != "headless":
+		add_child(WindowPacingScript.new())
 	var render_evidence := RenderEvidenceScript.requested()
 	if render_evidence:
 		_storage_base_path = "user://parkey-test-results/render-evidence/run-%d" % Time.get_ticks_usec()
@@ -273,14 +276,14 @@ func _build_environment() -> void:
 	var quality := RenderProfileScript.quality_enabled()
 	WorkshopWorldScript.build(self, %WorldEnvironment, %Floor, quality)
 	get_node("KeyLight").shadow_enabled = quality
-	get_node("KeyLight").light_energy = 1.0 if quality else 0.85
-	get_node("KeyLight").light_angular_distance = 1.2
-	get_node("KeyLight").directional_shadow_max_distance = 75.0
+	get_node("KeyLight").light_energy = 1.08 if quality else 0.85
+	get_node("KeyLight").light_angular_distance = 2.5
+	get_node("KeyLight").directional_shadow_max_distance = 55.0
 	get_node("KeyLight").shadow_blur = 1.0
-	get_node("KeyLight").shadow_normal_bias = 1.5
+	get_node("KeyLight").shadow_normal_bias = 0.65
 	if quality:
 		RenderingServer.directional_soft_shadow_filter_set_quality(RenderingServer.SHADOW_QUALITY_SOFT_HIGH)
-	get_node("FillLight").light_energy = 0.22
+	get_node("FillLight").light_energy = 0.16
 	get_viewport().msaa_3d = Viewport.MSAA_4X if quality else Viewport.MSAA_DISABLED
 	var grain := Image.create(128, 128, false, Image.FORMAT_RGB8)
 	var normal := Image.create(128, 128, false, Image.FORMAT_RGB8)

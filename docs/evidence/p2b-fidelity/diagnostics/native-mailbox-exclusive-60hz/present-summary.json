@@ -1,0 +1,50 @@
+{
+  "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/native-mailbox-exclusive-60hz/presents.csv",
+  "rows": 1198,
+  "modes": {
+    "Composed: Copy with GPU GDI": 1198
+  },
+  "tearing": {
+    "0": 1198
+  },
+  "sync_intervals": {
+    "-1": 1198
+  },
+  "presents": {
+    "count": 1198,
+    "mean_ms": 16.665710851419,
+    "p50_ms": 16.6581,
+    "p95_ms": 16.9613,
+    "p99_ms": 17.1672,
+    "max_ms": 17.7193,
+    "over_20": 0
+  },
+  "displayed": {
+    "count": 1175,
+    "mean_ms": 16.991500085106374,
+    "p50_ms": 16.6785,
+    "p95_ms": 27.7187,
+    "p99_ms": 31.4298,
+    "max_ms": 33.7365,
+    "over_20": 313
+  },
+  "gpu_busy": {
+    "count": 1198,
+    "mean_ms": 12.837247746243754,
+    "p50_ms": 13.126,
+    "p95_ms": 13.7217,
+    "p99_ms": 13.8898,
+    "max_ms": 14.1731,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 1198,
+    "mean_ms": 16.665710851419,
+    "p50_ms": 16.6581,
+    "p95_ms": 16.9613,
+    "p99_ms": 17.1672,
+    "max_ms": 17.7193,
+    "over_20": 0
+  },
+  "present_api": null
+}

@@ -1,0 +1,1 @@
+Variant: project.godot starts vsync_mode.windows=3 directly; WindowPacing runtime switch skipped; exclusive fullscreen selected by diagnostic helper.

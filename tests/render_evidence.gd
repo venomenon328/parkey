@@ -10,6 +10,8 @@ var last_tick := 0
 var started := 0
 var skip_frames := 0
 var frames_without_focus := 0
+var first_frame := {}
+var pacing_seconds := 0.0
 var output_directory := "user://parkey-test-results/render-evidence"
 
 
@@ -22,6 +24,11 @@ static func requested() -> bool:
 func _ready() -> void:
 	scene = get_parent()
 	started = Time.get_ticks_usec()
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--evidence-output="):
+			output_directory = argument.trim_prefix("--evidence-output=")
+		if argument.begins_with("--evidence-pacing="):
+			pacing_seconds = clampf(float(argument.trim_prefix("--evidence-pacing=")), 5.0, 120.0)
 	DirAccess.make_dir_recursive_absolute(output_directory)
 	_run.call_deferred()
 
@@ -43,9 +50,19 @@ func _run() -> void:
 		for screen_index in DisplayServer.get_screen_count():
 			if DisplayServer.screen_get_refresh_rate(screen_index) > DisplayServer.screen_get_refresh_rate(get_window().current_screen):
 				get_window().current_screen = screen_index
+		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--evidence-screen="):
+				get_window().current_screen = int(argument.trim_prefix("--evidence-screen="))
 		get_window().position = DisplayServer.screen_get_position(get_window().current_screen)
 		get_window().grab_focus()
 		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--evidence-position="):
+				var position_parts := argument.trim_prefix("--evidence-position=").split(",")
+				get_window().position = Vector2i(int(position_parts[0]), int(position_parts[1]))
+			if argument.begins_with("--evidence-vsync="):
+				DisplayServer.window_set_vsync_mode(int(argument.trim_prefix("--evidence-vsync=")))
+			if argument.begins_with("--evidence-window-mode="):
+				get_window().mode = int(argument.trim_prefix("--evidence-window-mode="))
 			if argument.begins_with("--evidence-size="):
 				var dimensions := argument.trim_prefix("--evidence-size=").split("x")
 				if dimensions.size() == 2:
@@ -54,6 +71,14 @@ func _run() -> void:
 	await RenderingServer.frame_post_draw
 	_emit({"kind": "first_frame", "engine_ticks_ms": Time.get_ticks_msec(), "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "adapter": RenderingServer.get_video_adapter_name(), "screen_refresh_hz": DisplayServer.screen_get_refresh_rate(get_window().current_screen) if not OS.has_feature("web") else -1.0, "screen_index": get_window().current_screen, "window_position": str(get_window().position), "vsync_mode": DisplayServer.window_get_vsync_mode()})
 	await get_tree().create_timer(3.0).timeout
+	if pacing_seconds > 0.0:
+		await _letters("AZK", 0.24)
+		await get_tree().create_timer(1.0).timeout
+		measuring = true
+		await get_tree().create_timer(pacing_seconds).timeout
+		measuring = false
+		_finish_report()
+		return
 	await _capture("ready")
 	await _letters("AZK", 0.24)
 	await _capture("alpha")
@@ -92,6 +117,11 @@ func _run() -> void:
 	measuring = true
 	await get_tree().create_timer(15.0).timeout
 	measuring = false
+	_finish_report()
+
+
+func _finish_report() -> void:
+	var ordered_frames := frames_ms.duplicate()
 	frames_ms.sort()
 	var total := 0.0
 	var over_20 := 0
@@ -103,6 +133,13 @@ func _run() -> void:
 		if frame > 33.334:
 			over_33 += 1
 	var report := {"kind": "complete", "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "engine": Engine.get_version_info().string, "adapter": RenderingServer.get_video_adapter_name(), "frames_without_focus": frames_without_focus, "sample_frames": frames_ms.size(), "sample_seconds": total / 1000.0, "mean_fps": frames_ms.size() * 1000.0 / total, "p50_ms": _percentile(0.5), "p95_ms": _percentile(0.95), "p99_ms": _percentile(0.99), "max_ms": frames_ms[-1], "frames_over_20_ms": over_20, "frames_over_33_ms": over_33, "draw_calls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), "primitives": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME), "runs": reports}
+	report["first_frame"] = first_frame
+	report["measurement"] = "static_pacing_diagnostic" if pacing_seconds > 0.0 else "four_routes_and_decision_idle"
+	report["frame_intervals_ms"] = ordered_frames
+	if not OS.has_feature("web"):
+		report["final_max_fps"] = Engine.max_fps
+		report["final_vsync_mode"] = DisplayServer.window_get_vsync_mode()
+		report["final_screen_refresh_hz"] = DisplayServer.screen_get_refresh_rate(get_window().current_screen)
 	var file := FileAccess.open(output_directory.path_join("metrics.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(report, "\t"))
 	file.close()
@@ -140,7 +177,23 @@ func _capture(label: String) -> void:
 
 
 func _emit(report: Dictionary) -> void:
-	print("P2B_EVIDENCE " + JSON.stringify(report))
+	if report.kind == "first_frame" and not OS.has_feature("web"):
+		report["window_mode"] = get_window().mode
+		report["window_size"] = str(get_window().size)
+		report["window_position_with_decorations"] = str(DisplayServer.window_get_position_with_decorations())
+		report["window_size_with_decorations"] = str(DisplayServer.window_get_size_with_decorations())
+		report["rendering_driver"] = RenderingServer.get_current_rendering_driver_name()
+		report["max_fps"] = Engine.max_fps
+		report["arguments"] = OS.get_cmdline_args() + OS.get_cmdline_user_args()
+		var screens: Array[Dictionary] = []
+		for index in DisplayServer.get_screen_count():
+			screens.append({"index": index, "position": str(DisplayServer.screen_get_position(index)), "size": str(DisplayServer.screen_get_size(index)), "refresh_hz": DisplayServer.screen_get_refresh_rate(index)})
+		report["screens"] = screens
+	if report.kind == "first_frame":
+		first_frame = report.duplicate(true)
+	var summary := report.duplicate()
+	summary.erase("frame_intervals_ms")
+	print("P2B_EVIDENCE " + JSON.stringify(summary))
 	if OS.has_feature("web"):
 		JavaScriptBridge.eval("window.parkeyEvidence = " + JSON.stringify(report))
 		if report.kind == "complete":

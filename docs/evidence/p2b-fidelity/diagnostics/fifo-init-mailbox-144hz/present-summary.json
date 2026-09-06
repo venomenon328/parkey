@@ -1,0 +1,58 @@
+{
+  "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/fifo-init-mailbox-144hz/presents.csv",
+  "rows": 2865,
+  "modes": {
+    "Hardware Composed: Independent Flip": 2865
+  },
+  "tearing": {
+    "1": 2865
+  },
+  "sync_intervals": {
+    "0": 2865
+  },
+  "presents": {
+    "count": 2865,
+    "mean_ms": 6.9724285514834055,
+    "p50_ms": 6.9501,
+    "p95_ms": 7.3825,
+    "p99_ms": 8.5424,
+    "max_ms": 10.1389,
+    "over_20": 0
+  },
+  "displayed": {
+    "count": 2865,
+    "mean_ms": 6.974601291448507,
+    "p50_ms": 6.9499,
+    "p95_ms": 7.0011,
+    "p99_ms": 8.5082,
+    "max_ms": 9.6146,
+    "over_20": 0
+  },
+  "gpu_busy": {
+    "count": 2865,
+    "mean_ms": 6.65863179755673,
+    "p50_ms": 6.3462,
+    "p95_ms": 7.8517,
+    "p99_ms": 8.831,
+    "max_ms": 9.9627,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 2865,
+    "mean_ms": 6.835808307155303,
+    "p50_ms": 6.827,
+    "p95_ms": 7.2418,
+    "p99_ms": 8.3948,
+    "max_ms": 9.9212,
+    "over_20": 0
+  },
+  "present_api": {
+    "count": 2865,
+    "mean_ms": 0.13662324607329832,
+    "p50_ms": 0.124,
+    "p95_ms": 0.2128,
+    "p99_ms": 0.3126,
+    "max_ms": 0.5989,
+    "over_20": 0
+  }
+}

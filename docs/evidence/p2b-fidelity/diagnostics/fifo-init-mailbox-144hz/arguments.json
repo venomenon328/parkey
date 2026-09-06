@@ -1,0 +1,13 @@
+[
+  "--resolution",
+  "1920x1080",
+  "--log-file",
+  "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/fifo-init-mailbox-144hz/render.txt",
+  "--",
+  "--p2b-evidence",
+  "--evidence-size=1920x1080",
+  "--evidence-screen=0",
+  "--evidence-position=300,140",
+  "--evidence-pacing=30",
+  "--evidence-output=E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/fifo-init-mailbox-144hz"
+]

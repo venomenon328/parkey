@@ -1,0 +1,59 @@
+{
+  "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/normal-present-144hz/presents.csv",
+  "rows": 4297,
+  "modes": {
+    "Hardware Composed: Independent Flip": 4168,
+    "Hardware: Independent Flip": 129
+  },
+  "tearing": {
+    "0": 4297
+  },
+  "sync_intervals": {
+    "0": 4297
+  },
+  "presents": {
+    "count": 4297,
+    "mean_ms": 6.973322271352075,
+    "p50_ms": 6.9437,
+    "p95_ms": 7.6195,
+    "p99_ms": 8.2146,
+    "max_ms": 9.23,
+    "over_20": 0
+  },
+  "displayed": {
+    "count": 4168,
+    "mean_ms": 7.188945681381936,
+    "p50_ms": 6.943,
+    "p95_ms": 7.0212,
+    "p99_ms": 13.9073,
+    "max_ms": 20.932,
+    "over_20": 1
+  },
+  "gpu_busy": {
+    "count": 4297,
+    "mean_ms": 6.617839353037015,
+    "p50_ms": 6.7533,
+    "p95_ms": 8.014,
+    "p99_ms": 8.2478,
+    "max_ms": 8.865,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 4297,
+    "mean_ms": 6.8408608098673565,
+    "p50_ms": 6.8146,
+    "p95_ms": 7.4813,
+    "p99_ms": 8.0922,
+    "max_ms": 9.0206,
+    "over_20": 0
+  },
+  "present_api": {
+    "count": 4297,
+    "mean_ms": 0.1324621363742147,
+    "p50_ms": 0.1249,
+    "p95_ms": 0.184,
+    "p99_ms": 0.2491,
+    "max_ms": 0.4461,
+    "over_20": 0
+  }
+}

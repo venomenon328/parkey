@@ -1,0 +1,58 @@
+{
+  "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/fifo-60hz-cap120/presents.csv",
+  "rows": 1194,
+  "modes": {
+    "Composed: Flip": 1194
+  },
+  "tearing": {
+    "0": 1194
+  },
+  "sync_intervals": {
+    "1": 1194
+  },
+  "presents": {
+    "count": 1194,
+    "mean_ms": 16.677565410385245,
+    "p50_ms": 13.9359,
+    "p95_ms": 20.936,
+    "p99_ms": 20.9815,
+    "max_ms": 21.3799,
+    "over_20": 479
+  },
+  "displayed": {
+    "count": 1194,
+    "mean_ms": 16.68020737018424,
+    "p50_ms": 16.6801,
+    "p95_ms": 23.9001,
+    "p99_ms": 25.9639,
+    "max_ms": 26.9872,
+    "over_20": 88
+  },
+  "gpu_busy": {
+    "count": 1194,
+    "mean_ms": 8.709018760469009,
+    "p50_ms": 8.8251,
+    "p95_ms": 9.4055,
+    "p99_ms": 9.5015,
+    "max_ms": 9.749,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 1194,
+    "mean_ms": 16.535557118927954,
+    "p50_ms": 13.8087,
+    "p95_ms": 20.7998,
+    "p99_ms": 20.8564,
+    "max_ms": 21.1902,
+    "over_20": 479
+  },
+  "present_api": {
+    "count": 1194,
+    "mean_ms": 0.14195829145728647,
+    "p50_ms": 0.1346,
+    "p95_ms": 0.2044,
+    "p99_ms": 0.2998,
+    "max_ms": 0.4212,
+    "over_20": 0
+  }
+}

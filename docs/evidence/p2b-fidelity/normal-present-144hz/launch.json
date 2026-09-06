@@ -1,0 +1,18 @@
+{
+  "executable": "build/windows/parkey.exe",
+  "arguments": [
+    "--resolution",
+    "1920x1080",
+    "--screen",
+    "0",
+    "--position",
+    "300,140",
+    "--quit-after",
+    "6000",
+    "--log-file",
+    "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/normal-present-144hz/render.txt"
+  ],
+  "external_trace_seconds": 30,
+  "evidence_helper": false,
+  "normal_runtime": true
+}

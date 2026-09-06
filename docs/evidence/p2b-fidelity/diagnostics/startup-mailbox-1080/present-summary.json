@@ -1,0 +1,50 @@
+{
+  "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/present-default-1080/presents.csv",
+  "rows": 4297,
+  "modes": {
+    "Composed: Copy with GPU GDI": 4297
+  },
+  "tearing": {
+    "0": 4297
+  },
+  "sync_intervals": {
+    "-1": 4297
+  },
+  "presents": {
+    "count": 4297,
+    "mean_ms": 6.9699860833139455,
+    "p50_ms": 6.9387,
+    "p95_ms": 7.4547,
+    "p99_ms": 8.0307,
+    "max_ms": 8.9451,
+    "over_20": 0
+  },
+  "displayed": {
+    "count": 4223,
+    "mean_ms": 7.092037295761288,
+    "p50_ms": 6.9453,
+    "p95_ms": 8.3481,
+    "p99_ms": 13.8873,
+    "max_ms": 23.2249,
+    "over_20": 1
+  },
+  "gpu_busy": {
+    "count": 4297,
+    "mean_ms": 6.417010798231331,
+    "p50_ms": 6.556,
+    "p95_ms": 7.5478,
+    "p99_ms": 8.0546,
+    "max_ms": 8.6304,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 4297,
+    "mean_ms": 6.9699860833139455,
+    "p50_ms": 6.9387,
+    "p95_ms": 7.4547,
+    "p99_ms": 8.0307,
+    "max_ms": 8.9451,
+    "over_20": 0
+  },
+  "present_api": null
+}

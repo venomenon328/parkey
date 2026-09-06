@@ -127,7 +127,7 @@ build/windows/parkey.exe --resolution 1920x1080 -- --p2b-evidence --evidence-siz
 build/windows/parkey.exe --resolution 2560x1440 -- --p2b-evidence --evidence-size=2560x1440
 ```
 
-Die zusätzliche Größenangabe setzt nach der anfänglichen DPI-Aushandlung die Clientgröße; der Prüfhelfer protokolliert die tatsächlichen PNG-Pixelmaße, nicht nur die skalierte `WindowTexture`-Breitenangabe. Screenshots und `metrics.json` entstehen unter `user://parkey-test-results/render-evidence/`; vor der nächsten Auflösung in einen eigenen Nachweisordner kopieren. Testresultate liegen in einem separaten Unterordner je Prozessstart. Benutzerbestzeiten werden nicht verändert.
+Die zusätzliche Größenangabe setzt nach der anfänglichen DPI-Aushandlung die Clientgröße; der Prüfhelfer protokolliert die tatsächlichen PNG-Pixelmaße. Screenshots und `metrics.json` entstehen unter `user://parkey-test-results/render-evidence/`; mit `--evidence-output=E:/Zeuch/Coding/parkey/build/evidence/eigener-lauf` direkt einen eigenen Ordner wählen. Testresultate liegen separat je Prozessstart; Benutzerbestzeiten werden nicht verändert. Rohdaten enthalten die geordneten Frameintervalle, reale Fenster-/Monitorwerte, Renderdriver sowie das anfängliche und abschließende FPS-Limit.
 
 Web: Der lokale Prüftreiber verwendet nur Node-24-Bordmittel. Er dient den unveränderten Webexport aus und nimmt ausschließlich die eigenen Bilder/Messwerte des explizit aktivierten Spiels entgegen; keine Browser-Debugging-Schnittstelle, keine Profilzugriffe und kein externer Dienst.
 
@@ -141,6 +141,32 @@ Der Server bindet ausschließlich `127.0.0.1`, akzeptiert nur begrenzte JSON-Nac
 
 Die Nacharbeit erfasst acht Zustände einschließlich `beta` und `beta_long` für die schmalen Formate und das breite W. Native Messfenster sichtbar öffnen und während des Laufs fokussiert lassen; verdeckte Fenster können vom Desktop gedrosselt werden und liefern keine vergleichbare Vordergrundleistung. Nur im Prüfmodus wählt der Helfer den angeschlossenen Bildschirm mit der höchsten gemeldeten Frequenz, setzt die Fensterposition dorthin und fordert beim Start Fokus an. Der erste native Frame protokolliert Bildschirmfrequenz, Bildschirmindex, Fensterposition und VSync-Modus; der Abschluss zählt auch Messframes ohne Fensterfokus. Diese Zahl muss bei der Auswertung mit angegeben werden. Das normale Spiel erhält keine neue Bildschirm-/Fokussteuerung. `.gdignore` hält die reine Gestaltungsreferenz ebenso wie die Renderbelege aus dem Spielimport heraus.
 
-Die große P2b-Nacharbeit verwendet lokal versionierte OFL-Schriften und ein CC0-HDR unter `assets/`; Quellen und Lizenztexte stehen in [CREDITS.md](../CREDITS.md). Beide Export-Presets packen die Credits und Lizenztexte mit ein. Es sind keine zusätzlichen Werkzeuge, Dienste oder Laufzeitdownloads erforderlich.
+Die P2b-Nacharbeit verwendet lokal versionierte OFL-Schriften, ein CC0-HDR und drei CC0-Holzkanäle unter `assets/`; Quellen und Lizenztexte stehen in [CREDITS.md](../CREDITS.md). Beide Export-Presets packen Credits und Lizenztexte mit ein. Das Spiel benötigt keine zusätzlichen Werkzeuge, Dienste oder Laufzeitdownloads.
 
-Zur getrennten Diagnose von Renderlast und Fenstersynchronisation kann derselbe native Release mit `--disable-vsync --max-fps 144` zusätzlich geprüft werden. Das ist eine ausdrücklich benannte Diagnosekonfiguration, keine neue VSync-Voreinstellung und kein Ersatz für den normalen 60-FPS-Nachweis. Beide Messreihen und ihre Frame-Spitzen getrennt ausweisen.
+Windows initialisiert regulär mit FIFO und schaltet am bestehenden Fenster auf Mailbox-VSync; das automatische Limit entspricht dem aktuellen Fenstermonitor (`WindowPacing`, Fallback 60). Für normale Nachweise weder `--disable-vsync`, `--max-fps` noch `--evidence-vsync` setzen. Die Platzierung bleibt Sache des Fenstersystems. `--evidence-screen=1` wählt im Prüfmodus explizit den zweiten Monitor; `--evidence-position=300,140` setzt nur die Prüfposition. `--evidence-pacing=40` misst statt vier Routen einen ruhenden Entscheidungsblick für 40 Sekunden. Diese statische Zusatzmessung ersetzt die Routen-/Bildprüfung nicht. `--evidence-window-mode=4` dient ausschließlich der getrennten Gegenprobe mit exklusivem Vollbild; die normale Fensterwahl bleibt unverändert.
+
+Diagnosen dürfen `--evidence-vsync=1` (FIFO), `--evidence-vsync=3` (Mailbox), `--rendering-driver d3d12` oder `--disable-vsync --max-fps 144` getrennt vergleichen. Abweichende Synchronisation/Driver immer ausdrücklich kennzeichnen; niemals als Default-Erfolg ausgeben. Grafikläufe nacheinander und ohne gleichzeitig laufenden Export durchführen.
+
+Optionales Windows-ETW-Werkzeug: [PresentMon 2.5.1](https://github.com/GameTechDev/PresentMon/releases/tag/v2.5.1), geprüft 2026-09-06, MIT. Portable Datei und unveränderte `LICENSE.txt` liegen unter `E:\Zeuch\Coding\Parkey-Tools\PresentMon-2.5.1`; kein PATH-/Treiber-/OS-Tuning. [EXE](https://github.com/GameTechDev/PresentMon/releases/download/v2.5.1/PresentMon-2.5.1-x64.exe), SHA-256 `9BEC3083069F58F911E6A512F4806DB51A27BD096103087BC1D05EF54C80A191`, [Lizenz](https://raw.githubusercontent.com/GameTechDev/PresentMon/v2.5.1/LICENSE.txt). Der Quellcode benötigt dieses Werkzeug nicht.
+
+```powershell
+New-Item -ItemType Directory -Force -Path build/evidence/present
+Start-Process E:\Zeuch\Coding\Parkey-Tools\PresentMon-2.5.1\PresentMon.exe -WindowStyle Hidden -ArgumentList @('--process_name','parkey.exe','--output_file','E:/Zeuch/Coding/parkey/build/evidence/present/presents.csv','--no_console_stats','--no_track_input','--delay','8','--timed','30','--terminate_after_timed','--session_name','ParkeyPresent')
+build/windows/parkey.exe --resolution 1920x1080 -- --p2b-evidence --evidence-size=1920x1080 --evidence-pacing=40 --evidence-output=E:/Zeuch/Coding/parkey/build/evidence/present
+# Nach Ende beider Prozesse:
+node tests/analyze_presents.mjs build/evidence/present/presents.csv build/evidence/present/present-summary.json
+```
+
+ETW meldet Present-Pfad und `MsBetweenDisplayChange` separat von Engine-Frames. **Auf gemischten Monitorfrequenzen sind diese Display-Zeitstempel nicht zuverlässig einem physischen Monitor zuzuordnen** ([PresentMon #108](https://github.com/GameTechDev/PresentMon/issues/108), geprüft 2026-09-06). Die lokale Gegenprobe meldet am 60-Hz-Monitor sogar mehr als 60 Display-Updates/s. Deshalb weder ungeprüfte Scanout-Erfolge noch entsprechende Fehler aus dieser Spalte ableiten. `NA`/nicht angezeigte Presents sind keine Null-ms-Bilder. `AllowsTearing` ist ein API-Erlaubnisflag, kein beobachteter Bildriss. Nichtadministrative Warnungen zu fremden/kurzlebigen Prozessen separat aufbewahren; eine leere CSV ist kein Erfolg.
+
+Zusätzliche, getrennte Diagnose: `tests/windows_output_probe.cs` liest ausschließlich DXGI-Output-Duplication-Metadaten eines ausgewählten Monitors, keine Bildpixel. Zum Bauen mit vorhandenem .NET-8-SDK alle Ausgaben in die Werkzeugablage lenken:
+
+```powershell
+dotnet build tests/windows_output_probe.csproj -c Release -p:BaseIntermediateOutputPath=E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/obj/ -p:OutputPath=E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/bin/
+E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/bin/windows_output_probe.exe
+# Erst die ausgegebene DXGI-Geometrie dem gewünschten Monitor zuordnen!
+# Beispiel: Output 0, 20 Sekunden, 8 Sekunden Startverzögerung:
+E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/bin/windows_output_probe.exe 0 20 8 E:/Zeuch/Coding/parkey/build/evidence/output-timing.json
+```
+
+DXGI- und Godot-Indizes unterscheiden sich auf dem Prüfdesktop. [Microsoft](https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/ns-dxgi1_2-dxgi_outdupl_frame_info) beschreibt `LastPresentTime` als Desktop-Aktualisierung, nicht als optischen Scanout. Die zusätzliche Capture-Schnittstelle verändert außerdem den beobachteten Present-Pfad. Diese Gegenprobe ist daher kein normaler Erfolgsnachweis und keine zusätzliche Spielabhängigkeit. Wahrnehmbares Stottern und Bildrisse bleiben Teil der offenen persönlichen Windows-Abnahme.

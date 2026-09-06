@@ -1,0 +1,58 @@
+{
+  "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/d3d12-mailbox-144hz/presents.csv",
+  "rows": 2398,
+  "modes": {
+    "Composed: Flip": 2398
+  },
+  "tearing": {
+    "0": 2398
+  },
+  "sync_intervals": {
+    "1": 2398
+  },
+  "presents": {
+    "count": 2398,
+    "mean_ms": 8.318269766472065,
+    "p50_ms": 7.7578,
+    "p95_ms": 12.8343,
+    "p99_ms": 14.0183,
+    "max_ms": 15.028,
+    "over_20": 0
+  },
+  "displayed": {
+    "count": 1202,
+    "mean_ms": 16.601354575707152,
+    "p50_ms": 16.1957,
+    "p95_ms": 26.6197,
+    "p99_ms": 27.0129,
+    "max_ms": 27.7462,
+    "over_20": 277
+  },
+  "gpu_busy": {
+    "count": 2398,
+    "mean_ms": 7.289037989991685,
+    "p50_ms": 7.467,
+    "p95_ms": 8.3185,
+    "p99_ms": 8.5135,
+    "max_ms": 9.7829,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 2398,
+    "mean_ms": 5.054774395329441,
+    "p50_ms": 6.0605,
+    "p95_ms": 8.0528,
+    "p99_ms": 8.3188,
+    "max_ms": 12.7957,
+    "over_20": 0
+  },
+  "present_api": {
+    "count": 2398,
+    "mean_ms": 3.2634752293577978,
+    "p50_ms": 0.237,
+    "p95_ms": 10.9152,
+    "p99_ms": 12.2292,
+    "max_ms": 13.1209,
+    "over_20": 0
+  }
+}

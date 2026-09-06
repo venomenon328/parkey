@@ -1,0 +1,58 @@
+{
+  "source": "build/evidence/p2b-fidelity/pacing/present-mailbox-capped/presents.csv",
+  "rows": 2155,
+  "modes": {
+    "Hardware Composed: Independent Flip": 2155
+  },
+  "tearing": {
+    "1": 2155
+  },
+  "sync_intervals": {
+    "0": 2155
+  },
+  "presents": {
+    "count": 2155,
+    "mean_ms": 6.947843062645006,
+    "p50_ms": 6.949,
+    "p95_ms": 7.2754,
+    "p99_ms": 7.502,
+    "max_ms": 10.4764,
+    "over_20": 0
+  },
+  "displayed": {
+    "count": 2155,
+    "mean_ms": 6.9501516937355055,
+    "p50_ms": 6.9494,
+    "p95_ms": 6.98,
+    "p99_ms": 7.0088,
+    "max_ms": 7.172,
+    "over_20": 0
+  },
+  "gpu_busy": {
+    "count": 2155,
+    "mean_ms": 5.072341345707648,
+    "p50_ms": 4.6123,
+    "p95_ms": 6.5651,
+    "p99_ms": 6.888,
+    "max_ms": 13.2783,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 2155,
+    "mean_ms": 6.727651600928085,
+    "p50_ms": 6.8221,
+    "p95_ms": 7.1196,
+    "p99_ms": 7.3486,
+    "max_ms": 8.2113,
+    "over_20": 0
+  },
+  "present_api": {
+    "count": 2155,
+    "mean_ms": 0.22019215777262172,
+    "p50_ms": 0.1255,
+    "p95_ms": 0.1933,
+    "p99_ms": 3.9205,
+    "max_ms": 10.4251,
+    "over_20": 0
+  }
+}

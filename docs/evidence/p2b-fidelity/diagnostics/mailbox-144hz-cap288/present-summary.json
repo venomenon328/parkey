@@ -1,0 +1,50 @@
+{
+  "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/mailbox-144hz-cap288/presents.csv",
+  "rows": 5580,
+  "modes": {
+    "Composed: Copy with GPU GDI": 5580
+  },
+  "tearing": {
+    "0": 5580
+  },
+  "sync_intervals": {
+    "-1": 5580
+  },
+  "presents": {
+    "count": 5580,
+    "mean_ms": 3.577425860215051,
+    "p50_ms": 3.6463,
+    "p95_ms": 4.375,
+    "p99_ms": 4.6984,
+    "max_ms": 5.7107,
+    "over_20": 0
+  },
+  "displayed": {
+    "count": 2872,
+    "mean_ms": 6.951555814763197,
+    "p50_ms": 6.9448,
+    "p95_ms": 6.9833,
+    "p99_ms": 9.1737,
+    "max_ms": 14.8976,
+    "over_20": 0
+  },
+  "gpu_busy": {
+    "count": 5580,
+    "mean_ms": 3.574258673835123,
+    "p50_ms": 3.783,
+    "p95_ms": 4.2226,
+    "p99_ms": 4.3362,
+    "max_ms": 4.5474,
+    "over_20": 0
+  },
+  "cpu_busy": {
+    "count": 5580,
+    "mean_ms": 3.577425860215051,
+    "p50_ms": 3.6463,
+    "p95_ms": 4.375,
+    "p99_ms": 4.6984,
+    "max_ms": 5.7107,
+    "over_20": 0
+  },
+  "present_api": null
+}

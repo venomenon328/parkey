@@ -4,11 +4,16 @@ const SceneScript = preload("res://scripts/playable_course_scene.gd")
 const ProfileScript = preload("res://scripts/presentation/render_profile.gd")
 const WorldScript = preload("res://scripts/presentation/workshop_world.gd")
 const ClockScript = preload("res://scripts/core/monotonic_clock.gd")
+const PacingScript = preload("res://scripts/presentation/window_pacing.gd")
 const REFERENCE_ID := "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a"
 
 
 static func run(harness) -> void:
 	print("Running suite: presentation")
+	harness._assert_equal(PacingScript.frame_limit(143.973), 144, "Native scheduling follows the actual high-refresh display without a fixed 144 FPS product target.")
+	harness._assert_equal(PacingScript.frame_limit(59.951), 60, "A 60 Hz display receives a bounded 60 FPS schedule.")
+	harness._assert_equal(PacingScript.frame_limit(-1.0), 60, "Unavailable display metadata falls back to 60 FPS.")
+	harness._assert_equal(PacingScript.frame_limit(INF), 60, "Invalid refresh metadata never creates an unbounded schedule.")
 	var scene := (load("res://scenes/playable_course.tscn") as PackedScene).instantiate() as PlayableCourseScene
 	var clock := ClockScript.Manual.new()
 	scene.configure_for_test(clock, "user://parkey-test-results/presentation", [], 0)
@@ -109,6 +114,21 @@ static func run(harness) -> void:
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/LeftArm/Hand"), "Figure has connected arms and hands.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/RightLeg/Shoe"), "Figure has legs and shoes.")
 	harness._assert_equal(scene.get_node_or_null("PlayerFigure/HeadPivot/HeadIndicator"), null, "The protruding head box is removed.")
+	# Curved props and character parts use indexed, textured meshes. Verify their
+	# real surface data after material batching, where prior iterations lost geometry.
+	var material_batches := 0
+	for node in scene.get_node("Workshop").get_children():
+		if not node is MeshInstance3D:
+			continue
+		material_batches += 1
+		var arrays: Array = node.mesh.surface_get_arrays(0)
+		harness._assert_true(arrays[Mesh.ARRAY_VERTEX].size() > 0 and arrays[Mesh.ARRAY_NORMAL].size() == arrays[Mesh.ARRAY_VERTEX].size(), "Batched workshop geometry preserves its vertices and shading normals.")
+		harness._assert_not_null(node.material_override, "Every furniture batch retains its actual material, including shaders.")
+	harness._assert_true(material_batches < 60, "Craft detail remains grouped into a bounded number of material draws.")
+	var sole: MeshInstance3D = scene.get_node("PlayerFigure/RightLeg/Sole")
+	harness._assert_true(sole.mesh.get_aabb().end.y + sole.position.y < -0.57, "Modeled shoe soles remain below the upper, close to the cap contact plane.")
+	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/SweptLock"), "The normal runner has modeled hair detail under the reaction pivot.")
+	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/LeftArm/Thumb"), "Hand detail follows its animated arm.")
 	# A full actual result card must fit, including a new-best line and ten rows.
 	var crowded := scene.session.last_result.duplicate(true)
 	for index in 11:
@@ -136,6 +156,7 @@ static func run(harness) -> void:
 		parent.add_child(floor_mesh)
 		harness.root.add_child(parent)
 		WorldScript.build(parent, environment, floor_mesh, config.ssao)
+		harness._assert_equal(environment.environment.ssil_enabled, method == "forward_plus", "Indirect contact light is optional and never required in Compatibility.")
 		harness._assert_equal(environment.environment.ssao_enabled, method == "forward_plus", "Actual %s environment respects the bounded SSAO profile." % method)
 		harness._assert_false(environment.environment.glow_enabled, "No profile needs bloom for required signals.")
 		harness._assert_equal(environment.environment.fog_sky_affect, 0.0, "Distance fog must not replace the cloud panorama with a flat background.")
