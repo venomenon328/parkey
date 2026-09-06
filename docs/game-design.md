@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1 ist abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P2a / #5 ist technisch implementiert und menschlich für den Referenzkurs abgenommen; die letzte Statusdarstellungs-Nacharbeit wird im Draft regressionsgeprüft. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); Referenzkurs und Abnahmegrenzen in [p2a-route-decisions.md](p2a-route-decisions.md).
+Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1 ist abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P2a / #5 ist technisch und menschlich für den Referenzkurs abgenommen; die letzte Feldstatus-Nacharbeit ist durch CI regressionsgeprüft. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); Referenzkurs und Abnahmegrenzen in [p2a-route-decisions.md](p2a-route-decisions.md).
 
 ## Spielkern
 
@@ -64,7 +64,7 @@ Während des P1b-Laufs genügen Timer und Fehlerfeedback, nach Abschluss Zeit un
 
 Das endgültige Streckendesign darf unregelmäßig sein: variable Grundformen, Ausrichtungen, Anordnungen, moderate Größenunterschiede und wechselnde Nachbarzahlen statt bloß eines anderen regelmäßigen Rasters. Übermäßig große Felder sind nicht das Ziel. Übersichtliche Passagen und markante Entscheidungspunkte bleiben wichtiger als maximaler Zufall. Eine größere Fläche darf an einem Rand mehrere kleinere Nachbarn haben.
 
-Ein erkennbarer gemeinsamer Randabschnitt kann einen Übergang bilden, auch ohne vollständige Seitenübereinstimmung. Bloße Eckberührung, diagonale Lage in einem gedachten Raster oder optische Nähe allein erzeugen keine Verbindung. Kleine konsistent lesbare Fugen sind möglich. Sichtbar begehbare Anschlüsse und gespeicherte Kanten müssen übereinstimmen; keine unsichtbaren Verbote oder willkürlichen Fernverbindungen. Größere Sprünge, gesonderte Brücken und Höhenparcours sind nicht beschlossen.
+Ein erkennbarer gemeinsamer Randabschnitt kann einen Übergang bilden, auch ohne vollständige Seitenübereinstimmung. Bloße Eckberührung, diagonale Lage in einem gedachten Raster oder optische Nähe allein erzeugt keine Verbindung. Kleine konsistent lesbare Fugen sind möglich. Sichtbar begehbare Anschlüsse und gespeicherte Kanten müssen übereinstimmen; keine unsichtbaren Verbote oder willkürlichen Fernverbindungen. Größere Sprünge, gesonderte Brücken und Höhenparcours sind nicht beschlossen.
 
 Die P1b-Rückmeldung am W-Feld konkretisiert diese Regel: Zwei fast bündig nebeneinander liegende Routen dürfen nicht wie eine zusammenhängende Fläche aussehen, wenn Querbewegungen verboten sind. Entweder passen Graph und lesbare Übergänge dazu, oder die Routen werden eindeutig räumlich getrennt. Ein minimal anderer Fugenabstand, eine Liste im HUD oder die fehlende Nachbarmarkierung allein ist keine ausreichende Trennung.
 
