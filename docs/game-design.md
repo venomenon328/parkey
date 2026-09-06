@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1 ist abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P2a / #5 ist technisch implementiert und bleibt bis Review sowie menschlicher Spielabnahme Draft. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); Referenzkurs und Abnahmegrenzen in [p2a-route-decisions.md](p2a-route-decisions.md).
+Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1 ist abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P2a / #5 ist technisch implementiert und menschlich für den Referenzkurs abgenommen; die letzte Statusdarstellungs-Nacharbeit wird im Draft regressionsgeprüft. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); Referenzkurs und Abnahmegrenzen in [p2a-route-decisions.md](p2a-route-decisions.md).
 
 ## Spielkern
 
@@ -48,11 +48,11 @@ Nach D-020 müssen **Position und Blickrichtung kontinuierlich** geführt werden
 
 ### Feldzustände
 
-Nach D-019 sind Standard, bereits besucht, aktuell und erreichbar visuell unterscheidbar. Der Besuchsstatus bleibt während desselben Versuchs erhalten, auch nach Rückwegen. Ein besuchter Nachbar ist gleichzeitig besucht und erreichbar; diese Informationen dürfen sich nicht gegenseitig ausblenden. Das aktuelle Feld hat eine eindeutige zusätzliche Kennzeichnung.
+Nach D-019 sind Standard, bereits besucht, aktuell und erreichbar visuell unterscheidbar. Der Besuchsstatus bleibt während desselben Versuchs erhalten, auch nach Rückwegen. Ein besuchter Nachbar kann logisch weiterhin erreichbar sein, wird visuell aber **nur als besucht** dargestellt; der Besuchsstatus hat Vorrang vor der Erreichbarkeitsdarstellung. Ein zusätzlicher kombinierter Zustand „besucht und erreichbar“ ist nicht nötig. Das aktuelle Feld hat unabhängig davon eine eindeutige zusätzliche Kennzeichnung.
 
 Für P1b wird der Status aus logischen Schritten geführt. Das besetzte Startfeld gehört bereits dazu; nach Quick Restart ist nur dieser neue Ausgangszustand markiert. Ungültige, während der Sperre verworfene oder in der UI verwendete Eingaben markieren keine neuen Felder. Besuchsstatus ist lokaler Darstellungszustand und verändert weder Graph noch Streckenidentität.
 
-Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie.
+Die genaue Farb-/Material-/Symbolgestaltung ist offen. Schon der PoC braucht aber gut sichtbare Zustandsunterschiede auf bzw. oberhalb der Keycaps und ergänzende nicht ausschließlich farbliche Signale. Eine unter dem Feld verdeckte Auswahlplatte oder ein kaum sichtbares Symbol reicht nicht. Markierungen erläutern die vorhandene Erreichbarkeit, sie legitimieren keine widersprüchliche Streckengeometrie. Ein unbesuchtes erreichbares Feld darf dazu heller/Rand-markiert sein; bei bereits besuchten Feldern werden diese Erreichbarkeitssignale unterdrückt.
 
 Buchstaben müssen auch im Web-Profil ohne teure Effekte lesbar bleiben. Schatten, Figur, Schärfentiefe und Benutzeroberfläche dürfen sie nicht verdecken. P2a bindet den kontrastreichen Hauptbuchstaben direkt an die Keycap und dreht ihn im übernommenen Handkurs gegenüber P1b um 90° im Uhrzeigersinn; die großen weißen schwebenden P1b-Callouts sind entfernt. Für spätere frei gedrehte Tiles gilt daraus keine starre Rotation: Tile-Ausrichtung und Kamera sind gemeinsam zu prüfen. Insbesondere muss auch der aktuelle Buchstabe erkennbar bleiben.
 
@@ -76,13 +76,13 @@ Geeignete Stand-/Landepunkte liegen innerhalb der Felder; Übergangsverläufe bl
 
 Frühe Handstrecken dürfen einfach sein, ohne den Kern auf ihr Layout zu beschränken. P1a prüft unter anderem fünf eindeutig beschriftete Nachbarn und einen gedrehten größeren Knoten mit zwei kleineren Nachbarn; P1b enthält mindestens eine überschaubare unregelmäßige Stelle mit moderat verschiedenen Größen und einem nicht rechtwinkligen lesbaren Übergang. Wenige einfache Formen genügen, kein beliebiger Polygon-Generator.
 
-Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze vermutete gegen längere vermutete Tippfolge und gemeinsames Finale. P2a implementiert dazu zwei Entscheidungen mit `FJK`/`ASDFGH` und `PLM`/`QWERT`; die Beschreibungen sind Testhypothesen, keine allgemeine Ergonomiebehauptung. Alternativen führen zunächst wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
+Bewusst entworfene Abschnitte werden zuerst geprüft: flüssiger Korridor, einsehbare Gabelung, kurze vermutete gegen längere vermutete Tippfolge und gemeinsames Finale. P2a implementiert dazu zwei Entscheidungen mit `FJK`/`ASDFGH` und `PLM`/`QWERT`; die Beschreibungen sind Testhypothesen, keine allgemeine Ergonomiebehauptung. Die menschliche P2a-Stichprobe bestätigte die Funktion und Lesbarkeit der Entscheidungssituationen, nicht aber einen Geschwindigkeitsvorteil der längeren Folgen; in den vier Läufen waren die kurzen Varianten jeweils schneller. Alternativen führen zunächst wieder zusammen. Sackgassen, Schleifen, Sprünge und Sonderfelder sind keine Pflicht des ersten PoC.
 
 Eine Routenwahl benötigt vorher genügend Information über Verlauf und erste Buchstabenfolgen. Tippbarkeit hängt von Tastaturlayout, Eingabemethode und Spielerfahrung ab; ein anfängliches QWERTZ-Modell ist eine zu prüfende Hypothese, keine universelle Ergonomiebewertung.
 
 Die Eindeutigkeitsprüfung betrachtet die gesamte Nachbarschaft. Bereits **A–B–A** ist bei beidseitigen Verbindungen vom mittleren B aus ungültig. Gabelungen, Rückwege und Zusammenführungen erfüllen dieselbe Regel. Sichtbare Anordnung und erlaubte Verbindungen bleiben konsistent.
 
-Der spätere Generator kombiniert geprüfte Abschnitte und variiert Topologie, räumliche Anordnung und Beschriftung kontrolliert. Er prüft Erreichbarkeit, Eindeutigkeit, Anschlüsse und brauchbare Alternativen. Die beste Route darf vom Können abhängen.
+Der spätere Generator kombiniert geprüfte Abschnitte und variiert Topologie, räumliche Anordnung und Beschriftung kontrolliert. Er prüft Erreichbarkeit, Eindeutigkeit, Anschlüsse und brauchbare Alternativen. Die beste Route darf vom Können abhängen. Die P2a-Ergebnisse erlauben dabei die Nutzung der geprüften Entscheidungs-/Geometriebausteine, aber noch keine feste Heuristik „länger = leichter bzw. schneller“.
 
 ### Streckenidentität
 
