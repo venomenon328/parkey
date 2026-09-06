@@ -130,7 +130,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_equal(scene.session.current_field_id, "approach_a", "The viewport path uses the first letter as start and movement.")
 	harness._assert_equal(scene.session.start_usec, 10000000, "The scene forwards the captured receipt time unchanged.")
 	harness._assert_transform_close(scene.camera.global_transform, camera_before_first_move, 0.0001, "A logical step does not snap camera position or orientation inside the input callback.")
-	harness._assert_true(scene.field_visual_state("start")["visited"] and scene.field_visual_state("start")["reachable"], "The visited return neighbor combines both states.")
+	harness._assert_true(scene.field_visual_state("start")["visited"] and scene.field_visual_state("start")["reachable"], "The visited return neighbor combines both logical states even though presentation prioritizes visit history.")
 	harness._assert_true(scene.field_visual_state("approach_a")["current"] and scene.field_visual_state("approach_a")["visited"], "The logical destination becomes current and visited before animation catches up.")
 	await scene.get_tree().process_frame
 	var field_before_ui := scene.session.current_field_id
@@ -433,10 +433,11 @@ static func _test_responsiveness_status_and_surface_labels(harness) -> void:
 	await _push_key(scene, _key(KEY_A, 97))
 	var visited_reachable_colors := scene.field_material_colors("start")
 	harness._assert_true(
-		(visited_reachable_colors["surface"] as Color).is_equal_approx((visited_reachable_colors["keycap"] as Color).lightened(PlayableCourseSceneScript.REACHABLE_LIGHTEN_AMOUNT)),
-		"Visited plus reachable uses the lighter reachable base variant, not a third mixed palette.",
+		(visited_reachable_colors["surface"] as Color).is_equal_approx((visited_reachable_colors["keycap"] as Color).darkened(PlayableCourseSceneScript.VISITED_DARKEN_AMOUNT)),
+		"A visited field keeps the darker visited surface even when it is reachable again.",
 	)
-	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node("StateMarker").text, "◇ ✓", "Visited plus reachable preserves the non-color visit signal.")
+	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node("StateMarker").text, "✓", "A visited reachable neighbor uses only the visited marker, not a combined status.")
+	harness._assert_false((scene.field_nodes["start"] as Node3D).get_node("Selection").visible, "A visited reachable neighbor suppresses the reachability border so visit history has visual priority.")
 	var reachable_surface_label: Label3D = scene.field_nodes["approach_z"].get_node("Letter")
 	harness._assert_true(reachable_surface_label.visible, "A newly directly reachable field keeps its primary tile-surface label visible.")
 	harness._assert_equal((scene.field_nodes["approach_z"] as Node3D).get_node_or_null("LetterCallout"), null, "No large white near-field callout is recreated for a reachable field.")
