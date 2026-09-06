@@ -74,9 +74,9 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	var fixture := await _scene_fixture(harness)
 	var scene: PlayableCourseScene = fixture["scene"]
 	var clock: MonotonicClock = fixture["clock"]
-	harness._assert_not_null(scene.get_node_or_null("HUD/TimerLabel"), "The real scene initializes its timer HUD in the SceneTree.")
+	harness._assert_not_null(scene.get_node_or_null("HUD/TimerCard/TimerLabel"), "The real scene initializes its timer inside the centered HUD card.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Head"), "The real scene contains a distinguishable player head.")
-	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/HeadIndicator"), "The head has an asymmetric orientation signal that makes shaking visible.")
+	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/Nose"), "The fitted nose provides human facial orientation without a protruding box.")
 	harness._assert_not_null(scene.get_node_or_null("CourseCamera"), "The real scene initializes the automatic camera.")
 	harness._assert_equal(scene.field_nodes.size(), 30, "The renderer builds every field from CourseData.")
 	harness._assert_equal(scene.course_identity_after_render, scene.course_identity_before_render, "Scene construction does not mutate course identity.")
@@ -99,7 +99,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	var course_identity_before_states := scene.session.course_identity()
 	var camera_to_start := scene.camera_target_for_field("start") - scene._anchor_world("start")
 	harness._assert_true(camera_to_start.dot(scene.course_forward()) < -PlayableCourseSceneScript.CAMERA_DISTANCE + 0.01, "The camera starts behind the figure along the course direction.")
-	harness._assert_true(absf(camera_to_start.dot(Vector3(-scene.course_forward().z, 0.0, scene.course_forward().x))) < 0.001, "The rear camera has no isometric side offset.")
+	harness._assert_true(is_equal_approx(camera_to_start.dot(Vector3(-scene.course_forward().z, 0.0, scene.course_forward().x)), -PlayableCourseSceneScript.CAMERA_SHOULDER_OFFSET), "The rear camera uses its bounded shoulder offset to keep the figure clear of print.")
 	harness._assert_true(scene.camera.projection == Camera3D.PROJECTION_PERSPECTIVE, "The reproducible rear composition uses perspective projection.")
 	var viewport_rect := scene.get_viewport().get_visible_rect()
 	harness._assert_true(scene.profile_label.get_global_rect().end.x <= viewport_rect.end.x, "The renderer profile stays inside the responsive top bar.")
@@ -134,6 +134,7 @@ static func _test_scene_input_ui_and_routes(harness) -> void:
 	harness._assert_true(scene.field_visual_state("approach_a")["current"] and scene.field_visual_state("approach_a")["visited"], "The logical destination becomes current and visited before animation catches up.")
 	await scene.get_tree().process_frame
 	var field_before_ui := scene.session.current_field_id
+	scene.workshop_hud.set_debug(true)
 	await _push_mouse_click(scene, scene.input_test.get_global_rect().get_center())
 	harness._assert_equal(scene.get_viewport().gui_get_focus_owner(), scene.input_test, "A real viewport click focuses the LineEdit.")
 	await _push_key(scene, _key(KEY_B, 98))
@@ -426,8 +427,8 @@ static func _test_responsiveness_status_and_surface_labels(harness) -> void:
 		(standard_colors["surface"] as Color).is_equal_approx(standard_colors["keycap"] as Color),
 		"An untouched field keeps its unmodified base material color.",
 	)
-	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node("StateMarker").text, "● ✓", "The current visited start uses its explicit marker instead of a status hue.")
-	harness._assert_equal((scene.field_nodes["approach_a"] as Node3D).get_node("StateMarker").text, "◇", "A reachable unvisited field uses its explicit reachability marker.")
+	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node_or_null("StateMarker"), null, "The current visited start has no status symbol.")
+	harness._assert_equal((scene.field_nodes["approach_a"] as Node3D).get_node_or_null("StateMarker"), null, "A reachable unvisited field has no status symbol.")
 
 	clock.current_usec = 1000000
 	await _push_key(scene, _key(KEY_A, 97))
@@ -436,7 +437,7 @@ static func _test_responsiveness_status_and_surface_labels(harness) -> void:
 		(visited_reachable_colors["surface"] as Color).is_equal_approx((visited_reachable_colors["keycap"] as Color).darkened(PlayableCourseSceneScript.VISITED_DARKEN_AMOUNT)),
 		"A visited field keeps the darker visited surface even when it is reachable again.",
 	)
-	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node("StateMarker").text, "✓", "A visited reachable neighbor uses only the visited marker, not a combined status.")
+	harness._assert_equal((scene.field_nodes["start"] as Node3D).get_node_or_null("StateMarker"), null, "A visited reachable neighbor remains symbol-free.")
 	harness._assert_false((scene.field_nodes["start"] as Node3D).get_node("Selection").visible, "A visited reachable neighbor suppresses the reachability border so visit history has visual priority.")
 	var reachable_surface_label: Label3D = scene.field_nodes["approach_z"].get_node("Letter")
 	harness._assert_true(reachable_surface_label.visible, "A newly directly reachable field keeps its primary tile-surface label visible.")
@@ -522,11 +523,16 @@ static func _test_local_result_scene_flow(harness) -> void:
 	harness._assert_equal(entries[0]["duration_usec"], 1234000, "The faster real-scene run preserves its exact raw microseconds.")
 	harness._assert_equal(entries[1]["duration_usec"], 1234999, "The slower real-scene run preserves its different exact raw microseconds.")
 	harness._assert_equal(PlayableCourseSceneScript.format_duration_usec(int(entries[0]["duration_usec"])), PlayableCourseSceneScript.format_duration_usec(int(entries[1]["duration_usec"])), "The differently ranked scene results intentionally share the displayed milliseconds.")
-	harness._assert_true(scene.result_label.text.contains("1234999 us"), "The real result-detail UI reveals the current run's exact microseconds when milliseconds collide.")
+	harness._assert_false(scene.result_label.text.contains(" us"), "The normal result hides raw microseconds even when milliseconds collide.")
+	harness._assert_true(scene.workshop_hud.result_debug.text.contains("1234999 us"), "The F3 audit keeps the current exact original time.")
 	harness._assert_true(scene.result_label.text.contains("Rang: 2"), "The real result-detail UI shows the slower raw time's distinct rank.")
-	harness._assert_true(scene.leaderboard_label.text.contains("1234000 us"), "The rendered leaderboard makes the faster colliding raw time auditable too.")
-	harness._assert_true(scene.leaderboard_label.text.contains("Persoenliche Bestzeit: 00:01.234 (1234000 us)"), "The result panel explains the faster personal best next to a slower display-identical run.")
+	harness._assert_true(scene.workshop_hud.result_debug.text.contains("1234000 us"), "The F3 audit retains the faster original time too.")
+	harness._assert_false(scene.leaderboard_label.text.contains(" us"), "The player leaderboard hides original microseconds.")
+	harness._assert_true(scene.leaderboard_label.text.contains("Persönliche Bestzeit: 00:01.234"), "The result panel explains the faster personal best next to a slower display-identical run.")
 	harness._assert_true(scene.leaderboard_label.text.contains("Top 10"), "The result panel contains a compact local Top 10.")
+	harness._assert_equal(scene.workshop_hud.result_rows.get_child(0).get_node("Time").text, "00:01.234", "The first actual table cell displays milliseconds.")
+	harness._assert_equal(scene.workshop_hud.result_rows.get_child(1).get_node("Time").text, "00:01.234", "The second actual table cell displays the same milliseconds.")
+	harness._assert_equal(scene.workshop_hud.result_rows.get_child(1).get_node("Rank").text, "02", "The visually identical times still retain their different exact ranks.")
 	var reloaded := LocalResultStoreScript.new(storage_path, 1)
 	var reloaded_report: Dictionary = reloaded.load()
 	harness._assert_true(reloaded_report["ok"], "A new store instance reloads the scene's isolated durable results.")

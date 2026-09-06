@@ -1,25 +1,6 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/playable_course_scene.gd" id="1_playable"]
-
-[sub_resource type="CapsuleMesh" id="Capsule_body"]
-radius = 0.34
-height = 1.15
-
-[sub_resource type="SphereMesh" id="Sphere_head"]
-radius = 0.4
-height = 0.8
-
-[sub_resource type="BoxMesh" id="Box_head_indicator"]
-size = Vector3(0.24, 0.2, 0.5)
-
-[sub_resource type="StandardMaterial3D" id="Material_figure"]
-albedo_color = Color(0.18, 0.74, 0.93, 1)
-roughness = 0.38
-
-[sub_resource type="StandardMaterial3D" id="Material_head_indicator"]
-albedo_color = Color(1, 0.36, 0.24, 1)
-roughness = 0.32
 
 [sub_resource type="BoxMesh" id="Box_floor"]
 size = Vector3(1, 0.1, 1)
@@ -31,8 +12,8 @@ script = ExtResource("1_playable")
 unique_name_in_owner = true
 
 [node name="KeyLight" type="DirectionalLight3D" parent="."]
-rotation_degrees = Vector3(-52, -28, 0)
-light_color = Color(1, 0.84, 0.65, 1)
+rotation_degrees = Vector3(-32, -55, 0)
+light_color = Color(1, 0.82, 0.66, 1)
 light_energy = 2.2
 shadow_enabled = true
 
@@ -56,25 +37,8 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 rotation_degrees = Vector3(0, -18, 0)
 
-[node name="Body" type="MeshInstance3D" parent="PlayerFigure"]
-position = Vector3(0, 0.55, 0)
-mesh = SubResource("Capsule_body")
-material_override = SubResource("Material_figure")
-
 [node name="HeadPivot" type="Node3D" parent="PlayerFigure"]
 unique_name_in_owner = true
-position = Vector3(0, 1.36, 0)
-
-[node name="Head" type="MeshInstance3D" parent="PlayerFigure/HeadPivot"]
-unique_name_in_owner = true
-mesh = SubResource("Sphere_head")
-material_override = SubResource("Material_figure")
-
-[node name="HeadIndicator" type="MeshInstance3D" parent="PlayerFigure/HeadPivot"]
-unique_name_in_owner = true
-position = Vector3(-0.34, 0.08, -0.1)
-mesh = SubResource("Box_head_indicator")
-material_override = SubResource("Material_head_indicator")
 
 [node name="CourseCamera" type="Camera3D" parent="."]
 unique_name_in_owner = true
@@ -82,14 +46,6 @@ current = true
 fov = 56.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
-
-[node name="TopBar" type="ColorRect" parent="HUD"]
-anchor_right = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = 130.0
-color = Color(0.025, 0.035, 0.06, 0.92)
 
 [node name="TimerLabel" type="Label" parent="HUD"]
 unique_name_in_owner = true

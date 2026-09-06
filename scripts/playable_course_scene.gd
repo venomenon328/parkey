@@ -12,6 +12,14 @@ const RenderProfileScript = preload("res://scripts/presentation/render_profile.g
 const LocalResultStoreScript = preload("res://scripts/storage/local_result_store.gd")
 const RunIdGeneratorScript = preload("res://scripts/storage/run_id_generator.gd")
 
+const KeycapVisualScript = preload("res://scripts/presentation/keycap_visual.gd")
+const LegendFont = preload("res://assets/fonts/Barlow-Medium.ttf")
+const RunnerVisualScript = preload("res://scripts/presentation/runner_visual.gd")
+const WorkshopWorldScript = preload("res://scripts/presentation/workshop_world.gd")
+const WorkshopHUDScript = preload("res://scripts/presentation/workshop_hud.gd")
+const RenderEvidenceScript = preload("res://tests/render_evidence.gd")
+const WindowPacingScript = preload("res://scripts/presentation/window_pacing.gd")
+
 const FIELD_HEIGHT := 0.32
 const FIGURE_HEIGHT := 0.55
 const MAX_VISUAL_WAYPOINTS := 18
@@ -20,9 +28,10 @@ const MAX_VISUAL_WAYPOINTS := 18
 const MAX_CATCH_UP_SECONDS := 0.05
 const CAMERA_CATCH_UP_SECONDS := 0.08
 const HEAD_SHAKE_SECONDS := 0.24
-const CAMERA_DISTANCE := 7.2
-const CAMERA_HEIGHT := 6.2
-const CAMERA_LOOK_AHEAD := 7.2
+const CAMERA_DISTANCE := 6.8
+const CAMERA_HEIGHT := 4.2
+const CAMERA_LOOK_AHEAD := 3.4
+const CAMERA_SHOULDER_OFFSET := 1.0
 const SURFACE_LABEL_CLOCKWISE_ROTATION_DEG := -90.0
 const VISITED_DARKEN_AMOUNT := 0.28
 const REACHABLE_LIGHTEN_AMOUNT := 0.18
@@ -46,6 +55,11 @@ const CURRENT_BORDER_LIGHTEN_AMOUNT := 0.12
 @onready var menu_text: Label = %MenuText
 @onready var input_test: LineEdit = %InputTest
 @onready var profile_label: Label = %ProfileLabel
+
+var runner_visual := RunnerVisualScript.new()
+var workshop_hud := WorkshopHUDScript.new()
+var _grain_texture: ImageTexture
+var _normal_texture: ImageTexture
 
 var course: CourseData
 var session: RunSession
@@ -95,6 +109,11 @@ func configure_for_test(
 
 
 func _ready() -> void:
+	if OS.has_feature("windows") and DisplayServer.get_name() != "headless":
+		add_child(WindowPacingScript.new())
+	var render_evidence := RenderEvidenceScript.requested()
+	if render_evidence:
+		_storage_base_path = "user://parkey-test-results/render-evidence/run-%d" % Time.get_ticks_usec()
 	course = HandcraftedCourseScript.build()
 	var errors := CourseValidatorScript.validate(course)
 	section_contracts = HandcraftedCourseScript.section_contracts()
@@ -112,25 +131,42 @@ func _ready() -> void:
 		status_label.text = "NICHT SPIELBAR"
 		return
 	course_identity_before_render = session.course_identity()
+	workshop_hud.build(self)
+	runner_visual.build(figure, figure_head)
+	figure.rotation.y = -atan2(course_forward().x, -course_forward().z)
 	_build_environment()
 	_build_course_geometry()
 	course_identity_after_render = session.course_identity()
 	_reset_visited_fields()
 	_snap_presentation_to_logical(true)
 	_refresh_view(_now_usec())
-	print("Parkey P2a started: fields=%d identity=%s profile=%s renderer=%s" % [
+	_reset_keycap_press()
+	print("Parkey P2b started: fields=%d identity=%s profile=%s renderer=%s" % [
 		course.fields.size(), course_identity_before_render, RenderProfileScript.expected_profile(), RenderProfileScript.current_method(),
 	])
+	if render_evidence:
+		add_child(RenderEvidenceScript.new())
 
 
 func _process(delta: float) -> void:
 	if session == null or not session.is_valid():
 		return
+	var was_moving := not visual_waypoints.is_empty()
 	_advance_visual(delta)
 	_advance_head_shake(delta)
+	for cap in field_nodes.values():
+		cap.advance(delta)
+	var current_cap: KeycapVisual = field_nodes[session.current_field_id]
+	runner_visual.advance(delta, was_moving, _head_shake_remaining > 0.0, current_cap.press_offset if visual_waypoints.is_empty() else 0.0)
 	_update_camera(delta)
 	_flush_one_pending_result()
 	_refresh_view(_now_usec())
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3 and not event.ctrl_pressed and not event.alt_pressed and not event.meta_pressed:
+		workshop_hud.set_debug(not workshop_hud.debug_enabled)
+		get_viewport().set_input_as_handled()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -229,39 +265,53 @@ func _reset_presentation() -> void:
 	leaderboard_label.visible = false
 	storage_label.visible = false
 	_shown_result_run_id = ""
+	workshop_hud.result_debug.text = ""
 	_reset_visited_fields()
 	_snap_presentation_to_logical(true)
+	_reset_keycap_press()
+	runner_visual.reset()
 
 
 func _build_environment() -> void:
-	var environment := Environment.new()
-	environment.background_mode = Environment.BG_COLOR
-	environment.background_color = Color("18233a")
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color("9bb6d6")
-	environment.ambient_light_energy = 0.75
-	%WorldEnvironment.environment = environment
-
-	var floor_mesh := PlaneMesh.new()
-	floor_mesh.size = Vector2(80.0, 60.0)
-	var floor_material := StandardMaterial3D.new()
-	floor_material.albedo_color = Color("101827")
-	floor_material.roughness = 0.92
-	floor_mesh.material = floor_material
-	%Floor.mesh = floor_mesh
+	var quality := RenderProfileScript.quality_enabled()
+	WorkshopWorldScript.build(self, %WorldEnvironment, %Floor, quality)
+	get_node("KeyLight").shadow_enabled = quality
+	get_node("KeyLight").light_energy = 1.18 if quality else 0.91
+	get_node("KeyLight").light_angular_distance = 3.5
+	get_node("KeyLight").directional_shadow_max_distance = 55.0
+	get_node("KeyLight").shadow_blur = 1.0
+	get_node("KeyLight").shadow_normal_bias = 0.9
+	if quality:
+		RenderingServer.directional_soft_shadow_filter_set_quality(RenderingServer.SHADOW_QUALITY_SOFT_HIGH)
+	get_node("FillLight").light_energy = 0.23
+	get_viewport().msaa_3d = Viewport.MSAA_4X if quality else Viewport.MSAA_DISABLED
+	var grain := Image.create(128, 128, false, Image.FORMAT_RGB8)
+	var normal := Image.create(128, 128, false, Image.FORMAT_RGB8)
+	for y in 128:
+		for x in 128:
+			var value := 0.88 + float((x * 73 + y * 151 + x * y * 13) % 31) / 258.0
+			grain.set_pixel(x, y, Color(value, value, value))
+			var nx := float((x * 37 + y * 17 + x * y * 3) % 31 - 15) / 160.0
+			var ny := float((x * 13 + y * 43 + x * y * 7) % 31 - 15) / 160.0
+			normal.set_pixel(x, y, Color(0.5 + nx, 0.5 + ny, 1.0))
+	grain.generate_mipmaps()
+	normal.generate_mipmaps()
+	_grain_texture = ImageTexture.create_from_image(grain)
+	_normal_texture = ImageTexture.create_from_image(normal)
 
 
 func _build_course_geometry() -> void:
 	for field in course.fields:
 		var field_id := str(field.get("id", ""))
 		var layout: Dictionary = course.layouts[field_id]
-		var node := Node3D.new()
+		var node := KeycapVisualScript.new()
 		node.name = "Field_%s" % field_id
 		node.position = layout_point_to_world(layout.get("position", []), 0.0)
 		node.rotation_degrees.y = -float(layout.get("rotation_deg", 0.0))
 		course_root.add_child(node)
 		field_nodes[field_id] = node
 		_build_field_mesh(node, field_id, str(field.get("letter", "")), layout)
+		node.capture_rest_heights()
 	for transition in course.transitions:
 		_build_transition_mesh(transition)
 	_update_markers()
@@ -272,55 +322,52 @@ func _build_field_mesh(node: Node3D, field_id: String, letter: String, layout: D
 	var size := Vector2(float(size_data[0]), float(size_data[1]))
 	var selection := MeshInstance3D.new()
 	selection.name = "Selection"
-	var selection_mesh := BoxMesh.new()
-	selection_mesh.size = Vector3(size.x + 0.24, 0.14, size.y + 0.24)
-	selection_mesh.material = _material(Color("f8d66d"), 0.35)
+	var selection_mesh := KeycapVisualScript.rounded_mesh(size, 0.04, 0.015)
 	selection.mesh = selection_mesh
-	selection.position.y = 0.35
+	selection.position.y = 0.045
 	node.add_child(selection)
 
 	var keycap := MeshInstance3D.new()
 	keycap.name = "Keycap"
-	var key_mesh := BoxMesh.new()
-	key_mesh.size = Vector3(size.x, FIELD_HEIGHT, size.y)
-	var color := Color("d78b3d")
+	var key_mesh := KeycapVisualScript.cap_mesh(size, false)
+	var color := _default_field_color(field_id)
 	if field_id == course.start_id:
 		color = Color("3e9e75")
 	elif field_id == course.target_id:
 		color = Color("b95c78")
-	key_mesh.material = _material(color, 0.48)
+	keycap.material_override = _material(color, 0.48)
 	keycap.mesh = key_mesh
-	keycap.position.y = 0.12 + FIELD_HEIGHT * 0.5
+	keycap.position.y = 0.0
 	node.add_child(keycap)
 
 	var state_surface := MeshInstance3D.new()
 	state_surface.name = "StateSurface"
-	var state_mesh := BoxMesh.new()
-	state_mesh.size = Vector3(maxf(0.4, size.x - 0.12), 0.035, maxf(0.4, size.y - 0.12))
+	var state_mesh := KeycapVisualScript.cap_mesh(size, true)
 	state_surface.mesh = state_mesh
-	state_surface.position.y = 0.4575
+	state_surface.position.y = 0.0
 	node.add_child(state_surface)
 
 	var label := Label3D.new()
 	label.name = "Letter"
 	label.text = letter
 	label.font_size = 192
-	label.outline_size = 18
-	label.modulate = Color("fff4d7")
-	label.outline_modulate = Color("17233a")
-	label.pixel_size = 0.0075
-	label.position = Vector3(0.0, 0.49, -minf(0.48, size.y * 0.24))
+	label.outline_size = 0
+	label.shaded = true
+	label.modulate = Color("302b26")
+	label.font = LegendFont
+	var region := KeycapVisualScript.legend_region(size)
+	var glyph_size := label.font.get_string_size(letter, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size)
+	label.pixel_size = minf(0.0048, minf(region.size.y / glyph_size.x, region.size.x / glyph_size.y))
+	label.position = Vector3(region.get_center().x, KeycapVisualScript.TOP_HEIGHT + 0.004, region.get_center().y)
 	label.rotation_degrees = Vector3(-90.0, SURFACE_LABEL_CLOCKWISE_ROTATION_DEG, 0.0)
 	node.add_child(label)
 
-	var marker := Label3D.new()
-	marker.name = "StateMarker"
-	marker.font_size = 72
-	marker.outline_size = 10
-	marker.pixel_size = 0.0035
-	marker.position = Vector3(0.0, 0.5, minf(0.5, size.y * 0.28))
-	marker.rotation_degrees.x = -90.0
-	node.add_child(marker)
+	var socket := MeshInstance3D.new()
+	socket.name = "Socket"
+	socket.mesh = KeycapVisualScript.rounded_mesh(size, 0.15, 0.025)
+	socket.material_override = _material(Color("182e31"), 0.8)
+	socket.position.y = -0.08
+	node.add_child(socket)
 
 
 func _build_transition_mesh(transition: Dictionary) -> void:
@@ -429,7 +476,7 @@ func _update_camera(delta: float) -> void:
 func camera_target_for_field(field_id: String) -> Vector3:
 	var anchor := _anchor_world(field_id)
 	var forward := course_forward()
-	return anchor - forward * CAMERA_DISTANCE + Vector3.UP * CAMERA_HEIGHT
+	return anchor - forward * CAMERA_DISTANCE + Vector3.UP * CAMERA_HEIGHT - Vector3(-forward.z, 0, forward.x) * CAMERA_SHOULDER_OFFSET
 
 
 func camera_focus_for_field(field_id: String) -> Vector3:
@@ -480,8 +527,8 @@ func _update_markers() -> void:
 		var selection: MeshInstance3D = node.get_node("Selection")
 		var keycap: MeshInstance3D = node.get_node("Keycap")
 		var state_surface: MeshInstance3D = node.get_node("StateSurface")
-		var marker: Label3D = node.get_node("StateMarker")
 		var is_current: bool = field_id == session.current_field_id
+		(node as KeycapVisual).pressed = is_current
 		var is_reachable: bool = neighbors.has(field_id)
 		var is_visited: bool = visited_field_ids.has(field_id)
 		var base_color := _default_field_color(field_id)
@@ -493,10 +540,7 @@ func _update_markers() -> void:
 			base_color.lightened(CURRENT_BORDER_LIGHTEN_AMOUNT if is_current else REACHABLE_LIGHTEN_AMOUNT),
 			0.3,
 		)
-		state_surface.material_override = _material(surface_color, 0.38)
-		marker.visible = is_current or is_reachable or is_visited
-		marker.text = "● ✓" if is_current else "✓" if is_visited else "◇" if is_reachable else ""
-		marker.modulate = _marker_color(base_color, is_current, is_reachable, is_visited)
+		state_surface.material_override = _material(surface_color, 0.62)
 
 
 func field_visual_state(field_id: String) -> Dictionary:
@@ -518,7 +562,7 @@ func _default_field_color(field_id: String) -> Color:
 		return Color("3e9e75")
 	if field_id == course.target_id:
 		return Color("b95c78")
-	return Color("d78b3d")
+	return Color("c2ad89")
 
 
 func _status_surface_color(base_color: Color, is_reachable: bool, is_visited: bool) -> Color:
@@ -526,16 +570,6 @@ func _status_surface_color(base_color: Color, is_reachable: bool, is_visited: bo
 		return base_color.darkened(VISITED_DARKEN_AMOUNT)
 	if is_reachable:
 		return base_color.lightened(REACHABLE_LIGHTEN_AMOUNT)
-	return base_color
-
-
-func _marker_color(base_color: Color, is_current: bool, is_reachable: bool, is_visited: bool) -> Color:
-	if is_current:
-		return base_color.darkened(0.72)
-	if is_visited:
-		return base_color.lightened(0.45)
-	if is_reachable:
-		return base_color.darkened(0.72)
 	return base_color
 
 
@@ -563,6 +597,7 @@ func _refresh_view(now_usec: int) -> void:
 	if session.state == RunSessionScript.State.LOCKED and not lock_active:
 		state_name = "RUNNING"
 	status_label.text = state_name
+	workshop_hud.refresh(state_name, session.error_count, route_measurement.summary_lines())
 	var neighbor_labels: Array[String] = []
 	for neighbor_id in session.course.neighbor_ids(session.current_field_id):
 		neighbor_labels.append(str(session.course.field_by_id(neighbor_id).get("letter", "")))
@@ -571,7 +606,7 @@ func _refresh_view(now_usec: int) -> void:
 		" ".join(neighbor_labels),
 	]
 	lock_label.visible = lock_active
-	lock_label.text = "FEHLERSPERRE %d ms" % int((lock_remaining + 999) / 1000) if lock_label.visible else ""
+	lock_label.text = "Tippfehler · %d ms" % int((lock_remaining + 999) / 1000) if lock_label.visible else ""
 
 
 func _queue_finished_result() -> void:
@@ -634,9 +669,8 @@ func _render_result(snapshot: Dictionary, outcome: Dictionary) -> void:
 	if rank <= 0 and result_store != null:
 		rank = result_store.rank_for_run(course_identity, str(snapshot.get("run_id", "")))
 	var duration_usec := int(snapshot.get("duration_usec", 0))
-	var result_line := "ZIEL  %s  (%d us)  |  Fehler: %d" % [
+	var result_line := "ZIEL  ·  %s\nFehler: %d" % [
 		format_duration_usec(duration_usec),
-		duration_usec,
 		int(snapshot.get("error_count", 0)),
 	]
 	if rank > 0:
@@ -648,31 +682,9 @@ func _render_result(snapshot: Dictionary, outcome: Dictionary) -> void:
 		result_line += "  |  Bestzeit eingestellt"
 	result_label.text = result_line
 
-	var leaderboard_lines: Array[String] = []
 	var best_usec: int = result_store.personal_best_usec(course_identity) if result_store != null else -1
-	if best_usec >= 0:
-		leaderboard_lines.append("Persoenliche Bestzeit: %s (%d us)" % [format_duration_usec(best_usec), best_usec])
-	else:
-		leaderboard_lines.append("Persoenliche Bestzeit: wird vorbereitet")
 	var top: Array = result_store.top_entries(course_identity) if result_store != null else []
-	if top.is_empty():
-		leaderboard_lines.append("Top 10: wird gespeichert ...")
-	else:
-		leaderboard_lines.append("Top 10:")
-		for entry in top:
-			var entry_rank: int = result_store.rank_for_run(course_identity, str(entry["run_id"]))
-			leaderboard_lines.append("#%d  %s  (%d us)  |  %d Fehler" % [
-				entry_rank,
-				format_duration_usec(int(entry["duration_usec"])),
-				int(entry["duration_usec"]),
-				int(entry["error_count"]),
-			])
-	if route_measurement != null and not route_measurement.completed_sections.is_empty():
-		leaderboard_lines.append("Routenmessung (nur dieser Lauf):")
-		leaderboard_lines.append_array(route_measurement.summary_lines())
-	if outcome.has("retained") and not bool(outcome["retained"]):
-		leaderboard_lines.append("Dieser Lauf bleibt sichtbar, liegt aber ausserhalb der Top 100.")
-	leaderboard_label.text = "\n".join(leaderboard_lines)
+	workshop_hud.show_results(snapshot, best_usec, top, result_store, bool(outcome.get("retained", true)))
 	storage_label.text = result_store.status_message() if result_store != null else "Speicher wird vorbereitet."
 
 
@@ -716,9 +728,20 @@ func _material(color: Color, roughness: float) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = roughness
+	material.roughness_texture = _grain_texture
+	material.normal_enabled = true
+	material.normal_texture = _normal_texture
+	material.normal_scale = 0.12
+	material.uv1_scale = Vector3(9, 9, 9)
+	material.metallic_specular = 0.38
 	_material_cache[material_key] = material
 	return material
 
 
 func _now_usec() -> int:
 	return _clock_override.now_usec() if _clock_override != null else Time.get_ticks_usec()
+
+
+func _reset_keycap_press() -> void:
+	for field_id in field_nodes:
+		field_nodes[field_id].reset_press(field_id == session.current_field_id)
