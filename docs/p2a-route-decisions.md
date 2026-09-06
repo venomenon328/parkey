@@ -1,6 +1,6 @@
 # P2a: Lesbare Routenentscheidungen und Referenzbausteine
 
-Stand: 2026-09-06. Implementierung zu Issue [#5](https://github.com/venomenon328/parkey/issues/5) auf `codex/p2a-route-decisions`. Verbindlich bleiben D-010 bis D-013 und D-019 bis D-024 aus [Entscheidungen](decisions.md), der P1-Eingabevertrag sowie [testing.md](testing.md). Dieses Paket ist ein Handstrecken- und Erprobungsschritt: Es enthält keinen Generator, keine finale Assetproduktion und keine Ergonomiebehauptung.
+Stand: 2026-09-06. Issue [#5](https://github.com/venomenon328/parkey/issues/5) ist abgenommen und über PR #15 nach `main` gemergt (`a12cb8f148e6c90d66c6c198b7d923eee9d5eebc`). Verbindlich bleiben D-010 bis D-013 und D-019 bis D-024 aus [Entscheidungen](decisions.md), der P1-Eingabevertrag sowie [testing.md](testing.md). Dieses Paket ist ein Handstrecken- und Erprobungsschritt: Es enthält keinen Generator, keine finale Assetproduktion und keine Ergonomiebehauptung.
 
 ## Referenzkurs und Abschnittsvertrag
 
@@ -54,4 +54,4 @@ Bei der Abnahme wurde zusätzlich die visuelle Priorität von „besucht“ gege
 
 Automatisierte Nachweise prüfen Graph, Layout, Ports, Anschlüsse, alle vier Routen, Identität, Kamera-Vorschau, Oberflächenbeschriftung, vollständige A–Z-QWERTZ-Beschreibungen, Feldstatus-Priorität sowie die in-memory Messung einschließlich ihres Zustandslebenszyklus. Review-Nacharbeit `de9f8ee` ist durch GitHub-CI `34024281152` mit Import, kompletter `all`-Suite und beiden Release-Exporten erfolgreich verifiziert. Die letzte Feldstatus-Nacharbeit ist durch GitHub-CI `34027294353` auf `b0270b4` ebenfalls vollständig bestätigt: Import, Tests sowie Windows- und Web-Releaseexport waren erfolgreich. Der tatsächliche Windows-Release wurde auf dem vorherigen P2a-Implementierungsstand unter Windows 11 Pro Build 26200 bei 2560 × 1440 sichtbar gestartet und an Bereitschaft sowie erster Entscheidung nach synthetischem `A → Z → K` geprüft. Die späteren vier menschlichen Vollroutenläufe liefern die eigentliche P2a-Spielabnahme.
 
-P2a ist damit fachlich abgenommen und merge-bereit. Eine gesonderte physische Chrome-Abnahme aus P1b bleibt unabhängig davon offen.
+P2a ist vollständig abgenommen und über PR #15 nach `main` gemergt (`a12cb8f148e6c90d66c6c198b7d923eee9d5eebc`). Der anschließende `main`-CI-Lauf `34028827332` war erfolgreich. Eine gesonderte physische Chrome-Abnahme aus P1b bleibt unabhängig davon offen.
