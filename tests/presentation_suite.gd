@@ -126,8 +126,9 @@ static func run(harness) -> void:
 		harness._assert_not_null(node.material_override, "Every furniture batch retains its actual material, including shaders.")
 	harness._assert_true(material_batches < 60, "Craft detail remains grouped into a bounded number of material draws.")
 	var sole: MeshInstance3D = scene.get_node("PlayerFigure/RightLeg/Sole")
-	harness._assert_true(sole.mesh.get_aabb().end.y + sole.position.y < -0.57, "Modeled shoe soles remain below the upper, close to the cap contact plane.")
-	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/SweptLock"), "The normal runner has modeled hair detail under the reaction pivot.")
+	var sole_top: float = sole.mesh.get_aabb().end.y + sole.position.y + float(sole.get_parent().get_meta("rest_y"))
+	harness._assert_true(sole_top > 0.03 and sole_top < 0.10, "Modeled soles retain cap contact despite shorter leg proportions.")
+	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/HeadPivot/BobHair"), "The sculpted bob follows the existing head reaction pivot.")
 	harness._assert_not_null(scene.get_node_or_null("PlayerFigure/LeftArm/Thumb"), "Hand detail follows its animated arm.")
 	# A full actual result card must fit, including a new-best line and ten rows.
 	var crowded := scene.session.last_result.duplicate(true)

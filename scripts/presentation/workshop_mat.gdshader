@@ -5,7 +5,7 @@ void fragment() {
 	float weave = sin(p.x * TAU * 6.0) * sin(p.y * TAU * 6.0);
 	float fade = 1.0 - smoothstep(0.025, 0.13, max(fwidth(p.x), fwidth(p.y)));
 	// Fine woven rubber, with antialiasing that fades subpixel detail in the distance.
-	ALBEDO = vec3(0.041, 0.097, 0.083) * (1.0 + weave * 0.10 * fade);
+	ALBEDO = vec3(0.070, 0.091, 0.086) * (1.0 + weave * 0.065 * fade);
 	if (OUTPUT_IS_SRGB) {
 		ALBEDO = 1.055 * pow(ALBEDO, vec3(1.0 / 2.4)) - 0.055;
 	}

@@ -15,4 +15,4 @@ Running suite: routes
 Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
 Running suite: presentation
 Parkey P2b started: fields=30 identity=course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a profile=Windows / Forward+ renderer=forward_plus
-PASS: 1089 assertions, 0 failures.
+PASS: 1103 assertions, 0 failures.

@@ -94,10 +94,12 @@ Das bestätigte Nutzerbriefing D-025–D-028 konkretisiert Figur, Keycaps, Beisp
 
 Die visuelle Nacharbeit zu #6 konkretisiert die Formensprache: geschlossene verjüngte Kappen mit weicher Schulter und flacher Mulde, dunkle beleuchtete Legenden innerhalb der nutzbaren Topfläche, helles Wolkenpanorama und zentraler kräftiger Timer mit Stoppuhr. Die vorhandene Werkstatt bleibt die einzige Beispielwelt. Der Mock legt kein bestimmtes Holzmaterial fest; die erneute subjektive Nutzerabnahme bleibt offen.
 
-Der weitere Fidelity-Pass vertieft Möbel-/Pflanzenformen, Beschläge, Materialantwort, Licht und Figurdetails. Holzmaserung folgt gemäß ergänzender Nutzerentscheidung der Längsrichtung der Bretter; die Kappen bleiben warmer matter Kunststoff. Grafik- und Fenstersynchronisation ändern weder Eingabeannahme noch Laufzeit oder Streckenidentität.
+Der aktuelle Fidelity-Auftrag gestaltet die Werkstatt als zusammenhängenden Ort für Switch-Montage, Keycap-Farbproben und Tastaturprüfung. Wenige funktionale Baugruppen ersetzen beliebig wiederholte Dekoration. Warme Lichtkanten, kühle Schatten und fein abgestimmte Oberflächen sollen die Bildwirkung verbessern. Die Figur nähert sich dem extern angehängten Mock mit kindlichen Proportionen, großem rundem Kopf, hellem Bob mit zwei kleinen runden Haarformen, fliederfarbenem Hoodie und hellen Schuhen. Holzmaserung folgt der Brettlänge; Kappen bleiben warmer matter Kunststoff. Kern, Strecke, Hub und Eingabesemantik bleiben erhalten; Performance wird in dieser Runde nur normal auf massive Regressionen geprüft.
+
+Die seitlichen Werkstattstationen stehen auf einem zusammenhängenden texturierten Kulissenboden unterhalb der kanonischen Strecke. Keine frei schwebenden Start-/Zieltexte und kein zusätzlicher Boden-Schriftzug; das eigentliche Zielportal bleibt beschriftet. Der Kulissenboden erzeugt keine begehbaren Felder oder Verbindungen.
+
+Die Tisch-/Arbeitsplatten der Stationen erhalten nach ergänzender Nutzerentscheidung eine eigene Textur gegenüber dem Boden: helle, fein gemaserte Arbeitsflächen mit seidenmattem Finish statt der gröberen Dielenmaserung. Die Maserung folgt weiterhin der Brettlänge.
 
 ## Bewusst später
 
 Bestzeit-Ghost, geteilte Seeds, Tagesparcours und Abschnittstraining bleiben Erweiterungsideen. Onlinekonten, Echtzeit-Mehrspieler, Inventar, Power-ups, Ausdauer und Geschwindigkeitsboni gehören nicht zum ersten PoC. Eine fertige Pausemenü-/Übungsfortsetzungsoberfläche ist kein versteckter Pflichtumfang von P1a/P1b.
-
-Die seitlichen Werkstattstationen stehen auf einem zusammenhängenden texturierten Kulissenboden unterhalb der kanonischen Strecke. Keine frei schwebenden Start-/Zieltexte und kein zusätzlicher Boden-Schriftzug; das eigentliche Zielportal bleibt beschriftet. Der Kulissenboden erzeugt keine begehbaren Felder oder Verbindungen.

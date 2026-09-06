@@ -145,28 +145,6 @@ Die P2b-Nacharbeit verwendet lokal versionierte OFL-Schriften, ein CC0-HDR und d
 
 Windows initialisiert regulär mit FIFO und schaltet am bestehenden Fenster auf Mailbox-VSync; das automatische Limit entspricht dem aktuellen Fenstermonitor (`WindowPacing`, Fallback 60). Für normale Nachweise weder `--disable-vsync`, `--max-fps` noch `--evidence-vsync` setzen. Die Platzierung bleibt Sache des Fenstersystems. `--evidence-screen=1` wählt im Prüfmodus explizit den zweiten Monitor; `--evidence-position=300,140` setzt nur die Prüfposition. `--evidence-pacing=40` misst statt vier Routen einen ruhenden Entscheidungsblick für 40 Sekunden. Diese statische Zusatzmessung ersetzt die Routen-/Bildprüfung nicht. `--evidence-window-mode=4` dient ausschließlich der getrennten Gegenprobe mit exklusivem Vollbild; die normale Fensterwahl bleibt unverändert.
 
-Diagnosen dürfen `--evidence-vsync=1` (FIFO), `--evidence-vsync=3` (Mailbox), `--rendering-driver d3d12` oder `--disable-vsync --max-fps 144` getrennt vergleichen. Abweichende Synchronisation/Driver immer ausdrücklich kennzeichnen; niemals als Default-Erfolg ausgeben. Grafikläufe nacheinander und ohne gleichzeitig laufenden Export durchführen.
+Für die aktuelle Fidelity-Runde genügt gemäß [#6](https://github.com/venomenon328/parkey/issues/6#issuecomment-5561815307) der normale Release-Sanity-Lauf: 1080p, 1440p und Chrome, beide vom Nutzer verwendeten Monitorfrequenzen berücksichtigen. Keine neue PresentMon-/ETW-/VSync-/Treiberforensik. Die normale Pacing-Konfiguration bleibt erhalten; finale historische Werte und begrenzte Gegenproben stehen in [pacing-baseline.json](evidence/p2b-fidelity/pacing-baseline.json). Vollständige damalige Traces und Werkzeugrezepte bleiben über [b236f17](https://github.com/venomenon328/parkey/blob/b236f17d1d77c66736f54b8239d25337265d83ea/docs/development.md) abrufbar. Keine zusätzliche Entwicklungs- oder Spielabhängigkeit.
 
-Optionales Windows-ETW-Werkzeug: [PresentMon 2.5.1](https://github.com/GameTechDev/PresentMon/releases/tag/v2.5.1), geprüft 2026-09-06, MIT. Portable Datei und unveränderte `LICENSE.txt` liegen unter `E:\Zeuch\Coding\Parkey-Tools\PresentMon-2.5.1`; kein PATH-/Treiber-/OS-Tuning. [EXE](https://github.com/GameTechDev/PresentMon/releases/download/v2.5.1/PresentMon-2.5.1-x64.exe), SHA-256 `9BEC3083069F58F911E6A512F4806DB51A27BD096103087BC1D05EF54C80A191`, [Lizenz](https://raw.githubusercontent.com/GameTechDev/PresentMon/v2.5.1/LICENSE.txt). Der Quellcode benötigt dieses Werkzeug nicht.
-
-```powershell
-New-Item -ItemType Directory -Force -Path build/evidence/present
-Start-Process E:\Zeuch\Coding\Parkey-Tools\PresentMon-2.5.1\PresentMon.exe -WindowStyle Hidden -ArgumentList @('--process_name','parkey.exe','--output_file','E:/Zeuch/Coding/parkey/build/evidence/present/presents.csv','--no_console_stats','--no_track_input','--delay','8','--timed','30','--terminate_after_timed','--session_name','ParkeyPresent')
-build/windows/parkey.exe --resolution 1920x1080 -- --p2b-evidence --evidence-size=1920x1080 --evidence-pacing=40 --evidence-output=E:/Zeuch/Coding/parkey/build/evidence/present
-# Nach Ende beider Prozesse:
-node tests/analyze_presents.mjs build/evidence/present/presents.csv build/evidence/present/present-summary.json
-```
-
-ETW meldet Present-Pfad und `MsBetweenDisplayChange` separat von Engine-Frames. **Auf gemischten Monitorfrequenzen sind diese Display-Zeitstempel nicht zuverlässig einem physischen Monitor zuzuordnen** ([PresentMon #108](https://github.com/GameTechDev/PresentMon/issues/108), geprüft 2026-09-06). Die lokale Gegenprobe meldet am 60-Hz-Monitor sogar mehr als 60 Display-Updates/s. Deshalb weder ungeprüfte Scanout-Erfolge noch entsprechende Fehler aus dieser Spalte ableiten. `NA`/nicht angezeigte Presents sind keine Null-ms-Bilder. `AllowsTearing` ist ein API-Erlaubnisflag, kein beobachteter Bildriss. Nichtadministrative Warnungen zu fremden/kurzlebigen Prozessen separat aufbewahren; eine leere CSV ist kein Erfolg.
-
-Zusätzliche, getrennte Diagnose: `tests/windows_output_probe.cs` liest ausschließlich DXGI-Output-Duplication-Metadaten eines ausgewählten Monitors, keine Bildpixel. Zum Bauen mit vorhandenem .NET-8-SDK alle Ausgaben in die Werkzeugablage lenken:
-
-```powershell
-dotnet build tests/windows_output_probe.csproj -c Release -p:BaseIntermediateOutputPath=E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/obj/ -p:OutputPath=E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/bin/
-E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/bin/windows_output_probe.exe
-# Erst die ausgegebene DXGI-Geometrie dem gewünschten Monitor zuordnen!
-# Beispiel: Output 0, 20 Sekunden, 8 Sekunden Startverzögerung:
-E:/Zeuch/Coding/Parkey-Tools/OutputTiming-Probe/bin/windows_output_probe.exe 0 20 8 E:/Zeuch/Coding/parkey/build/evidence/output-timing.json
-```
-
-DXGI- und Godot-Indizes unterscheiden sich auf dem Prüfdesktop. [Microsoft](https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/ns-dxgi1_2-dxgi_outdupl_frame_info) beschreibt `LastPresentTime` als Desktop-Aktualisierung, nicht als optischen Scanout. Die zusätzliche Capture-Schnittstelle verändert außerdem den beobachteten Present-Pfad. Diese Gegenprobe ist daher kein normaler Erfolgsnachweis und keine zusätzliche Spielabhängigkeit. Wahrnehmbares Stottern und Bildrisse bleiben Teil der offenen persönlichen Windows-Abnahme.
+Für eine getrennte Modell-Sichtprüfung kann der native Evidence-Helfer zusätzlich `--evidence-portrait` erhalten. Er rendert die reale Figur von vorn und hinten, schreibt `character_front.png` / `character_back.png` und beendet sich. Diese Nahansichten verwenden ausdrücklich eine Prüfkamera; normale Spielkamera, Nutzerergebnisse und Kernregeln bleiben unberührt. Sie ersetzen weder die acht normalen Spielbilder noch einen vollständigen Lauf. Zwischenbilder lokal unter `build/` sammeln; nur aussagekräftige Iterationsbilder und finale Nachweise versionieren.

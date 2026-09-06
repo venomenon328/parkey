@@ -1,0 +1,800 @@
+{
+  "source_commit": "b236f17d1d77c66736f54b8239d25337265d83ea",
+  "purpose": "Historische finale Werte und begrenzter Ursachennachweis der unveränderten normalen FIFO-Initialisierung / Mailbox / Monitorbegrenzung. Keine Messungen dieses Fidelity-Passes.",
+  "retention": "Ausgewählte JSON-Berichte unverändert bis auf ausgelassene Einzel-Frameintervalle und Routenlisten. Vollständige damalige Rohdaten bleiben über den Quellcommit in Git abrufbar.",
+  "limits": "Display-Change-Zeitstempel auf dem gemischten 144/60-Hz-Desktop sind kein optischer Scanoutnachweis. Widersprüchliche Display-Werte bleiben in den ausgewählten Present-Berichten erhalten. Persönliche Stotter-/Tearing-Abnahme offen.",
+  "sources": {
+    "windows-1080/metrics.json": {
+      "adapter": "NVIDIA GeForce RTX 3070",
+      "draw_calls": 506.0,
+      "engine": "4.7.2-stable (official)",
+      "final_max_fps": 144,
+      "final_screen_refresh_hz": 143.973007202148,
+      "final_vsync_mode": 3,
+      "first_frame": {
+        "adapter": "NVIDIA GeForce RTX 3070",
+        "arguments": [
+          "--p2b-evidence",
+          "--evidence-screen=0",
+          "--evidence-size=1920x1080",
+          "--evidence-output=E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/windows-1080"
+        ],
+        "engine_ticks_ms": 2853,
+        "kind": "first_frame",
+        "max_fps": 144,
+        "renderer": "forward_plus",
+        "rendering_driver": "vulkan",
+        "screen_index": 0,
+        "screen_refresh_hz": 143.973007202148,
+        "screens": [
+          {
+            "index": 0,
+            "position": "(0, 0)",
+            "refresh_hz": 143.973007202148,
+            "size": "(2560, 1440)"
+          },
+          {
+            "index": 1,
+            "position": "(2560, 0)",
+            "refresh_hz": 59.951000213623,
+            "size": "(2560, 1440)"
+          }
+        ],
+        "viewport": "1920x1080",
+        "vsync_mode": 3,
+        "window_mode": 0,
+        "window_position": "(0, 0)",
+        "window_position_with_decorations": "(-8, -31)",
+        "window_size": "(1920, 1080)",
+        "window_size_with_decorations": "(1936, 1119)"
+      },
+      "frames_over_20_ms": 1,
+      "frames_over_33_ms": 1,
+      "frames_without_focus": 0,
+      "kind": "complete",
+      "max_ms": 35.424,
+      "mean_fps": 142.568876494592,
+      "measurement": "four_routes_and_decision_idle",
+      "p50_ms": 6.941,
+      "p95_ms": 8.525,
+      "p99_ms": 9.269,
+      "primitives": 1140534.0,
+      "renderer": "forward_plus",
+      "sample_frames": 4596,
+      "sample_seconds": 32.2370500000001,
+      "viewport": "1920x1080"
+    },
+    "windows-1440/metrics.json": {
+      "adapter": "NVIDIA GeForce RTX 3070",
+      "draw_calls": 506.0,
+      "engine": "4.7.2-stable (official)",
+      "final_max_fps": 144,
+      "final_screen_refresh_hz": 143.973007202148,
+      "final_vsync_mode": 3,
+      "first_frame": {
+        "adapter": "NVIDIA GeForce RTX 3070",
+        "arguments": [
+          "--p2b-evidence",
+          "--evidence-screen=0",
+          "--evidence-size=2560x1440",
+          "--evidence-output=E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/windows-1440"
+        ],
+        "engine_ticks_ms": 2768,
+        "kind": "first_frame",
+        "max_fps": 144,
+        "renderer": "forward_plus",
+        "rendering_driver": "vulkan",
+        "screen_index": 0,
+        "screen_refresh_hz": 143.973007202148,
+        "screens": [
+          {
+            "index": 0,
+            "position": "(0, 0)",
+            "refresh_hz": 143.973007202148,
+            "size": "(2560, 1440)"
+          },
+          {
+            "index": 1,
+            "position": "(2560, 0)",
+            "refresh_hz": 59.951000213623,
+            "size": "(2560, 1440)"
+          }
+        ],
+        "viewport": "2560x1440",
+        "vsync_mode": 3,
+        "window_mode": 0,
+        "window_position": "(0, 0)",
+        "window_position_with_decorations": "(-8, -31)",
+        "window_size": "(2560, 1440)",
+        "window_size_with_decorations": "(2576, 1479)"
+      },
+      "frames_over_20_ms": 0,
+      "frames_over_33_ms": 0,
+      "frames_without_focus": 0,
+      "kind": "complete",
+      "max_ms": 17.935,
+      "mean_fps": 140.435916810045,
+      "measurement": "four_routes_and_decision_idle",
+      "p50_ms": 6.953,
+      "p95_ms": 8.42,
+      "p99_ms": 9.825,
+      "primitives": 1140534.0,
+      "renderer": "forward_plus",
+      "sample_frames": 4525,
+      "sample_seconds": 32.2211020000001,
+      "viewport": "2560x1440"
+    },
+    "windows-60hz-1080/metrics.json": {
+      "adapter": "NVIDIA GeForce RTX 3070",
+      "draw_calls": 506.0,
+      "engine": "4.7.2-stable (official)",
+      "final_max_fps": 60,
+      "final_screen_refresh_hz": 59.951000213623,
+      "final_vsync_mode": 3,
+      "first_frame": {
+        "adapter": "NVIDIA GeForce RTX 3070",
+        "arguments": [
+          "--p2b-evidence",
+          "--evidence-screen=1",
+          "--evidence-size=1920x1080",
+          "--evidence-output=E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/windows-60hz-1080"
+        ],
+        "engine_ticks_ms": 2723,
+        "kind": "first_frame",
+        "max_fps": 60,
+        "renderer": "forward_plus",
+        "rendering_driver": "vulkan",
+        "screen_index": 1,
+        "screen_refresh_hz": 59.951000213623,
+        "screens": [
+          {
+            "index": 0,
+            "position": "(0, 0)",
+            "refresh_hz": 143.973007202148,
+            "size": "(2560, 1440)"
+          },
+          {
+            "index": 1,
+            "position": "(2560, 0)",
+            "refresh_hz": 59.951000213623,
+            "size": "(2560, 1440)"
+          }
+        ],
+        "viewport": "1920x1080",
+        "vsync_mode": 3,
+        "window_mode": 0,
+        "window_position": "(2560, 0)",
+        "window_position_with_decorations": "(2552, -31)",
+        "window_size": "(1920, 1080)",
+        "window_size_with_decorations": "(1936, 1119)"
+      },
+      "frames_over_20_ms": 4,
+      "frames_over_33_ms": 0,
+      "frames_without_focus": 0,
+      "kind": "complete",
+      "max_ms": 29.417,
+      "mean_fps": 60.0024427359025,
+      "measurement": "four_routes_and_decision_idle",
+      "p50_ms": 16.664,
+      "p95_ms": 16.775,
+      "p99_ms": 16.884,
+      "primitives": 1140534.0,
+      "renderer": "forward_plus",
+      "sample_frames": 1942,
+      "sample_seconds": 32.365349,
+      "viewport": "1920x1080"
+    },
+    "windows-60hz-1440/metrics.json": {
+      "adapter": "NVIDIA GeForce RTX 3070",
+      "draw_calls": 506.0,
+      "engine": "4.7.2-stable (official)",
+      "final_max_fps": 60,
+      "final_screen_refresh_hz": 59.951000213623,
+      "final_vsync_mode": 3,
+      "first_frame": {
+        "adapter": "NVIDIA GeForce RTX 3070",
+        "arguments": [
+          "--p2b-evidence",
+          "--evidence-screen=1",
+          "--evidence-size=2560x1440",
+          "--evidence-output=E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/windows-60hz-1440"
+        ],
+        "engine_ticks_ms": 2797,
+        "kind": "first_frame",
+        "max_fps": 60,
+        "renderer": "forward_plus",
+        "rendering_driver": "vulkan",
+        "screen_index": 1,
+        "screen_refresh_hz": 59.951000213623,
+        "screens": [
+          {
+            "index": 0,
+            "position": "(0, 0)",
+            "refresh_hz": 143.973007202148,
+            "size": "(2560, 1440)"
+          },
+          {
+            "index": 1,
+            "position": "(2560, 0)",
+            "refresh_hz": 59.951000213623,
+            "size": "(2560, 1440)"
+          }
+        ],
+        "viewport": "2560x1440",
+        "vsync_mode": 3,
+        "window_mode": 0,
+        "window_position": "(2560, 0)",
+        "window_position_with_decorations": "(2552, -31)",
+        "window_size": "(2560, 1440)",
+        "window_size_with_decorations": "(2576, 1479)"
+      },
+      "frames_over_20_ms": 4,
+      "frames_over_33_ms": 0,
+      "frames_without_focus": 0,
+      "kind": "complete",
+      "max_ms": 28.235,
+      "mean_fps": 60.0022093406093,
+      "measurement": "four_routes_and_decision_idle",
+      "p50_ms": 16.664,
+      "p95_ms": 16.782,
+      "p99_ms": 17.007,
+      "primitives": 1140534.0,
+      "renderer": "forward_plus",
+      "sample_frames": 1944,
+      "sample_seconds": 32.398807,
+      "viewport": "2560x1440"
+    },
+    "web-chrome/metrics.json": {
+      "adapter": "WebKit WebGL",
+      "browser": {
+        "canvas": [
+          1904,
+          985
+        ],
+        "navigation_to_complete_ms": 50100.299999997,
+        "resources": [
+          {
+            "duration_ms": 9.69999999552965,
+            "name": "index.png",
+            "transfer_bytes": 21743
+          },
+          {
+            "duration_ms": 10,
+            "name": "index.js",
+            "transfer_bytes": 280115
+          },
+          {
+            "duration_ms": 135.89999999851,
+            "name": "index.wasm",
+            "transfer_bytes": 39515054
+          },
+          {
+            "duration_ms": 23.7999999970198,
+            "name": "index.pck",
+            "transfer_bytes": 11389992
+          },
+          {
+            "duration_ms": 5.40000000596046,
+            "name": "index.icon.png",
+            "transfer_bytes": 6000
+          },
+          {
+            "duration_ms": 3.19999999552965,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 11.1000000014901,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 8.29999999701977,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 13,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 10,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 9.5,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 7.39999999850988,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 9,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 6.60000000149012,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 8.79999999701977,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 6.09999999403954,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 8.70000000298023,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 6.29999999701977,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 20.8000000044703,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 3.89999999850988,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 9.69999999552965,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          },
+          {
+            "duration_ms": 7.5,
+            "name": "__evidence",
+            "transfer_bytes": 302
+          }
+        ],
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36"
+      },
+      "draw_calls": 258,
+      "engine": "4.7.2-stable (official)",
+      "first_frame": {
+        "adapter": "WebKit WebGL",
+        "engine_ticks_ms": 2511,
+        "kind": "first_frame",
+        "navigation_to_frame_ms": 2891.09999999404,
+        "renderer": "gl_compatibility",
+        "screen_index": 0,
+        "screen_refresh_hz": -1,
+        "viewport": "1751x985",
+        "vsync_mode": 1,
+        "window_position": "(0, 0)"
+      },
+      "frames_over_20_ms": 1,
+      "frames_over_33_ms": 0,
+      "frames_without_focus": 0,
+      "kind": "complete",
+      "max_ms": 20.1,
+      "mean_fps": 59.9512972966281,
+      "measurement": "four_routes_and_decision_idle",
+      "p50_ms": 16.7,
+      "p95_ms": 16.9,
+      "p99_ms": 17,
+      "primitives": 285606,
+      "renderer": "gl_compatibility",
+      "sample_frames": 1940,
+      "sample_seconds": 32.3596000000005,
+      "viewport": "1751x985",
+      "screenshots": 8
+    },
+    "normal-present-144hz/present-summary.json": {
+      "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/normal-present-144hz/presents.csv",
+      "rows": 4297,
+      "modes": {
+        "Hardware Composed: Independent Flip": 4168,
+        "Hardware: Independent Flip": 129
+      },
+      "tearing": {
+        "0": 4297
+      },
+      "sync_intervals": {
+        "0": 4297
+      },
+      "presents": {
+        "count": 4297,
+        "mean_ms": 6.973322271352075,
+        "p50_ms": 6.9437,
+        "p95_ms": 7.6195,
+        "p99_ms": 8.2146,
+        "max_ms": 9.23,
+        "over_20": 0
+      },
+      "displayed": {
+        "count": 4168,
+        "mean_ms": 7.188945681381936,
+        "p50_ms": 6.943,
+        "p95_ms": 7.0212,
+        "p99_ms": 13.9073,
+        "max_ms": 20.932,
+        "over_20": 1
+      },
+      "gpu_busy": {
+        "count": 4297,
+        "mean_ms": 6.617839353037015,
+        "p50_ms": 6.7533,
+        "p95_ms": 8.014,
+        "p99_ms": 8.2478,
+        "max_ms": 8.865,
+        "over_20": 0
+      },
+      "cpu_busy": {
+        "count": 4297,
+        "mean_ms": 6.8408608098673565,
+        "p50_ms": 6.8146,
+        "p95_ms": 7.4813,
+        "p99_ms": 8.0922,
+        "max_ms": 9.0206,
+        "over_20": 0
+      },
+      "present_api": {
+        "count": 4297,
+        "mean_ms": 0.1324621363742147,
+        "p50_ms": 0.1249,
+        "p95_ms": 0.184,
+        "p99_ms": 0.2491,
+        "max_ms": 0.4461,
+        "over_20": 0
+      }
+    },
+    "normal-present-60hz/present-summary.json": {
+      "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/final/normal-present-60hz/presents.csv",
+      "rows": 1798,
+      "modes": {
+        "Composed: Flip": 1798
+      },
+      "tearing": {
+        "0": 1798
+      },
+      "sync_intervals": {
+        "0": 1798
+      },
+      "presents": {
+        "count": 1798,
+        "mean_ms": 16.66590088987762,
+        "p50_ms": 16.6623,
+        "p95_ms": 17.0103,
+        "p99_ms": 17.2538,
+        "max_ms": 18.4525,
+        "over_20": 0
+      },
+      "displayed": {
+        "count": 1773,
+        "mean_ms": 16.906006824591078,
+        "p50_ms": 16.6802,
+        "p95_ms": 25.2752,
+        "p99_ms": 34.4016,
+        "max_ms": 34.8148,
+        "over_20": 413
+      },
+      "gpu_busy": {
+        "count": 1798,
+        "mean_ms": 7.694939988876525,
+        "p50_ms": 7.7154,
+        "p95_ms": 8.9829,
+        "p99_ms": 9.1734,
+        "max_ms": 9.583,
+        "over_20": 0
+      },
+      "cpu_busy": {
+        "count": 1798,
+        "mean_ms": 16.521694660734155,
+        "p50_ms": 16.5182,
+        "p95_ms": 16.8682,
+        "p99_ms": 17.1047,
+        "max_ms": 18.3256,
+        "over_20": 0
+      },
+      "present_api": {
+        "count": 1798,
+        "mean_ms": 0.1442386540600668,
+        "p50_ms": 0.1391,
+        "p95_ms": 0.1924,
+        "p99_ms": 0.2473,
+        "max_ms": 0.4594,
+        "over_20": 0
+      }
+    },
+    "diagnostics/vulkan-edge/metrics.json": {
+      "adapter": "NVIDIA GeForce RTX 3070",
+      "draw_calls": 477.0,
+      "engine": "4.7.2-stable (official)",
+      "first_frame": {
+        "adapter": "NVIDIA GeForce RTX 3070",
+        "arguments": [
+          "--p2b-evidence",
+          "--evidence-size=1920x1080",
+          "--evidence-pacing=20",
+          "--evidence-output=E:\\Zeuch\\Coding\\parkey\\build\\evidence\\p2b-fidelity\\pacing\\vulkan-edge"
+        ],
+        "engine_ticks_ms": 2297,
+        "kind": "first_frame",
+        "max_fps": 0,
+        "renderer": "forward_plus",
+        "rendering_driver": "vulkan",
+        "screen_index": 0,
+        "screen_refresh_hz": 143.973007202148,
+        "screens": [
+          {
+            "index": 0,
+            "position": "(0, 0)",
+            "refresh_hz": 143.973007202148,
+            "size": "(2560, 1440)"
+          },
+          {
+            "index": 1,
+            "position": "(2560, 0)",
+            "refresh_hz": 59.951000213623,
+            "size": "(2560, 1440)"
+          }
+        ],
+        "viewport": "1920x1080",
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_position": "(0, 0)",
+        "window_position_with_decorations": "(-8, -31)",
+        "window_size": "(1920, 1080)",
+        "window_size_with_decorations": "(1936, 1119)"
+      },
+      "frames_over_20_ms": 421,
+      "frames_over_33_ms": 0,
+      "frames_without_focus": 0,
+      "kind": "complete",
+      "max_ms": 22.197,
+      "mean_fps": 59.9647197571308,
+      "measurement": "static_pacing_diagnostic",
+      "p50_ms": 15.131,
+      "p95_ms": 20.968,
+      "p99_ms": 21.219,
+      "primitives": 395094.0,
+      "renderer": "forward_plus",
+      "sample_frames": 1200,
+      "sample_seconds": 20.011767,
+      "viewport": "1920x1080"
+    },
+    "diagnostics/vulkan-mailbox/metrics.json": {
+      "adapter": "NVIDIA GeForce RTX 3070",
+      "draw_calls": 477.0,
+      "engine": "4.7.2-stable (official)",
+      "first_frame": {
+        "adapter": "NVIDIA GeForce RTX 3070",
+        "arguments": [
+          "--p2b-evidence",
+          "--evidence-size=1920x1080",
+          "--evidence-pacing=20",
+          "--evidence-output=E:\\Zeuch\\Coding\\parkey\\build\\evidence\\p2b-fidelity\\pacing\\vulkan-mailbox",
+          "--evidence-position=300,140",
+          "--evidence-vsync=3"
+        ],
+        "engine_ticks_ms": 2328,
+        "kind": "first_frame",
+        "max_fps": 0,
+        "renderer": "forward_plus",
+        "rendering_driver": "vulkan",
+        "screen_index": 0,
+        "screen_refresh_hz": 143.973007202148,
+        "screens": [
+          {
+            "index": 0,
+            "position": "(0, 0)",
+            "refresh_hz": 143.973007202148,
+            "size": "(2560, 1440)"
+          },
+          {
+            "index": 1,
+            "position": "(2560, 0)",
+            "refresh_hz": 59.951000213623,
+            "size": "(2560, 1440)"
+          }
+        ],
+        "viewport": "1920x1080",
+        "vsync_mode": 3,
+        "window_mode": 0,
+        "window_position": "(300, 140)",
+        "window_position_with_decorations": "(292, 109)",
+        "window_size": "(1920, 1080)",
+        "window_size_with_decorations": "(1936, 1119)"
+      },
+      "frames_over_20_ms": 0,
+      "frames_over_33_ms": 0,
+      "frames_without_focus": 0,
+      "kind": "complete",
+      "max_ms": 9.687,
+      "mean_fps": 143.875562735669,
+      "measurement": "static_pacing_diagnostic",
+      "p50_ms": 6.968,
+      "p95_ms": 8.908,
+      "p99_ms": 9.29,
+      "primitives": 395094.0,
+      "renderer": "forward_plus",
+      "sample_frames": 2878,
+      "sample_seconds": 20.003397,
+      "viewport": "1920x1080"
+    },
+    "diagnostics/present-fifo/present-summary.json": {
+      "source": "build/evidence/p2b-fidelity/pacing/present-fifo/presents.csv",
+      "rows": 896,
+      "modes": {
+        "Composed: Flip": 896
+      },
+      "tearing": {
+        "0": 896
+      },
+      "sync_intervals": {
+        "1": 896
+      },
+      "presents": {
+        "count": 896,
+        "mean_ms": 16.68206283482144,
+        "p50_ms": 13.9212,
+        "p95_ms": 20.8969,
+        "p99_ms": 20.94,
+        "max_ms": 21.1194,
+        "over_20": 360
+      },
+      "displayed": {
+        "count": 896,
+        "mean_ms": 16.682004241071418,
+        "p50_ms": 13.9101,
+        "p95_ms": 20.8507,
+        "p99_ms": 27.7166,
+        "max_ms": 27.8126,
+        "over_20": 361
+      },
+      "gpu_busy": {
+        "count": 896,
+        "mean_ms": 6.124111383928574,
+        "p50_ms": 5.9053,
+        "p95_ms": 7.0294,
+        "p99_ms": 7.2242,
+        "max_ms": 7.9061,
+        "over_20": 0
+      },
+      "cpu_busy": {
+        "count": 896,
+        "mean_ms": 16.537126227678574,
+        "p50_ms": 13.793,
+        "p95_ms": 20.7741,
+        "p99_ms": 20.8169,
+        "max_ms": 20.9883,
+        "over_20": 360
+      },
+      "present_api": {
+        "count": 896,
+        "mean_ms": 0.14494765625000022,
+        "p50_ms": 0.1353,
+        "p95_ms": 0.1858,
+        "p99_ms": 0.3172,
+        "max_ms": 2.0475,
+        "over_20": 0
+      }
+    },
+    "diagnostics/fifo-init-mailbox-144hz/present-summary.json": {
+      "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/fifo-init-mailbox-144hz/presents.csv",
+      "rows": 2865,
+      "modes": {
+        "Hardware Composed: Independent Flip": 2865
+      },
+      "tearing": {
+        "1": 2865
+      },
+      "sync_intervals": {
+        "0": 2865
+      },
+      "presents": {
+        "count": 2865,
+        "mean_ms": 6.9724285514834055,
+        "p50_ms": 6.9501,
+        "p95_ms": 7.3825,
+        "p99_ms": 8.5424,
+        "max_ms": 10.1389,
+        "over_20": 0
+      },
+      "displayed": {
+        "count": 2865,
+        "mean_ms": 6.974601291448507,
+        "p50_ms": 6.9499,
+        "p95_ms": 7.0011,
+        "p99_ms": 8.5082,
+        "max_ms": 9.6146,
+        "over_20": 0
+      },
+      "gpu_busy": {
+        "count": 2865,
+        "mean_ms": 6.65863179755673,
+        "p50_ms": 6.3462,
+        "p95_ms": 7.8517,
+        "p99_ms": 8.831,
+        "max_ms": 9.9627,
+        "over_20": 0
+      },
+      "cpu_busy": {
+        "count": 2865,
+        "mean_ms": 6.835808307155303,
+        "p50_ms": 6.827,
+        "p95_ms": 7.2418,
+        "p99_ms": 8.3948,
+        "max_ms": 9.9212,
+        "over_20": 0
+      },
+      "present_api": {
+        "count": 2865,
+        "mean_ms": 0.13662324607329832,
+        "p50_ms": 0.124,
+        "p95_ms": 0.2128,
+        "p99_ms": 0.3126,
+        "max_ms": 0.5989,
+        "over_20": 0
+      }
+    },
+    "diagnostics/mailbox-60hz-centered-cap288/present-summary.json": {
+      "source": "E:/Zeuch/Coding/parkey/build/evidence/p2b-fidelity/pacing/mailbox-60hz-centered-cap288/presents.csv",
+      "rows": 5681,
+      "modes": {
+        "Composed: Copy with GPU GDI": 5681
+      },
+      "tearing": {
+        "0": 5681
+      },
+      "sync_intervals": {
+        "-1": 5681
+      },
+      "presents": {
+        "count": 5681,
+        "mean_ms": 3.518072399225492,
+        "p50_ms": 3.5014,
+        "p95_ms": 4.2113,
+        "p99_ms": 4.5126,
+        "max_ms": 7.0084,
+        "over_20": 0
+      },
+      "displayed": {
+        "count": 1860,
+        "mean_ms": 10.732191774193552,
+        "p50_ms": 11.9108,
+        "p95_ms": 17.9642,
+        "p99_ms": 20.0922,
+        "max_ms": 26.9081,
+        "over_20": 21
+      },
+      "gpu_busy": {
+        "count": 5681,
+        "mean_ms": 3.51118056680162,
+        "p50_ms": 3.588,
+        "p95_ms": 4.2001,
+        "p99_ms": 4.3314,
+        "max_ms": 4.542,
+        "over_20": 0
+      },
+      "cpu_busy": {
+        "count": 5681,
+        "mean_ms": 3.518072399225492,
+        "p50_ms": 3.5014,
+        "p95_ms": 4.2113,
+        "p99_ms": 4.5126,
+        "max_ms": 7.0084,
+        "over_20": 0
+      },
+      "present_api": null
+    }
+  }
+}

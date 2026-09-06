@@ -1,7 +1,7 @@
 [
   {
     "exit": 0,
-    "name": "import",
+    "check": "import",
     "arguments": [
       "--headless",
       "--path",
@@ -11,7 +11,7 @@
   },
   {
     "exit": 0,
-    "name": "presentation",
+    "check": "presentation",
     "arguments": [
       "--headless",
       "--path",
@@ -25,7 +25,7 @@
   },
   {
     "exit": 0,
-    "name": "integration",
+    "check": "integration",
     "arguments": [
       "--headless",
       "--path",
@@ -39,7 +39,7 @@
   },
   {
     "exit": 0,
-    "name": "all",
+    "check": "all",
     "arguments": [
       "--headless",
       "--path",
@@ -53,7 +53,7 @@
   },
   {
     "exit": 0,
-    "name": "export-windows",
+    "check": "export-windows",
     "arguments": [
       "--headless",
       "--path",
@@ -65,7 +65,7 @@
   },
   {
     "exit": 0,
-    "name": "export-web",
+    "check": "export-web",
     "arguments": [
       "--headless",
       "--path",

@@ -22,7 +22,7 @@ Stand: 2026-09-06. P0 / Issue #1 ist implementiert und vollständig abgenommen: 
 
 Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backspace als Quick Restart zurück in Bereitschaft; Escape als getrennte Pausemenü-Anforderung. 200 ms Fehlerpause ohne Puffer/Verlängerung, A–Z, Rückwege und Fokusinvalidierung sind als PoC-Regeln freigegeben. Details und Randfälle stehen zentral im [P1-Regelprofil](docs/p1-rule-profile.md).
 
-**P2b / Issue #6: weiterer Fidelity-Pass im bestehenden Draft-PR #18.** Detailliertere Möbel, Pflanzen, Leuchten und Figur, CC0-Fotoholz mit längsgerichteter Maserung, gewebte Matte sowie abgestimmte Material-/Lichtantwort ergänzen die plastischen Keycaps und das klare HUD. Windows-Frame-Pacing und beide Shader-Farbräume sind anhand realer Releasebilder und Messungen nachgearbeitet. `presentation` 539, `integration` 238 und `all` 1089 Assertions sowie beide Releaseexporte sind erfolgreich. Reale Windows-/Chrome-Bilder, Renderiterationen und Leistungsgrenzen stehen im [P2b-Bericht](docs/p2b-visual-slice.md). **Subjektive Nutzerabnahme und persönlich gespielter vollständiger Windows-Lauf bleiben offen; kein Merge.**
+**P2b / Issue #6: weiterer Fidelity-Pass im bestehenden Draft-PR #18.** Drei funktionale Arbeitsbereiche verbinden die Tastatur-Werkstatt; eine neue kindliche Figur mit hellem Bob und fliederfarbenem Hoodie nähert sich dem Nutzer-Mock an. Licht, Himmel, Mikrostruktur und Kamera wurden anhand echter Bilder nachgearbeitet. `presentation` 553, `integration` 238 und `all` 1103 Assertions sowie beide Releaseexporte sind erfolgreich. Reale Windows-/Chrome-Bilder, normale Performance-Sanity-Werte und die gezielte Evidenzbereinigung stehen im [P2b-Bericht](docs/p2b-visual-slice.md). **Subjektive Nutzerabnahme und persönlich gespielter vollständiger Windows-Lauf bleiben offen; kein Merge.**
 
 ## Dokumentation
 
@@ -45,7 +45,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-**P2b / Issue #6 nach der visuellen Nacharbeit erneut abnehmen.** Der weitere Fidelity-Pass ist anhand mehrerer realer Renderiterationen gegen Mock und `5659242` umgesetzt; Umgebung, Figur, Materialien und Windows-Pacing sind nachgearbeitet. Technische Nachweise und offene Nutzerabnahme stehen im [P2b-Bericht](docs/p2b-visual-slice.md). P3-Inhalte sind nicht vorgezogen; kein automatischer Merge.
+**P2b / Issue #6 erneut visuell abnehmen.** Mehrere echte Renderiterationen vergleichen Werkstatt, Figur und Bildwirkung mit dem externen Mock und `b236f17`. Technische Nachweise und offene Nutzerabnahme stehen im [P2b-Bericht](docs/p2b-visual-slice.md). P3-Inhalte sind nicht vorgezogen; kein automatischer Merge.
 
 
 ## Zusammenarbeit

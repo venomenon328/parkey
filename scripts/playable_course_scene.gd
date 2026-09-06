@@ -28,8 +28,8 @@ const MAX_VISUAL_WAYPOINTS := 18
 const MAX_CATCH_UP_SECONDS := 0.05
 const CAMERA_CATCH_UP_SECONDS := 0.08
 const HEAD_SHAKE_SECONDS := 0.24
-const CAMERA_DISTANCE := 7.4
-const CAMERA_HEIGHT := 4.7
+const CAMERA_DISTANCE := 6.8
+const CAMERA_HEIGHT := 4.2
 const CAMERA_LOOK_AHEAD := 3.4
 const CAMERA_SHOULDER_OFFSET := 1.0
 const SURFACE_LABEL_CLOCKWISE_ROTATION_DEG := -90.0
@@ -276,14 +276,14 @@ func _build_environment() -> void:
 	var quality := RenderProfileScript.quality_enabled()
 	WorkshopWorldScript.build(self, %WorldEnvironment, %Floor, quality)
 	get_node("KeyLight").shadow_enabled = quality
-	get_node("KeyLight").light_energy = 1.08 if quality else 0.85
-	get_node("KeyLight").light_angular_distance = 2.5
+	get_node("KeyLight").light_energy = 1.18 if quality else 0.91
+	get_node("KeyLight").light_angular_distance = 3.5
 	get_node("KeyLight").directional_shadow_max_distance = 55.0
 	get_node("KeyLight").shadow_blur = 1.0
-	get_node("KeyLight").shadow_normal_bias = 0.65
+	get_node("KeyLight").shadow_normal_bias = 0.9
 	if quality:
 		RenderingServer.directional_soft_shadow_filter_set_quality(RenderingServer.SHADOW_QUALITY_SOFT_HIGH)
-	get_node("FillLight").light_energy = 0.16
+	get_node("FillLight").light_energy = 0.23
 	get_viewport().msaa_3d = Viewport.MSAA_4X if quality else Viewport.MSAA_DISABLED
 	var grain := Image.create(128, 128, false, Image.FORMAT_RGB8)
 	var normal := Image.create(128, 128, false, Image.FORMAT_RGB8)
@@ -731,7 +731,7 @@ func _material(color: Color, roughness: float) -> StandardMaterial3D:
 	material.roughness_texture = _grain_texture
 	material.normal_enabled = true
 	material.normal_texture = _normal_texture
-	material.normal_scale = 0.32
+	material.normal_scale = 0.12
 	material.uv1_scale = Vector3(9, 9, 9)
 	material.metallic_specular = 0.38
 	_material_cache[material_key] = material

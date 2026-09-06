@@ -71,6 +71,17 @@ func _run() -> void:
 	await RenderingServer.frame_post_draw
 	_emit({"kind": "first_frame", "engine_ticks_ms": Time.get_ticks_msec(), "renderer": RenderingServer.get_current_rendering_method(), "viewport": _resolution(), "adapter": RenderingServer.get_video_adapter_name(), "screen_refresh_hz": DisplayServer.screen_get_refresh_rate(get_window().current_screen) if not OS.has_feature("web") else -1.0, "screen_index": get_window().current_screen, "window_position": str(get_window().position), "vsync_mode": DisplayServer.window_get_vsync_mode()})
 	await get_tree().create_timer(3.0).timeout
+	if not OS.has_feature("web") and OS.get_cmdline_user_args().has("--evidence-portrait"):
+		# Separate model inspection, explicitly not the normal gameplay camera.
+		scene.set_process(false)
+		scene.figure.rotation = Vector3.ZERO
+		var anchor: Vector3 = scene.figure.global_position
+		for side in [-1.0, 1.0]:
+			scene.camera.global_position = anchor + Vector3(0.0, 1.18, side * 3.2)
+			scene.camera.look_at(anchor + Vector3.UP * 0.84)
+			await _capture("character_front" if side < 0 else "character_back")
+		get_tree().quit()
+		return
 	if pacing_seconds > 0.0:
 		await _letters("AZK", 0.24)
 		await get_tree().create_timer(1.0).timeout

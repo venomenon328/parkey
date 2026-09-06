@@ -1,0 +1,11 @@
+{
+  "source_commit": "b236f17d1d77c66736f54b8239d25337265d83ea",
+  "kept_historical_reports": 12,
+  "policy": "Das vorherige Evidenzset wird durch finale aktuelle Nachweise, acht ausgewählte Iterationsbilder, zwei Modellansichten und zwölf historische JSON-Zusammenfassungen ersetzt. Git-Historie bleibt unverändert; keine neue ETW-/PresentMon-Messung.",
+  "current_files_excluding_retention_and_manifest": 49,
+  "current_bytes_excluding_retention_and_manifest": 96762457,
+  "previous_files": 325,
+  "previous_bytes": 176479812,
+  "previous_csv_files": 27,
+  "previous_png_files": 88
+}
