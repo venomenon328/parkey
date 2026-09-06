@@ -34,7 +34,7 @@ func _run_requested_suite() -> void:
 	if suite == "integration" or suite == "all":
 		await IntegrationSuite.run(self)
 	if suite == "routes" or suite == "all":
-		RoutesSuite.run(self)
+		await RoutesSuite.run(self)
 	_finish()
 
 

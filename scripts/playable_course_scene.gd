@@ -165,11 +165,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func simulate_focus_lost(received_usec: int = -1) -> Dictionary:
 	_has_application_focus = false
-	var event := session.handle_focus_lost(_now_usec() if received_usec < 0 else received_usec)
+	var now_usec := _now_usec() if received_usec < 0 else received_usec
+	var previous_field_id := session.current_field_id
+	var event := session.handle_focus_lost(now_usec)
+	if route_measurement != null:
+		route_measurement.record_session_event(event, previous_field_id, session.current_field_id, now_usec)
 	visual_waypoints.clear()
 	_visual_budget_seconds = 0.0
 	_reconcile_figure_to_logical()
-	_refresh_view(_now_usec() if received_usec < 0 else received_usec)
+	_refresh_view(now_usec)
 	return event
 
 

@@ -8,6 +8,7 @@ const RouteMeasurementScript = preload("res://scripts/course/route_measurement.g
 const CourseDataScript = preload("res://scripts/core/course_data.gd")
 const CourseValidatorScript = preload("res://scripts/core/course_validator.gd")
 const CourseIdentityScript = preload("res://scripts/core/course_identity.gd")
+const MonotonicClockScript = preload("res://scripts/core/monotonic_clock.gd")
 const RuleProfileScript = preload("res://scripts/core/rule_profile.gd")
 const RunSessionScript = preload("res://scripts/core/run_session.gd")
 
@@ -18,6 +19,7 @@ static func run(harness) -> void:
 	_test_reference_routes_and_identity(harness)
 	_test_typing_hypotheses(harness)
 	_test_in_memory_section_measurement(harness)
+	await _test_scene_measurement_lifecycle(harness)
 
 
 static func _test_authored_sections_and_geometry(harness) -> void:
@@ -81,6 +83,26 @@ static func _test_typing_hypotheses(harness) -> void:
 	harness._assert_true(bool(alpha_long["familiar_sequence_hypothesis"]) and bool(beta_long["familiar_sequence_hypothesis"]), "The longer candidate annotations retain their explicitly tentative familiar-sequence hypothesis.")
 	harness._assert_true(int(beta_short["row_changes"]) > int(beta_long["row_changes"]), "The second comparison makes row changes transparent without converting them into a speed claim.")
 
+	var alphabet := QwertzTypingHypothesesScript.describe("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	harness._assert_true(alphabet["valid"], "The transparent QWERTZ lookup covers every A-Z gameplay letter.")
+	harness._assert_equal(alphabet["input_steps"], 26, "The complete A-Z QWERTZ description keeps every gameplay letter.")
+	var z_key := QwertzTypingHypothesesScript.key_description("Z")
+	harness._assert_equal(z_key.get("row"), "top", "QWERTZ Z uses the physical upper-row Y position.")
+	harness._assert_equal(z_key.get("hand"), "right", "QWERTZ Z is assigned to the right hand.")
+	harness._assert_equal(z_key.get("finger"), "index", "QWERTZ Z is assigned to the right index finger.")
+	var y_key := QwertzTypingHypothesesScript.key_description("Y")
+	harness._assert_equal(y_key.get("row"), "bottom", "QWERTZ Y uses the physical lower-row Z position.")
+	harness._assert_equal(y_key.get("hand"), "left", "QWERTZ Y is assigned to the left hand.")
+	harness._assert_equal(y_key.get("finger"), "little", "QWERTZ Y is assigned to the left little finger.")
+	var x_key := QwertzTypingHypothesesScript.key_description("X")
+	harness._assert_equal(x_key.get("row"), "bottom", "QWERTZ X is present on the lower row.")
+	harness._assert_equal(x_key.get("hand"), "left", "QWERTZ X is assigned to the left hand.")
+	harness._assert_equal(x_key.get("finger"), "ring", "QWERTZ X is assigned to the left ring finger.")
+	var c_key := QwertzTypingHypothesesScript.key_description("C")
+	harness._assert_equal(c_key.get("row"), "bottom", "QWERTZ C is present on the lower row.")
+	harness._assert_equal(c_key.get("hand"), "left", "QWERTZ C is assigned to the left hand.")
+	harness._assert_equal(c_key.get("finger"), "middle", "QWERTZ C is assigned to the left middle finger.")
+
 
 static func _test_in_memory_section_measurement(harness) -> void:
 	var course := HandcraftedCourseScript.build()
@@ -90,7 +112,6 @@ static func _test_in_memory_section_measurement(harness) -> void:
 	for letter in "AZKF":
 		_record_letter(session, measurement, letter, received_usec)
 		received_usec += 100
-	var alpha_start_usec := 1300
 	_record_letter(session, measurement, "X", received_usec)
 	received_usec += 200000
 	for letter in "JKMVBQWERTGYUION":
@@ -107,11 +128,96 @@ static func _test_in_memory_section_measurement(harness) -> void:
 	harness._assert_equal(beta["error_count"], 0, "The second section keeps its own local error count.")
 	harness._assert_true(not measurement.summary_lines().is_empty(), "Route observations remain available to the local result view without persistence.")
 
+	var finished_sections := measurement.completed_sections.duplicate(true)
+	var finished_menu := session.request_menu(received_usec)
+	measurement.record_session_event(finished_menu, session.current_field_id, session.current_field_id, received_usec)
+	harness._assert_equal(session.state, RunSessionScript.State.FINISHED, "Escape after a valid finish does not invalidate the completed run.")
+	harness._assert_equal(measurement.completed_sections, finished_sections, "Post-finish Escape preserves the completed route measurements.")
+
+	var interrupted_session := RunSessionScript.new(course)
+	var interrupted_measurement := RouteMeasurementScript.new(HandcraftedCourseScript.section_contracts())
+	var interrupted_usec := 500000
+	for letter in "AZKFJKM":
+		_record_letter(interrupted_session, interrupted_measurement, letter, interrupted_usec)
+		interrupted_usec += 100
+	harness._assert_equal(interrupted_measurement.completed_sections.size(), 1, "A completed section is retained while its overall attempt is still valid.")
+	var interrupted_previous := interrupted_session.current_field_id
+	var interrupted_event := interrupted_session.request_menu(interrupted_usec)
+	interrupted_measurement.record_session_event(interrupted_event, interrupted_previous, interrupted_session.current_field_id, interrupted_usec)
+	harness._assert_equal(interrupted_session.state, RunSessionScript.State.INTERRUPTED, "Escape during a running attempt invalidates that attempt.")
+	harness._assert_true(interrupted_measurement.completed_sections.is_empty(), "An invalidating Escape discards all section measurements from that attempt.")
+
+	var aborted_session := RunSessionScript.new(course)
+	var aborted_measurement := RouteMeasurementScript.new(HandcraftedCourseScript.section_contracts())
+	var aborted_usec := 700000
+	for letter in "AZKFJKM":
+		_record_letter(aborted_session, aborted_measurement, letter, aborted_usec)
+		aborted_usec += 100
+	harness._assert_equal(aborted_measurement.completed_sections.size(), 1, "A completed section exists before focus invalidation.")
+	var aborted_previous := aborted_session.current_field_id
+	var aborted_event := aborted_session.handle_focus_lost(aborted_usec)
+	aborted_measurement.record_session_event(aborted_event, aborted_previous, aborted_session.current_field_id, aborted_usec)
+	harness._assert_equal(aborted_session.state, RunSessionScript.State.ABORTED, "Focus loss invalidates a running attempt.")
+	harness._assert_true(aborted_measurement.completed_sections.is_empty(), "Focus invalidation discards all section measurements from that attempt.")
+
+
+static func _test_scene_measurement_lifecycle(harness) -> void:
+	var packed := load("res://scenes/playable_course.tscn") as PackedScene
+	harness._assert_not_null(packed, "The route lifecycle regression loads the actual playable scene.")
+	if packed == null:
+		return
+	var scene := packed.instantiate() as PlayableCourseScene
+	var clock := MonotonicClockScript.Manual.new()
+	scene.configure_for_test(clock, "user://parkey-test-results/routes-measurement-lifecycle", ["routes-lifecycle-finished"], 0)
+	harness.root.add_child(scene)
+	await harness.process_frame
+	harness._assert_not_null(scene.route_measurement, "The actual scene wires its per-attempt route measurement.")
+
+	var received_usec := 1000000
+	for letter in "AZKFJKM":
+		_record_scene_letter(scene, letter, received_usec)
+		received_usec += 100
+	harness._assert_equal(scene.route_measurement.completed_sections.size(), 1, "The actual scene records a completed first section before focus loss.")
+	scene.simulate_focus_lost(received_usec)
+	harness._assert_equal(scene.session.state, RunSessionScript.State.ABORTED, "The actual scene forwards focus loss into the run state.")
+	harness._assert_true(scene.route_measurement.completed_sections.is_empty(), "The actual scene forwards focus invalidation into route-measurement cleanup.")
+	scene.simulate_focus_gained()
+
+	var previous_field_id := scene.session.current_field_id
+	var restart_event := scene.session.quick_restart()
+	scene._apply_session_event(restart_event, previous_field_id, received_usec + 100)
+	received_usec += 200
+	for letter in HandcraftedCourseScript.UPPER_ROUTE:
+		_record_scene_letter(scene, letter, received_usec)
+		received_usec += 100
+	harness._assert_equal(scene.session.state, RunSessionScript.State.FINISHED, "The actual scene reaches a valid finish after the focus-aborted attempt is restarted.")
+	harness._assert_equal(scene.route_measurement.completed_sections.size(), 2, "The finished scene result retains both completed route sections.")
+	var completed_before_menu := scene.route_measurement.completed_sections.duplicate(true)
+	previous_field_id = scene.session.current_field_id
+	var menu_event := scene.session.request_menu(received_usec)
+	scene._apply_session_event(menu_event, previous_field_id, received_usec)
+	harness._assert_equal(scene.session.state, RunSessionScript.State.FINISHED, "Post-finish Escape in the actual scene preserves the finished state.")
+	harness._assert_equal(scene.route_measurement.completed_sections, completed_before_menu, "Post-finish Escape in the actual scene preserves route measurements.")
+	harness._assert_true(scene.leaderboard_label.text.contains("Routenmessung (nur dieser Lauf):"), "The finished result panel still exposes its route measurements after Escape.")
+	previous_field_id = scene.session.current_field_id
+	restart_event = scene.session.quick_restart()
+	scene._apply_session_event(restart_event, previous_field_id, received_usec + 100)
+	harness._assert_true(scene.route_measurement.completed_sections.is_empty(), "Quick Restart starts the actual scene with fresh route measurements.")
+
+	scene.queue_free()
+	await harness.process_frame
+
 
 static func _record_letter(session: RunSession, measurement: RouteMeasurement, letter: String, received_usec: int) -> void:
 	var previous := session.current_field_id
 	var event := session.handle_letter(letter, received_usec)
 	measurement.record_session_event(event, previous, session.current_field_id, received_usec)
+
+
+static func _record_scene_letter(scene: PlayableCourseScene, letter: String, received_usec: int) -> void:
+	var previous := scene.session.current_field_id
+	var event := scene.session.handle_letter(letter, received_usec)
+	scene._apply_session_event(event, previous, received_usec)
 
 
 static func _drive_letters(session: RunSession, letters: String, start_usec: int) -> void:

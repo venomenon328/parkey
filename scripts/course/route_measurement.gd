@@ -1,6 +1,8 @@
 class_name RouteMeasurement
 extends RefCounted
 
+const RunSessionScript = preload("res://scripts/core/run_session.gd")
+
 ## Per-attempt, in-memory route observations. This class has no file, network
 ## or timing authority and is deliberately called only after RunSession has
 ## processed an input event.
@@ -23,8 +25,16 @@ func reset() -> void:
 
 func record_session_event(event: Dictionary, previous_field_id: String, current_field_id: String, received_usec: int) -> void:
 	var kind := str(event.get("kind", ""))
-	if kind == "restarted" or kind == "menu_requested" or kind == "focus_lost":
+	if kind == "restarted":
 		reset()
+		return
+	if kind == "menu_requested":
+		if int(event.get("state", -1)) == RunSessionScript.State.INTERRUPTED:
+			reset()
+		return
+	if kind == "focus_lost":
+		if int(event.get("state", -1)) == RunSessionScript.State.ABORTED:
+			reset()
 		return
 	if kind != "moved" and kind != "finished":
 		return
