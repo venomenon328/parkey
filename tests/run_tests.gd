@@ -3,6 +3,7 @@ extends SceneTree
 const KeyInputNormalizer = preload("res://scripts/input/key_input_normalizer.gd")
 const CoreSuite = preload("res://tests/core_suite.gd")
 const IntegrationSuite = preload("res://tests/integration_suite.gd")
+const StorageSuite = preload("res://tests/storage_suite.gd")
 
 var assertions := 0
 var failures: Array[String] = []
@@ -15,11 +16,11 @@ func _initialize() -> void:
 func _run_requested_suite() -> void:
 	var suite := _requested_suite(OS.get_cmdline_user_args())
 	if suite.is_empty():
-		_fail("Missing value for --suite. Available suites: smoke, core, integration, all.")
+		_fail("Missing value for --suite. Available suites: smoke, core, storage, integration, all.")
 		_finish()
 		return
-	if suite != "smoke" and suite != "core" and suite != "integration" and suite != "all":
-		_fail("Unknown suite '%s'. Available suites: smoke, core, integration, all." % suite)
+	if suite != "smoke" and suite != "core" and suite != "storage" and suite != "integration" and suite != "all":
+		_fail("Unknown suite '%s'. Available suites: smoke, core, storage, integration, all." % suite)
 		_finish()
 		return
 
@@ -27,6 +28,8 @@ func _run_requested_suite() -> void:
 		_run_smoke_suite()
 	if suite == "core" or suite == "all":
 		CoreSuite.run(self)
+	if suite == "storage" or suite == "all":
+		StorageSuite.run(self)
 	if suite == "integration" or suite == "all":
 		await IntegrationSuite.run(self)
 	_finish()

@@ -1,6 +1,6 @@
 # Teststrategie und Abnahme
 
-Stand: 2026-09-06. P0, P1a und P1b sind abgenommen und gemergt. P1b umfasst 189 Integrations- und 350 Gesamtassertions; finale PR-CI `34001773894` und Merge-CI `34001879727` sind erfolgreich. Die physische Windows-Abnahme ist bestanden, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P1c ist vorbereitet, seine `storage`-Suite existiert noch nicht. Maßgeblich sind [P1-Regeln](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1c-Vertrag](p1c-local-results.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
+Stand: 2026-09-06. P0, P1a und P1b sind abgenommen und gemergt. P1b umfasst 189 Integrations- und 350 Gesamtassertions; finale PR-CI `34001773894` und Merge-CI `34001879727` sind erfolgreich. Die physische Windows-Abnahme ist bestanden, die physische Chrome-Abnahme aus P1b ausdrücklich verschoben. P1c implementiert `storage` sowie Szenenpersistenz und bleibt bis Review/Abnahme Draft. Maßgeblich sind [P1-Regeln](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1c-Vertrag](p1c-local-results.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Entscheidungen](decisions.md) und [Umsetzungsplan](implementation-plan.md).
 
 ## P0-Teststand
 
@@ -120,7 +120,7 @@ Keine Persistenz- oder Generatorabnahme vorziehen. Die P1b-Übergabe liefert die
 
 ## P1c: Ergebnisablage und Persistenzabnahme
 
-Der nächste Auftrag ist Issue #4 mit [p1c-local-results.md](p1c-local-results.md). Die `storage`-Suite ist **erst in diesem Paket anzulegen**; aktuell kennt der Runner nur `smoke`, `core`, `integration` und `all`.
+Issue #4 ergänzt den Runner um die echte `storage`-Suite; er kennt nun `smoke`, `core`, `storage`, `integration` und `all`. `storage` nutzt echte isolierte Dateien plus injizierte I/O-Fehler. `integration` setzt seinen Store vor dem Szenen-`_ready` auf einen eigenen Testpfad und prüft die reale Viewportfolge Abschluss→Restart ohne Renderframe→neuer Lauf mit verspätetem Speichern. Damit greifen weder `integration` noch `all` auf Benutzerbestzeiten zu.
 
 ```sh
 godot --headless --path . --import
@@ -134,6 +134,14 @@ godot --headless --path . --export-release "Web" build/web/index.html
 Echte temporäre Dateien und gezielt injizierte I/O-Fehler verwenden. Auch bestehende Szenentests müssen ihre Speicherabhängigkeit vor `_ready` isolieren, damit `integration`/`all` keine Benutzerbestzeiten verändern. Der Paketvertrag konkretisiert einmalige IDs, verzögerte Speicherantworten nach Restart, tatsächliche Ranglistentrennung, Gleichstände, Aufbewahrung sowie beschädigte/unbekannte Formate und sichere Ersetzung. Tests des echten Szenen-/Viewport-Pfads ergänzen die Storetests.
 
 Zusätzlich im exportierten Windows-Spiel Abschluss→Schließen→Neustart und im tatsächlichen Desktop-Chrome-Webexport derselben Origin Abschluss→Reload sowie Tab schließen→erneut öffnen prüfen. Temporäre Speicherung bei eingeschränktem Browser-Speicher muss verständlich angezeigt werden. Commit, Engine, Plattform/Browser, Origin/Testpfad und beobachteter Speicherstatus gehören in den Nachweis. Die P1b-Verschiebung der physischen Chrome-Tastaturabnahme hebt diese neuen Persistenzprüfungen nicht auf; ein Dateisystem-Mock und ein Export allein erfüllen sie nicht. Firefox bleibt P4. Implementierungs-PR bis zur vollständigen P1c-Abnahme Draft lassen.
+
+### P1c-Nachweis auf dem Implementierungsstand
+
+Godot `4.7.2.stable.official.ed1daf0bf` auf Windows 11 Pro, Build `26200`: `storage` bestand mit **57**, `integration` mit **212** und `all` mit **430 Assertions**. Die Suite prüft tatsächliche isolierte Dateien sowie die echte Spielszene; die eingeschränkte Speicheranzeige wird dabei mit deaktivierter Dauerhaftigkeit als `Nur temporaer: dauerhafter Speicher nicht verfuegbar.` geprüft. Die beiden Release-Exporte wurden mit den oben genannten Befehlen erstellt.
+
+Der native Windows-Release wurde tatsächlich gestartet. Ein vollständiger Oberroutenlauf über Win32-Nachrichten erzeugte eine Ergebnisdatei unter `%APPDATA%\Godot\app_userdata\Parkey\parkey-results\results-v1.json`; nach Prozessende und Neustart enthielt sie unverändert einen Eintrag. Die Nachrichten sind ein synthetischer Eingabenachweis, keine erneute physische Tastaturabnahme.
+
+Der Web-Release lief in Google Chrome `152.0.7977.76` unter `http://127.0.0.1:8123` mit einem frischen Browserprofil und CDP-Eingaben. Ein Abschluss wurde in Chromes IndexedDB unter `/userfs/godot/app_userdata/Parkey/parkey-results/results-v1.json` geschrieben. Nach Reload ergab ein zweiter gleicher Lauf zwei verschiedene IDs; nach Tab-Schließen und Neuöffnen unter derselben Origin bestanden beide weiter, ohne Duplikat. Ein separates Chrome-Profil mit blockierter Site-Datenspeicherung meldete beim IndexedDB-Öffnen `UnknownError` („user denied permission“); der Export blieb dabei startbar und erzeugte keine beweisbare dauerhafte Datei. Die verständliche temporäre Panelmeldung ist in der Szenenintegration nachgewiesen; eine manuelle Sichtprüfung dieses eingeschränkten Browserfalls bleibt offen.
 
 ## Datenvalidator und Generator
 

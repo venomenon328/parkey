@@ -27,7 +27,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 | [Entscheidungen](docs/decisions.md) | Bestätigte Anforderungen, PoC-Freigaben, Vorschläge und offene Entscheidungen |
 | [P1-Regelprofil](docs/p1-rule-profile.md) | Verbindlicher Start-/Eingabe-/Fehler-/Restart-/Menü-/Fokusvertrag |
 | [P1b-Integration](docs/p1b-implementation.md) | Szenen-/Eingabe-/Darstellungsvertrag und Abnahme des ersten Spielparcours |
-| [P1c-Ergebnisspeicher](docs/p1c-local-results.md) | Vorbereiteter Speicher-, Gleichstands-, UI- und Abnahmevertrag |
+| [P1c-Ergebnisspeicher](docs/p1c-local-results.md) | Implementierter Speicher-, Gleichstands-, UI- und Abnahmevertrag |
 | [P1b-Spielbarkeit](docs/p1b-playability.md) | Reaktionsgefühl, Feldstatus, Windows-Abnahme und visuelle Folgearbeit |
 | [Spieldesign](docs/game-design.md) | Spielschleife, Bewegung, Kamera und Parcours |
 | [Architektur](docs/architecture.md) | Gemeinsamer Spielkern und Windows-/Web-Profile |
@@ -39,7 +39,7 @@ Für P1 gilt: Start durch den ersten Bewegungsbuchstaben, kein Countdown; Backsp
 
 ## Nächster Arbeitsschritt
 
-**P1c / Issue #4: dauerhafte lokale Bestzeiten und Ergebnisschirm ist zur Umsetzung vorbereitet**, noch nicht implementiert. Der Branch `codex/p1c-local-leaderboards` basiert auf `main` bei `5e60d53f02d6a772677956d23016504d1227bead` und enthält die [P1c-Spezifikation](docs/p1c-local-results.md). Vorbereitungscommits bei der Umsetzung erhalten.
+**P1c / Issue #4: dauerhafte lokale Bestzeiten und Ergebnisschirm ist implementiert und bleibt bis Review/Abnahme im Draft-PR.** Der gemeinsame Szenencontroller übergibt unveränderliche Abschluss-Schnappschüsse mit einmaliger Lauf-ID an den versionierten lokalen Store. Die [P1c-Spezifikation](docs/p1c-local-results.md) beschreibt Speicherort, Schema, Fehlerstatus, Grenzen und Abnahmen. Es gibt weder Onlinewertung noch Windows-/Web-Synchronisierung.
 
 Die offene Kamera-/Beschriftungsverfeinerung ist bereits für **P2a / Issue #5** vorgemerkt: Tile-Buchstaben primär über die Feldoberflächen lesbar machen, die großen weißen P1b-Callouts zurückbauen und die Kamerakomposition weiter erproben. Erst erprobte Routenbausteine werden später zufallsgeneriert.
 

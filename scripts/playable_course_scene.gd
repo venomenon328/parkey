@@ -7,6 +7,8 @@ const RuleProfileScript = preload("res://scripts/core/rule_profile.gd")
 const RunSessionScript = preload("res://scripts/core/run_session.gd")
 const RunInputAdapterScript = preload("res://scripts/input/run_input_adapter.gd")
 const RenderProfileScript = preload("res://scripts/presentation/render_profile.gd")
+const LocalResultStoreScript = preload("res://scripts/storage/local_result_store.gd")
+const RunIdGeneratorScript = preload("res://scripts/storage/run_id_generator.gd")
 
 const FIELD_HEIGHT := 0.32
 const FIGURE_HEIGHT := 0.55
@@ -34,6 +36,9 @@ const CURRENT_BORDER_LIGHTEN_AMOUNT := 0.12
 @onready var context_label: Label = %ContextLabel
 @onready var lock_label: Label = %LockLabel
 @onready var result_label: Label = %ResultLabel
+@onready var leaderboard_label: Label = %LeaderboardLabel
+@onready var storage_label: Label = %StorageLabel
+@onready var result_panel: PanelContainer = %ResultPanel
 @onready var validation_label: Label = %ValidationLabel
 @onready var menu_panel: PanelContainer = %MenuPanel
 @onready var menu_text: Label = %MenuText
@@ -50,6 +55,7 @@ var completion_view_count := 0
 var course_identity_before_render := ""
 var course_identity_after_render := ""
 var visited_field_ids := {}
+var result_store: RefCounted
 
 var _clock_override: MonotonicClock
 var _has_application_focus := true
@@ -59,16 +65,39 @@ var _head_shake_remaining := 0.0
 var _camera_initialized := false
 var _camera_focus := Vector3.ZERO
 var _material_cache := {}
+var _storage_base_path := "user://parkey-results"
+var _storage_persistent_override := -1
+var _storage_faults := {}
+var _run_id_generator: RefCounted
+var _pending_result_snapshots: Array[Dictionary] = []
+var _last_handled_result_count := 0
+var _shown_result_run_id := ""
+var _next_store_attempt_usec := 0
 
 
-func configure_for_test(clock: MonotonicClock) -> void:
+func configure_for_test(
+		clock: MonotonicClock,
+		storage_base_path: String = "",
+		scripted_run_ids: Array = [],
+		persistent_override: int = 1,
+		storage_faults: Dictionary = {},
+) -> void:
 	_clock_override = clock
+	if not storage_base_path.is_empty():
+		_storage_base_path = storage_base_path
+	_storage_persistent_override = persistent_override
+	_storage_faults = storage_faults.duplicate(true)
+	_run_id_generator = RunIdGeneratorScript.new(scripted_run_ids)
 
 
 func _ready() -> void:
 	course = HandcraftedCourseScript.build()
 	var errors := CourseValidatorScript.validate(course)
 	session = RunSessionScript.new(course, RuleProfileScript.new(), _clock_override)
+	if _run_id_generator == null:
+		_run_id_generator = RunIdGeneratorScript.new()
+	result_store = LocalResultStoreScript.new(_storage_base_path, _storage_persistent_override, _storage_faults)
+	result_store.load()
 	profile_label.text = "%s | aktiv: %s" % [RenderProfileScript.expected_profile(), RenderProfileScript.current_method()]
 	if not errors.is_empty() or not session.is_valid():
 		validation_label.visible = true
@@ -82,7 +111,7 @@ func _ready() -> void:
 	_reset_visited_fields()
 	_snap_presentation_to_logical(true)
 	_refresh_view(_now_usec())
-	print("Parkey P1b started: fields=%d identity=%s profile=%s renderer=%s" % [
+	print("Parkey P1c started: fields=%d identity=%s profile=%s renderer=%s" % [
 		course.fields.size(), course_identity_before_render, RenderProfileScript.expected_profile(), RenderProfileScript.current_method(),
 	])
 
@@ -93,6 +122,7 @@ func _process(delta: float) -> void:
 	_advance_visual(delta)
 	_advance_head_shake(delta)
 	_update_camera(delta)
+	_flush_one_pending_result()
 	_refresh_view(_now_usec())
 
 
@@ -157,7 +187,7 @@ func _apply_session_event(event: Dictionary, previous_field_id: String, received
 		"finished":
 			visited_field_ids[session.current_field_id] = true
 			_append_visual_transition(previous_field_id, session.current_field_id)
-			_show_result()
+			_queue_finished_result()
 		"error":
 			visual_waypoints.clear()
 			_visual_budget_seconds = 0.0
@@ -181,7 +211,11 @@ func _reset_presentation() -> void:
 	_head_shake_remaining = 0.0
 	figure_head.rotation_degrees = Vector3.ZERO
 	menu_panel.visible = false
+	result_panel.visible = false
 	result_label.visible = false
+	leaderboard_label.visible = false
+	storage_label.visible = false
+	_shown_result_run_id = ""
 	_reset_visited_fields()
 	_snap_presentation_to_logical(true)
 
@@ -537,13 +571,100 @@ func _refresh_view(now_usec: int) -> void:
 	lock_label.text = "FEHLERSPERRE %d ms" % int((lock_remaining + 999) / 1000) if lock_label.visible else ""
 
 
-func _show_result() -> void:
+func _queue_finished_result() -> void:
+	if session.result_count <= _last_handled_result_count or not bool(session.last_result.get("ranked", false)):
+		return
+	_last_handled_result_count = session.result_count
+	var snapshot := session.last_result.duplicate(true)
+	snapshot["run_id"] = _run_id_generator.next_id()
+	_pending_result_snapshots.append(snapshot)
 	completion_view_count += 1
+	_show_result(snapshot)
+
+
+func _flush_one_pending_result() -> void:
+	if result_store == null or _pending_result_snapshots.is_empty():
+		return
+	if session.state == RunSessionScript.State.RUNNING or session.state == RunSessionScript.State.LOCKED:
+		return
+	var now_usec := _now_usec()
+	if now_usec < _next_store_attempt_usec:
+		return
+	var snapshot := _pending_result_snapshots[0]
+	var outcome: Dictionary = result_store.offer_result(snapshot)
+	if not outcome.get("ok", false):
+		_pending_result_snapshots.pop_front()
+		_update_shown_result(snapshot, outcome)
+		return
+	var saved: Dictionary = result_store.save()
+	_update_shown_result(snapshot, outcome)
+	if saved.get("ok", false):
+		_pending_result_snapshots.pop_front()
+		_next_store_attempt_usec = 0
+		return
+	if result_store.status == LocalResultStoreScript.Status.READ_ERROR or result_store.status == LocalResultStoreScript.Status.UNSUPPORTED:
+		_pending_result_snapshots.pop_front()
+		return
+	# Keep exactly this immutable snapshot for a later retry. A retry never
+	# creates a new ID or turns an old screen back on after Quick Restart.
+	_next_store_attempt_usec = now_usec + 1000000
+
+
+func _show_result(snapshot: Dictionary, outcome: Dictionary = {}) -> void:
+	result_panel.visible = true
 	result_label.visible = true
-	result_label.text = "ZIEL  %s  |  Fehler: %d" % [
-		format_duration_usec(int(session.last_result.get("duration_usec", 0))),
-		int(session.last_result.get("error_count", 0)),
+	leaderboard_label.visible = true
+	storage_label.visible = true
+	_shown_result_run_id = str(snapshot.get("run_id", ""))
+	_render_result(snapshot, outcome)
+
+
+func _update_shown_result(snapshot: Dictionary, outcome: Dictionary) -> void:
+	if not result_panel.visible or _shown_result_run_id != str(snapshot.get("run_id", "")):
+		return
+	_render_result(snapshot, outcome)
+
+
+func _render_result(snapshot: Dictionary, outcome: Dictionary) -> void:
+	var course_identity := str(snapshot.get("course_identity", ""))
+	var rank := int(outcome.get("rank", 0))
+	if rank <= 0 and result_store != null:
+		rank = result_store.rank_for_run(course_identity, str(snapshot.get("run_id", "")))
+	var result_line := "ZIEL  %s  |  Fehler: %d" % [
+		format_duration_usec(int(snapshot.get("duration_usec", 0))),
+		int(snapshot.get("error_count", 0)),
 	]
+	if rank > 0:
+		result_line += "  |  Rang: %d" % rank
+	var best_kind := str(outcome.get("best_kind", ""))
+	if best_kind == "first" or best_kind == "improved":
+		result_line += "  |  neue Bestzeit"
+	elif best_kind == "tied":
+		result_line += "  |  Bestzeit eingestellt"
+	result_label.text = result_line
+
+	var leaderboard_lines: Array[String] = []
+	var best_usec: int = result_store.personal_best_usec(course_identity) if result_store != null else -1
+	if best_usec >= 0:
+		leaderboard_lines.append("Persoenliche Bestzeit: %s (%d us)" % [format_duration_usec(best_usec), best_usec])
+	else:
+		leaderboard_lines.append("Persoenliche Bestzeit: wird vorbereitet")
+	var top: Array = result_store.top_entries(course_identity) if result_store != null else []
+	if top.is_empty():
+		leaderboard_lines.append("Top 10: wird gespeichert ...")
+	else:
+		leaderboard_lines.append("Top 10:")
+		for entry in top:
+			var entry_rank: int = result_store.rank_for_run(course_identity, str(entry["run_id"]))
+			leaderboard_lines.append("#%d  %s  |  %d Fehler" % [
+				entry_rank,
+				format_duration_usec(int(entry["duration_usec"])),
+				int(entry["error_count"]),
+			])
+	if outcome.has("retained") and not bool(outcome["retained"]):
+		leaderboard_lines.append("Dieser Lauf bleibt sichtbar, liegt aber ausserhalb der Top 100.")
+	leaderboard_label.text = "\n".join(leaderboard_lines)
+	storage_label.text = result_store.status_message() if result_store != null else "Speicher wird vorbereitet."
 
 
 func _anchor_world(field_id: String) -> Vector3:

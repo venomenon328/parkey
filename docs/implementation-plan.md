@@ -1,6 +1,6 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0, P1a und P1b sind abgenommen und nach `main` gemergt. P1c / #4 ist zur Umsetzung vorbereitet, noch nicht implementiert.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
+Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0, P1a und P1b sind abgenommen und nach `main` gemergt. P1c / #4 ist implementiert und bis Review/Abnahme Draft.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
@@ -9,14 +9,14 @@ Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0,
 | P0 / [#1](https://github.com/venomenon328/parkey/issues/1) | Ein Projekt, zwei Exporte, Test-/CI-Grundlage | Abgenommen und gemergt | `codex/p0-godot-foundation` |
 | P1a / [#2](https://github.com/venomenon328/parkey/issues/2) | CourseData, Validator, RunSession, Zeit und Fehlerfrist | Abgenommen, PR #12 gemergt | `codex/p1a-run-core` |
 | P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | Abgenommen, PR #13 gemergt | `codex/p1b-playable-course` |
-| P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | **Vorbereitet; #3 erfüllt, Implementierung offen** | `codex/p1c-local-leaderboards` |
+| P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | **Implementiert; Review/Abnahme offen** | `codex/p1c-local-leaderboards` |
 | P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | #4; echter P1-Spieltest | `codex/p2a-route-decisions` |
 | P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | #5; Zielhardware/Budget klären | `codex/p2b-visual-slice` |
 | P3a / [#7](https://github.com/venomenon328/parkey/issues/7) | Deterministischer validierter Generator | #5; Bausteinfreigabe | `codex/p3a-seeded-generator` |
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` |
 | P4 / [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | #8 | `codex/p4-poc-acceptance` |
 
-Abhängigkeiten bedeuten **abgenommen und nach `main` gemergt**, nicht nur „ein PR wurde eröffnet“. P0/P1a/P1b sind abgeschlossen. P1b-Merge: `e8e947e4100c8f3e534ae425752ac2c30c7fee7a`; `main`-CI `34001879727` erfolgreich. Der Branch für P1c ist auf `main` bei `5e60d53f02d6a772677956d23016504d1227bead` vorbereitet; seine Vorbereitungscommits bleiben bei der Umsetzung erhalten. Speicher-, Gleichstands- und Ergebnisvertrag: [p1c-local-results.md](p1c-local-results.md). Spätere Branches entsprechend erst beim jeweiligen Start anlegen.
+Abhängigkeiten bedeuten **abgenommen und nach `main` gemergt**, nicht nur „ein PR wurde eröffnet“. P0/P1a/P1b sind abgeschlossen. P1b-Merge: `e8e947e4100c8f3e534ae425752ac2c30c7fee7a`; `main`-CI `34001879727` erfolgreich. P1c baut auf diesem `main` bei `5e60d53f02d6a772677956d23016504d1227bead` auf; Speicher-, Gleichstands- und Ergebnisvertrag: [p1c-local-results.md](p1c-local-results.md). Sein Draft-PR wird nicht vor vollständiger Review/Abnahme gemergt. Spätere Branches entsprechend erst beim jeweiligen Start anlegen.
 
 Nur #6/#7 sind nach #5 für Parallelität vorgesehen. Gemeinsame Datenverträge dürfen dabei nicht unabhängig geändert werden; #8 wartet auf beide Abnahmen. Standard bleibt ein Paket pro PR.
 

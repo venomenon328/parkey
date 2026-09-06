@@ -1,6 +1,6 @@
 # Spieldesign
 
-Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1a und P1b sind abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P1c ist mit [Speicher-/Ergebnisvertrag](p1c-local-results.md) vorbereitet, noch nicht implementiert. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); P1b-Details in [p1b-implementation.md](p1b-implementation.md).
+Stand: 2026-09-06. Verbindlichkeit steht im [Entscheidungsregister](decisions.md). D-001 bis D-013, das P1-Profil D-014 bis D-018 und die Darstellungsentscheidungen D-019 bis D-024 bleiben maßgeblich. P1a und P1b sind abgenommen und gemergt; die physische Windows-Spielabnahme ist bestanden, die physische Chrome-Prüfung aus P1b ausdrücklich verschoben. P1c implementiert den [Speicher-/Ergebnisvertrag](p1c-local-results.md) im Draft-PR. Start, Eingabe, Fehler, Restart, Menü und Fokus stehen in [p1-rule-profile.md](p1-rule-profile.md); P1b-Details in [p1b-implementation.md](p1b-implementation.md).
 
 ## Spielkern
 
@@ -36,7 +36,7 @@ Fokusverlust während eines begonnenen Laufs bricht ihn ab und macht ihn nicht w
 
 Zieleingang beendet die Zeit beim gültigen logischen Schritt, nicht bei der Landung. Genau ein Ergebnis; spätere Animationen oder Speicherantworten ändern es nicht. Timeranzeige während des Rennens in Minuten, Sekunden und drei Nachkommastellen. Numerische monotone Zeitwerte statt Framezählung oder Sortierung formatierter Zeichenketten; Anzeigepräzision ist keine garantierte identische Gerätelatenz.
 
-Lokale Ranglisten je Strecken-/Regelidentität sind der geplante erste Speicherausbau in P1c, nicht Teil des P1a-Kerns oder der P1b-Integration. P1b zeigt das aktuelle Ergebnis ohne Persistenz. Der vorbereitete [P1c-Vertrag](p1c-local-results.md) konkretisiert Mikrosekundensortierung, gemeinsame Ränge bei exakter Zeitgleichheit, Top 100 je Identität und Top-10-Anzeige als vorläufige Arbeitsparameter. Onlinewertung bleibt separat.
+P1c zeigt nach einem gültigen Zieleingang Zeit, Fehler, persönliche Bestzeit, Speicherstatus und eine kompakte Top 10 der lokalen Rangliste. Lokale Ranglisten sind nach vollständiger Strecken-/Regelidentität getrennt; Mikrosekunden werden numerisch sortiert, exakte Gleichstände teilen einen Rang und höchstens 100 Läufe bleiben je Identität erhalten. Der aktuelle Lauf bleibt auch außerhalb der Top 10/100 sichtbar. Diese P1c-Arbeitsparameter stehen im [Paketvertrag](p1c-local-results.md); Onlinewertung bleibt separat.
 
 ## Kamera und Lesbarkeit
 

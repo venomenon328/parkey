@@ -1,6 +1,6 @@
 # P1c: Lokale Ergebnisse und Bestzeiten
 
-Stand: 2026-09-06. **Zur Umsetzung vorbereitet; noch nicht implementiert oder abgenommen.** Auftrag: [Issue #4](https://github.com/venomenon328/parkey/issues/4), Branch `codex/p1c-local-leaderboards`, vorbereitet auf `main` bei `5e60d53f02d6a772677956d23016504d1227bead`. P1b ist über PR #13 abgenommen und gemergt. Verbindlich bleiben [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md), [Architektur](architecture.md) und [Tests](testing.md).
+Stand: 2026-09-06. **Implementiert auf `codex/p1c-local-leaderboards`; Review/Abnahme bleiben Draft-PR-Gates.** Auftrag: [Issue #4](https://github.com/venomenon328/parkey/issues/4), vorbereitet auf `main` bei `5e60d53f02d6a772677956d23016504d1227bead`. P1b ist über PR #13 abgenommen und gemergt. Verbindlich bleiben [Entscheidungen](decisions.md), [P1-Regeln](p1-rule-profile.md), [Architektur](architecture.md) und [Tests](testing.md).
 
 Dieses Dokument konkretisiert den beauftragten lokalen Speicherausbau. Die unten gewählten Gleichstands-, Anzeige- und Aufbewahrungsparameter sind **vorläufige Arbeitsfestlegungen für P1c**, keine behaupteten zusätzlichen Nutzerentscheidungen oder endgültigen Regeln einer Onlinewertung. Sie gelten für diese Umsetzung; begründete Änderungen müssen Spezifikation und Tests gemeinsam aktualisieren.
 
@@ -32,7 +32,9 @@ Ein erneut angebotenes identisches Ergebnis mit derselben `run_id` ist wirkungsl
 
 ## 3. Dateivertrag und Fehlerverhalten
 
-Kleiner Store unter `user://`, mit injizierbarem Basispfad für Tests. Dateiname und tatsächliches Schema in der Umsetzung hier dokumentieren. Version 1 enthält mindestens Formatversion, `run_id`, vollständige `course_identity`, `rule_profile_id`, originale `duration_usec` und `error_count`; nur wertbare Abschlüsse aufnehmen. Keine rohen Eingabeprotokolle oder personenbezogenen Daten erforderlich.
+Der Store liegt unter **`user://parkey-results/results-v1.json`**; Tests setzen vor `_ready` ausschließlich eigene Pfade unter `user://parkey-test-results/...`. Die temporäre Datei heißt `results-v1.json.tmp`, die kurze Wiederanlaufsicherung `results-v1.json.bak`. Version 1 ist ein JSON-Objekt mit numerischem `format_version: 1` und dem Array `entries`. Jeder Eintrag enthält `run_id`, vollständige `course_identity`, `rule_profile_id`, `duration_usec` und `error_count`. Die beiden ganzzahligen Werte sind kanonische nichtnegative **Dezimalstrings**, damit Mikrosekunden auch in JSON-/Web-Laufzeiten verlustfrei bleiben; im Spiel und beim Sortieren sind sie Integer. Nur wertbare Abschlüsse gelangen in das Dokument. Es gibt weder rohe Eingabeprotokolle noch personenbezogene Daten.
+
+`RunIdGenerator` erzeugt die Lauf-ID aus Zeit-, Sitzungszähler- und Zufallsanteil; Tests können feste IDs vorgeben. Sie entsteht einmal beim Zieleingang und wird weder aus Zeit/Hash noch bei Retry, Rendern oder erneutem Laden abgeleitet. `LocalResultStore` prüft Pflichtfelder, Typen, Wertebereiche, vollständige Identitätsform und doppelte IDs vor der Übernahme. Unbekannte Versionen und beschädigte Dokumente bleiben unangetastet. Vor dem Ersetzen schreibt und liest der Store den vollständigen temporären Stand; bei bestehender Primärdatei wird diese nur kurz nach `.bak` verschoben und bei einem Ersetzungsfehler zurückgestellt. Fehlt allein die Primärdatei, kann eine gültige `.bak` wieder geladen werden; eine vorhandene beschädigte Primärdatei wird nicht still durch eine Sicherung ersetzt.
 
 Typen, Pflichtfelder, Wertebereiche und doppelte IDs validieren, bevor geladene Daten in die Rangliste gelangen. Integerwerte müssen im gewählten Format verlustfrei rundreisen. Bei JSON insbesondere Zahlenparser und exakte Wertebereiche berücksichtigen; gebrochene/negative Zeiten, boolesche Ersatzwerte und unzulässige IDs nicht still konvertieren. Größere Originalzeiten und Minutenüberträge testen. Kein allgemeines Migrationsframework und keine stillschweigende Migration unbekannter Formate.
 
@@ -59,7 +61,7 @@ Die verschobene physische Chrome-Tastaturabnahme aus P1b bleibt als solche offen
 
 ## 5. Konkrete Abnahme
 
-`storage` neu in den bestehenden GDScript-Runner und `all` aufnehmen. Echte temporäre Dateien verwenden; fehlende Rechte/volles Medium/fehlgeschlagenes Ersetzen zusätzlich gezielt injizieren, weil etwa ein Root-Testlauf fehlende Schreibrechte umgehen kann. **Alle** Szenen- und Integrationsprüfungen, die ab P1c Ergebnisse speichern könnten, vor `_ready` auf isolierte Testablage umstellen. Keine Benutzerbestzeiten als Testfixture lesen, verändern oder bereinigen.
+`storage` ist im bestehenden GDScript-Runner und in `all` aufgenommen. Es verwendet echte temporäre Dateien und injiziert Lese-, Schreib- und Ersetzungsfehler, weil etwa ein privilegierter Testlauf fehlende Rechte umgehen kann. **Alle** Szenen- und Integrationsprüfungen setzen vor `_ready` eine isolierte Testablage; Benutzerbestzeiten werden weder gelesen noch verändert oder bereinigt. Die Szenenintegration erzeugt den Schnappschuss im Zieleingabepfad, verschiebt Datei-I/O in `_process` und arbeitet offene Aufträge nur außerhalb eines aktiven Laufs ab. Nach einem Schreibfehler bleibt derselbe Schnappschuss mit derselben ID für den späteren Retry erhalten.
 
 | Prüfgruppe | Mindestnachweis |
 | --- | --- |
@@ -71,7 +73,9 @@ Die verschobene physische Chrome-Tastaturabnahme aus P1b bleibt als solche offen
 | Windows-Export | Lauf abschließen, Speicherstatus prüfen, App schließen und neu starten: Bestzeit/Liste unverändert. Ergebnis außerhalb Top 10 und unmittelbaren Restart prüfen. |
 | Web-Export | Über HTTP gleiche Origin und dasselbe Profil: Abschluss→Reload sowie Tab schließen→erneut öffnen; erhaltenes Ergebnis und keine Duplikate. Eingeschränkten Speicherfall mit ehrlicher temporärer Anzeige prüfen. Zeitpunkt/Umstände eines Reloads bei noch offenem Speichern dokumentieren. |
 
-Pflichtbefehle stehen in [testing.md](testing.md): Import, `storage`, `integration`, `all` und beide Release-Exporte. Unbekannte/leere Suites bleiben Fehler. Plattformnachweise nennen Commit, Engine, OS/Browser, Origin bzw. Speicherpfad, Schritte und Ergebnis. Nachweise/Anleitung mit der Implementierung ergänzen; derzeit existieren weder Store noch `storage`-Suite. Fehlende Pflichtabnahme lässt den Implementierungs-PR Draft.
+Der Implementierungsstand erfüllt die automatisierten Abnahmetabellen mit `storage` (57 Assertions), `integration` (212) und `all` (430). Der Release-Nachweis auf Windows 11 Pro / Godot 4.7.2 umfasst einen nativen Abschluss und Neustart mit unveränderter Datei. Der Chrome-Release lief über HTTP unter gleicher Origin mit zwei erhaltenen unterschiedlichen IDs über Reload sowie Tab-Schließen/Neuöffnen. Eine Chrome-Konfiguration mit blockierter Site-Datenspeicherung ergab den erwarteten IndexedDB-Zugriffsfehler und keinen dauerhaften Ergebniseintrag; die temporäre Resultatmeldung ist zusätzlich in der echten Szenenintegration abgedeckt. Details und verbleibende manuelle Sichtabnahme stehen in [testing.md](testing.md).
+
+Pflichtbefehle stehen in [testing.md](testing.md): Import, `storage`, `integration`, `all` und beide Release-Exporte. Unbekannte/leere Suites bleiben Fehler. Plattformnachweise nennen Commit, Engine, OS/Browser, Origin bzw. Speicherpfad, Schritte und Ergebnis. Fehlende Review-/Abnahme lässt den Implementierungs-PR Draft.
 
 ## 6. Technische Quellen und Umfang
 
