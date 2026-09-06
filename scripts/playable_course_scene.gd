@@ -486,15 +486,16 @@ func _update_markers() -> void:
 		var is_visited: bool = visited_field_ids.has(field_id)
 		var base_color := _default_field_color(field_id)
 		var surface_color := _status_surface_color(base_color, is_reachable, is_visited)
+		var show_reachable_status := is_reachable and not is_visited
 		keycap.material_override = _material(base_color, 0.48)
-		selection.visible = is_current or is_reachable
+		selection.visible = is_current or show_reachable_status
 		selection.material_override = _material(
 			base_color.lightened(CURRENT_BORDER_LIGHTEN_AMOUNT if is_current else REACHABLE_LIGHTEN_AMOUNT),
 			0.3,
 		)
 		state_surface.material_override = _material(surface_color, 0.38)
 		marker.visible = is_current or is_reachable or is_visited
-		marker.text = "● ✓" if is_current else "◇ ✓" if is_reachable and is_visited else "◇" if is_reachable else "✓"
+		marker.text = "● ✓" if is_current else "✓" if is_visited else "◇" if is_reachable else ""
 		marker.modulate = _marker_color(base_color, is_current, is_reachable, is_visited)
 
 
@@ -521,18 +522,20 @@ func _default_field_color(field_id: String) -> Color:
 
 
 func _status_surface_color(base_color: Color, is_reachable: bool, is_visited: bool) -> Color:
-	if is_reachable:
-		return base_color.lightened(REACHABLE_LIGHTEN_AMOUNT)
 	if is_visited:
 		return base_color.darkened(VISITED_DARKEN_AMOUNT)
+	if is_reachable:
+		return base_color.lightened(REACHABLE_LIGHTEN_AMOUNT)
 	return base_color
 
 
 func _marker_color(base_color: Color, is_current: bool, is_reachable: bool, is_visited: bool) -> Color:
-	if is_current or is_reachable:
+	if is_current:
 		return base_color.darkened(0.72)
 	if is_visited:
 		return base_color.lightened(0.45)
+	if is_reachable:
+		return base_color.darkened(0.72)
 	return base_color
 
 
