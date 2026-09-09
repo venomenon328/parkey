@@ -198,7 +198,7 @@ static func _test_scene_measurement_lifecycle(harness) -> void:
 	scene._apply_session_event(menu_event, previous_field_id, received_usec)
 	harness._assert_equal(scene.session.state, RunSessionScript.State.FINISHED, "Post-finish Escape in the actual scene preserves the finished state.")
 	harness._assert_equal(scene.route_measurement.completed_sections, completed_before_menu, "Post-finish Escape in the actual scene preserves route measurements.")
-	harness._assert_true(scene.leaderboard_label.text.contains("Routenmessung (nur dieser Lauf):"), "The finished result panel still exposes its route measurements after Escape.")
+	harness._assert_true(scene.workshop_hud.route_details.text.contains("Routenmessung (nur dieser Lauf):"), "The developer view retains finished route measurements after Escape.")
 	previous_field_id = scene.session.current_field_id
 	restart_event = scene.session.quick_restart()
 	scene._apply_session_event(restart_event, previous_field_id, received_usec + 100)

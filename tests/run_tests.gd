@@ -4,6 +4,7 @@ const KeyInputNormalizer = preload("res://scripts/input/key_input_normalizer.gd"
 const CoreSuite = preload("res://tests/core_suite.gd")
 const IntegrationSuite = preload("res://tests/integration_suite.gd")
 const StorageSuite = preload("res://tests/storage_suite.gd")
+const PresentationSuite = preload("res://tests/presentation_suite.gd")
 const RoutesSuite = preload("res://tests/routes_suite.gd")
 
 var assertions := 0
@@ -17,11 +18,11 @@ func _initialize() -> void:
 func _run_requested_suite() -> void:
 	var suite := _requested_suite(OS.get_cmdline_user_args())
 	if suite.is_empty():
-		_fail("Missing value for --suite. Available suites: smoke, core, storage, integration, routes, all.")
+		_fail("Missing value for --suite. Available suites: smoke, core, storage, integration, routes, presentation, all.")
 		_finish()
 		return
-	if suite != "smoke" and suite != "core" and suite != "storage" and suite != "integration" and suite != "routes" and suite != "all":
-		_fail("Unknown suite '%s'. Available suites: smoke, core, storage, integration, routes, all." % suite)
+	if suite != "smoke" and suite != "core" and suite != "storage" and suite != "integration" and suite != "routes" and suite != "presentation" and suite != "all":
+		_fail("Unknown suite '%s'. Available suites: smoke, core, storage, integration, routes, presentation, all." % suite)
 		_finish()
 		return
 
@@ -35,6 +36,8 @@ func _run_requested_suite() -> void:
 		await IntegrationSuite.run(self)
 	if suite == "routes" or suite == "all":
 		await RoutesSuite.run(self)
+	if suite == "presentation" or suite == "all":
+		await PresentationSuite.run(self)
 	_finish()
 
 

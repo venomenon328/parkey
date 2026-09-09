@@ -1,0 +1,94 @@
+{
+  "adapter": "NVIDIA GeForce RTX 3070",
+  "draw_calls": 616.0,
+  "engine": "4.7.2-stable (official)",
+  "final_max_fps": 144,
+  "final_screen_refresh_hz": 143.973007202148,
+  "final_vsync_mode": 3,
+  "first_frame": {
+    "adapter": "NVIDIA GeForce RTX 3070",
+    "arguments": [
+      "--p2b-evidence",
+      "--evidence-size=2560x1440",
+      "--evidence-output=E:/Zeuch/Coding/parkey/build/fidelity-work/final/windows-1440"
+    ],
+    "engine_ticks_ms": 2415,
+    "kind": "first_frame",
+    "max_fps": 60,
+    "renderer": "forward_plus",
+    "rendering_driver": "vulkan",
+    "screen_index": 0,
+    "screen_refresh_hz": 143.973007202148,
+    "screens": [
+      {
+        "index": 0,
+        "position": "(0, 0)",
+        "refresh_hz": 143.973007202148,
+        "size": "(2560, 1440)"
+      },
+      {
+        "index": 1,
+        "position": "(2560, 0)",
+        "refresh_hz": 59.951000213623,
+        "size": "(2560, 1440)"
+      }
+    ],
+    "viewport": "2560x1440",
+    "vsync_mode": 3,
+    "window_mode": 0,
+    "window_position": "(0, 0)",
+    "window_position_with_decorations": "(-8, -31)",
+    "window_size": "(2560, 1440)",
+    "window_size_with_decorations": "(2576, 1479)"
+  },
+  "frames_over_20_ms": 0,
+  "frames_over_33_ms": 0,
+  "frames_without_focus": 0,
+  "kind": "complete",
+  "max_ms": 19.605,
+  "mean_fps": 144.004501588772,
+  "measurement": "four_routes_and_decision_idle",
+  "p50_ms": 6.94,
+  "p95_ms": 7.085,
+  "p99_ms": 7.277,
+  "primitives": 983880.0,
+  "renderer": "forward_plus",
+  "runs": [
+    {
+      "duration_usec": 2833178,
+      "errors": 0,
+      "finished": true,
+      "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
+      "route": "AZKFJKMVBPLMGYUION",
+      "state": 6
+    },
+    {
+      "duration_usec": 3166559,
+      "errors": 0,
+      "finished": true,
+      "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
+      "route": "AZKFJKMVBQWERTGYUION",
+      "state": 6
+    },
+    {
+      "duration_usec": 3333424,
+      "errors": 0,
+      "finished": true,
+      "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
+      "route": "AZKASDFGHMVBPLMGYUION",
+      "state": 6
+    },
+    {
+      "duration_usec": 3666476,
+      "errors": 0,
+      "finished": true,
+      "identity": "course-identity-v1:4dff5df394060f3ce5ffc236f6a9bef0a7e9d0a174b8f4d34308063c73e18e1a",
+      "route": "AZKASDFGHMVBQWERTGYUION",
+      "state": 6
+    }
+  ],
+  "sample_frames": 4649,
+  "sample_seconds": 32.2837130000002,
+  "viewport": "2560x1440",
+  "retention_note": "Finaler Sanity-Bericht. Geordnete Einzelintervalle bleiben lokal unter build; Zusammenfassung, vier Routen und reale Fenster-/Browsermetadaten sind versioniert."
+}

@@ -1,6 +1,6 @@
 # Umsetzungspakete und Arbeitsablauf
 
-Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0, P1 und P2a / #5 sind vollständig abgenommen und nach `main` gemergt. P2b / #6 ist das nächste aktiv vorbereitete Paket.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [P1c-Ergebnisspeicher](p1c-local-results.md), [P2a-Routenentscheidungen](p2a-route-decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
+Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0, P1 und P2a / #5 sind vollständig abgenommen und nach `main` gemergt. P2b / #6 ist im Draft visuell nachgearbeitet; erneute Nutzerabnahme offen.** Grundlage sind [Entscheidungsregister](decisions.md), [P1-Regelprofil](p1-rule-profile.md), [P1b-Integration](p1b-implementation.md), [P1b-Spielbarkeit](p1b-playability.md), [P1c-Ergebnisspeicher](p1c-local-results.md), [P2a-Routenentscheidungen](p2a-route-decisions.md), [Spieldesign](game-design.md), [Architektur](architecture.md), [Teststrategie](testing.md), [Entwicklung](development.md) und `AGENTS.md`.
 
 ## Paketübersicht
 
@@ -11,14 +11,14 @@ Stand: 2026-09-06. Neun Umsetzungspakete sind als Issues #1–#9 angelegt. **P0,
 | P1b / [#3](https://github.com/venomenon328/parkey/issues/3) | Erster spielbarer handgebauter Third-Person-Lauf | Abgenommen, PR #13 gemergt | `codex/p1b-playable-course` |
 | P1c / [#4](https://github.com/venomenon328/parkey/issues/4) | Dauerhafte lokale Bestzeiten und Ergebnisschirm | Abgenommen, PR #14 gemergt | `codex/p1c-local-leaderboards` |
 | P2a / [#5](https://github.com/venomenon328/parkey/issues/5) | Erprobte Routen und vorausschauende Kamera | **Abgenommen, PR #15 gemergt** | `codex/p2a-route-decisions` |
-| P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | **Vorbereitet; Visualbriefing und Referenzbudget vor Implementierungsstart klären** | `codex/p2b-visual-slice` |
+| P2b / [#6](https://github.com/venomenon328/parkey/issues/6) | Hochwertige Windows-Beispielwelt, Web-Fallback | **Im Draft visuell nachgearbeitet; erneute Nutzerabnahme offen** | `codex/p2b-visual-slice` |
 | P3a / [#7](https://github.com/venomenon328/parkey/issues/7) | Deterministischer validierter Generator | #5-Merge/Bausteinfreigabe erfüllt; parallel zu #6 möglich | `codex/p3a-seeded-generator` |
 | P3b / [#8](https://github.com/venomenon328/parkey/issues/8) | Seed-Spielablauf und Export-Konformitätsnachweis | #6 und #7 | `codex/p3b-seed-game-flow` |
 | P4 / [#9](https://github.com/venomenon328/parkey/issues/9) | PoC-Abnahme und reproduzierbare Testpakete | #8 | `codex/p4-poc-acceptance` |
 
 Abhängigkeiten bedeuten **abgenommen und nach `main` gemergt**, nicht nur „ein PR wurde eröffnet“. P0/P1a/P1b/P1c/P2a sind abgeschlossen. P2a-Merge: `a12cb8f148e6c90d66c6c198b7d923eee9d5eebc` über PR #15; der anschließende `main`-CI-Lauf `34028827332` war erfolgreich. Die physische P1b-Chrome-Eingabeabnahme bleibt offen und darf nicht als bestanden ausgegeben werden. Neue Paketbranches entstehen vom jeweils aktuellen `main`.
 
-Nur #6/#7 sind nach #5 für Parallelität vorgesehen. Gemeinsame Datenverträge dürfen dabei nicht unabhängig geändert werden; #8 wartet auf beide Abnahmen. Standard bleibt ein Paket pro PR. P2b ist aktuell das aktiv vorbereitete Paket; P3a wird dadurch nicht vorgezogen.
+Nur #6/#7 sind nach #5 für Parallelität vorgesehen. Gemeinsame Datenverträge dürfen dabei nicht unabhängig geändert werden; #8 wartet auf beide Abnahmen. Standard bleibt ein Paket pro PR. P2b ist aktuell das aktive Abnahmepaket; P3a wird dadurch nicht vorgezogen.
 
 ## Warum dieser Zuschnitt?
 
@@ -70,3 +70,9 @@ Statusangaben trennen freigegeben, implementiert und abgenommen. Bei Entscheidun
 ## Lokale Werkzeuge
 
 Die verbindliche Windows-Ablage für projektbezogene Tools ist `E:\Zeuch\Coding\Parkey-Tools`; Details stehen in [development.md](development.md). Keine Parkey-spezifischen Toolinstallationen unter `C:\Tools` oder wechselnden ad-hoc-Verzeichnissen anlegen. Godot-eigene Benutzerpfade und `%TEMP%` sind die dokumentierten Ausnahmen.
+
+## P2b-Lieferstand
+
+Issue #6 hat Visualbriefing und Referenzbudget bestätigt (D-025–D-028). Der [P2b-Bericht](p2b-visual-slice.md) dokumentiert Umsetzung, reale Windows-/Web-Nachweise, Grenzen und offene subjektive Nutzerabnahme. Der bestehende 30-Feld-Kurs und seine Identität sind unverändert. P3a wird nicht mitimplementiert; #8 wartet weiterhin auf beide vorausgesetzten Abnahmen und Merges.
+
+Der aktuelle Fidelity-Pass aus #6 / PR #18 ersetzt wiederholte Dekoration durch eine Tastatur-Werkstatt mit Montage-, Farb-/Profil- und Prüfplatz, zusammenhängender Versorgung und Lagerung. Eine neue kindliche Figur mit hellem Bob, Hoodie und Sneakern nähert sich dem extern angehängten Mock an. Mehrere reale Renderiterationen korrigieren Haarformen, Schilder, Licht, Himmel, Mikrostruktur und Kamerakomposition. Die umfangreichen alten Traces sind auf einen kompakten historischen Pacing-Nachweis reduziert; die aktuelle Performanceprüfung bleibt ein normaler Windows-/Web-Sanity-Lauf. Subjektive Nutzerabnahme und persönlich gespielter Windows-Vollauf bleiben offen; PR #18 bleibt Draft.

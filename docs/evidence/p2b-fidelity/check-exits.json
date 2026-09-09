@@ -1,0 +1,78 @@
+[
+  {
+    "exit": 0,
+    "check": "import",
+    "arguments": [
+      "--headless",
+      "--path",
+      ".",
+      "--import"
+    ]
+  },
+  {
+    "exit": 0,
+    "check": "presentation",
+    "arguments": [
+      "--headless",
+      "--path",
+      ".",
+      "--script",
+      "res://tests/run_tests.gd",
+      "--",
+      "--suite",
+      "presentation"
+    ]
+  },
+  {
+    "exit": 0,
+    "check": "integration",
+    "arguments": [
+      "--headless",
+      "--path",
+      ".",
+      "--script",
+      "res://tests/run_tests.gd",
+      "--",
+      "--suite",
+      "integration"
+    ]
+  },
+  {
+    "exit": 0,
+    "check": "all",
+    "arguments": [
+      "--headless",
+      "--path",
+      ".",
+      "--script",
+      "res://tests/run_tests.gd",
+      "--",
+      "--suite",
+      "all"
+    ]
+  },
+  {
+    "exit": 0,
+    "check": "export-windows",
+    "arguments": [
+      "--headless",
+      "--path",
+      ".",
+      "--export-release",
+      "Windows Desktop",
+      "build/windows/parkey.exe"
+    ]
+  },
+  {
+    "exit": 0,
+    "check": "export-web",
+    "arguments": [
+      "--headless",
+      "--path",
+      ".",
+      "--export-release",
+      "Web",
+      "build/web/index.html"
+    ]
+  }
+]

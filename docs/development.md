@@ -88,12 +88,13 @@ godot --headless --path . --script res://tests/run_tests.gd -- --suite core
 godot --headless --path . --script res://tests/run_tests.gd -- --suite storage
 godot --headless --path . --script res://tests/run_tests.gd -- --suite integration
 godot --headless --path . --script res://tests/run_tests.gd -- --suite routes
+godot --headless --path . --script res://tests/run_tests.gd -- --suite presentation
 godot --headless --path . --script res://tests/run_tests.gd -- --suite all
 godot --headless --path . --export-release "Windows Desktop" build/windows/parkey.exe
 godot --headless --path . --export-release "Web" build/web/index.html
 ~~~
 
-Der Runner kennt ab P2a `smoke`, `core`, `storage`, `integration`, `routes` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
+Der Runner kennt ab P2b `smoke`, `core`, `storage`, `integration`, `routes`, `presentation` und `all`; ein unbekannter Name muss mit Exitcode ungleich null enden:
 
 ~~~powershell
 godot --headless --path . --script res://tests/run_tests.gd -- --suite does-not-exist
@@ -116,3 +117,34 @@ Die P0-Testszene zeigt eine Taste mit Y, eine Platzhalterfigur mit Kopf, eine er
 `KeyInputNormalizer` wertet den erzeugten Unicodewert eines neuen A-Z-Key-down aus, nicht die physische Taste. Shift wird normalisiert; Key-up, Echo sowie Ctrl/Alt/Meta-Kombinationen werden verworfen.
 
 Die P0-Szene liest `Time.get_ticks_usec()` beim Eintritt in `_unhandled_input`; `captured_usec` ist nur der monotone Zeitpunkt des Anwendungsempfangs. P1a stellt darauf aufbauend den testbaren `RunSession`-/Uhrvertrag bereit. P1b verdrahtet ihn über genau einen `_unhandled_input`-Pfad mit dem sichtbaren Parcours. Hardware-, OS- und Browserlatenzen werden nicht als identisch behauptet.
+
+## P2b-Grafikprüfung reproduzieren
+
+Normal spielen: Windows-Release starten bzw. Webexport über HTTP öffnen. F3 schaltet technische Diagnosen samt optionalem Textfokus-Test zu; erneutes F3 gibt Textfokus frei. Backspace/Escape behalten ihre P1-Bedeutung. Keine automatische Testeingabe ohne ausdrücklichen Prüfparameter.
+
+```powershell
+build/windows/parkey.exe --resolution 1920x1080 -- --p2b-evidence --evidence-size=1920x1080
+build/windows/parkey.exe --resolution 2560x1440 -- --p2b-evidence --evidence-size=2560x1440
+```
+
+Die zusätzliche Größenangabe setzt nach der anfänglichen DPI-Aushandlung die Clientgröße; der Prüfhelfer protokolliert die tatsächlichen PNG-Pixelmaße. Screenshots und `metrics.json` entstehen unter `user://parkey-test-results/render-evidence/`; mit `--evidence-output=E:/Zeuch/Coding/parkey/build/evidence/eigener-lauf` direkt einen eigenen Ordner wählen. Testresultate liegen separat je Prozessstart; Benutzerbestzeiten werden nicht verändert. Rohdaten enthalten die geordneten Frameintervalle, reale Fenster-/Monitorwerte, Renderdriver sowie das anfängliche und abschließende FPS-Limit.
+
+Web: Der lokale Prüftreiber verwendet nur Node-24-Bordmittel. Er dient den unveränderten Webexport aus und nimmt ausschließlich die eigenen Bilder/Messwerte des explizit aktivierten Spiels entgegen; keine Browser-Debugging-Schnittstelle, keine Profilzugriffe und kein externer Dienst.
+
+```powershell
+node tests/serve_web_evidence.mjs 8147 build/web build/evidence/p2b/web-1080
+```
+
+In Desktop-Chrome `http://127.0.0.1:8147/?evidence=1&capture=1` öffnen und etwa 55 Sekunden im Vordergrund lassen. Bilder und Bericht tragen die tatsächliche Canvasauflösung. Für eine zweite Fenstergröße den Server mit einem neuen Ausgabeordner neu starten und denselben Ablauf wiederholen. Fenster-/Vollbildgröße vor dem Lauf setzen; Fokuswechsel invalidieren laufende Versuche wie im Normalspiel. Auflösung immer an den erzeugten PNGs kontrollieren.
+
+Der Server bindet ausschließlich `127.0.0.1`, akzeptiert nur begrenzte JSON-Nachweise mit festen Screenshotnamen und beendet sich nach dem Abschlussbericht. Ohne `evidence=1` wird kein Prüfhelfer instanziiert; ohne `capture=1` auf `127.0.0.1` sendet selbst der Helfer keine HTTP-Nachweise. Normale Spielläufe haben keinen Uploadpfad. Die Berichte enthalten GPU, Canvas, Browserkennung, erste Bildzeit, lokale Ressourcenladezeiten, vier vollständige Läufe und Framebeobachtungen. Exporte und Screenshots sind weiterhin keine subjektive Nutzerabnahme.
+
+Die Nacharbeit erfasst acht Zustände einschließlich `beta` und `beta_long` für die schmalen Formate und das breite W. Native Messfenster sichtbar öffnen und während des Laufs fokussiert lassen; verdeckte Fenster können vom Desktop gedrosselt werden und liefern keine vergleichbare Vordergrundleistung. Nur im Prüfmodus wählt der Helfer den angeschlossenen Bildschirm mit der höchsten gemeldeten Frequenz, setzt die Fensterposition dorthin und fordert beim Start Fokus an. Der erste native Frame protokolliert Bildschirmfrequenz, Bildschirmindex, Fensterposition und VSync-Modus; der Abschluss zählt auch Messframes ohne Fensterfokus. Diese Zahl muss bei der Auswertung mit angegeben werden. Das normale Spiel erhält keine neue Bildschirm-/Fokussteuerung. `.gdignore` hält die reine Gestaltungsreferenz ebenso wie die Renderbelege aus dem Spielimport heraus.
+
+Die P2b-Nacharbeit verwendet lokal versionierte OFL-Schriften, ein CC0-HDR und drei CC0-Holzkanäle unter `assets/`; Quellen und Lizenztexte stehen in [CREDITS.md](../CREDITS.md). Beide Export-Presets packen Credits und Lizenztexte mit ein. Das Spiel benötigt keine zusätzlichen Werkzeuge, Dienste oder Laufzeitdownloads.
+
+Windows initialisiert regulär mit FIFO und schaltet am bestehenden Fenster auf Mailbox-VSync; das automatische Limit entspricht dem aktuellen Fenstermonitor (`WindowPacing`, Fallback 60). Für normale Nachweise weder `--disable-vsync`, `--max-fps` noch `--evidence-vsync` setzen. Die Platzierung bleibt Sache des Fenstersystems. `--evidence-screen=1` wählt im Prüfmodus explizit den zweiten Monitor; `--evidence-position=300,140` setzt nur die Prüfposition. `--evidence-pacing=40` misst statt vier Routen einen ruhenden Entscheidungsblick für 40 Sekunden. Diese statische Zusatzmessung ersetzt die Routen-/Bildprüfung nicht. `--evidence-window-mode=4` dient ausschließlich der getrennten Gegenprobe mit exklusivem Vollbild; die normale Fensterwahl bleibt unverändert.
+
+Für die aktuelle Fidelity-Runde genügt gemäß [#6](https://github.com/venomenon328/parkey/issues/6#issuecomment-5561815307) der normale Release-Sanity-Lauf: 1080p, 1440p und Chrome, beide vom Nutzer verwendeten Monitorfrequenzen berücksichtigen. Keine neue PresentMon-/ETW-/VSync-/Treiberforensik. Die normale Pacing-Konfiguration bleibt erhalten; finale historische Werte und begrenzte Gegenproben stehen in [pacing-baseline.json](evidence/p2b-fidelity/pacing-baseline.json). Vollständige damalige Traces und Werkzeugrezepte bleiben über [b236f17](https://github.com/venomenon328/parkey/blob/b236f17d1d77c66736f54b8239d25337265d83ea/docs/development.md) abrufbar. Keine zusätzliche Entwicklungs- oder Spielabhängigkeit.
+
+Für eine getrennte Modell-Sichtprüfung kann der native Evidence-Helfer zusätzlich `--evidence-portrait` erhalten. Er rendert die reale Figur von vorn und hinten, schreibt `character_front.png` / `character_back.png` und beendet sich. Diese Nahansichten verwenden ausdrücklich eine Prüfkamera; normale Spielkamera, Nutzerergebnisse und Kernregeln bleiben unberührt. Sie ersetzen weder die acht normalen Spielbilder noch einen vollständigen Lauf. Zwischenbilder lokal unter `build/` sammeln; nur aussagekräftige Iterationsbilder und finale Nachweise versionieren.
